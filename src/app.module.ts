@@ -1,4 +1,9 @@
-import { Module, ValidationPipe } from '@nestjs/common';
+import {
+  Module,
+  ValidationPipe,
+  MiddlewareConsumer,
+  NestModule,
+} from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
@@ -18,6 +23,8 @@ import { APP_PIPE, APP_INTERCEPTOR, APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AllExceptionsFilter } from './common/filters';
 import { AuthRolesGuard } from './common/guards';
 import { LoggingInterceptor, ResponseInterceptor } from './common/interceptors';
+import { CurrentUserMiddleware } from './common/middleware/current-user.middleware';
+import { MiddlewareModule } from './common/middleware/middleware.module';
 
 @Module({
   imports: [
@@ -33,6 +40,7 @@ import { LoggingInterceptor, ResponseInterceptor } from './common/interceptors';
       },
       inject: [ConfigService],
     }),
+    MiddlewareModule,
     UserModule,
     AuthModule,
     LabModule,
@@ -78,4 +86,21 @@ import { LoggingInterceptor, ResponseInterceptor } from './common/interceptors';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // 对所有需要认证的路径应用当前用户中间件
+    // 中间件会在 JwtAuthGuard 之后执行，用于标准化用户信息格式
+    consumer
+      .apply(CurrentUserMiddleware)
+      .forRoutes(
+        'user',
+        'appointments',
+        'instruments',
+        'news',
+        'notifications',
+        'favorites',
+        'evaluations',
+        'labs',
+      );
+  }
+}
