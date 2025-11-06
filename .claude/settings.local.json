@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pkill -f \"nest start\")",
+      "Bash(findstr :3000)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

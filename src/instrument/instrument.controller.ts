@@ -8,6 +8,15 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiParam,
+  ApiQuery,
+  ApiBody,
+} from '@nestjs/swagger';
 import { InstrumentService } from './instrument.service';
 import { CreateInstrumentDto } from './dto/create-instrument.dto';
 import { ApplyInstrumentDto } from './dto/apply-instrument.dto';
@@ -16,28 +25,63 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApplicationStatus } from './entities/instrument-application.entity';
 import { RepairStatus } from './entities/instrument-repair.entity';
 
+@ApiTags('仪器管理')
 @Controller('instruments')
 export class InstrumentController {
   constructor(private readonly instrumentService: InstrumentService) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '创建仪器', description: '添加新的仪器设备' })
+  @ApiBody({ type: CreateInstrumentDto })
+  @ApiResponse({
+    status: 201,
+    description: '创建成功',
+  })
   create(@Body() createInstrumentDto: CreateInstrumentDto) {
     return this.instrumentService.create(createInstrumentDto);
   }
 
   @Get()
-  findAll(@Query('keyword') keyword?: string, @Query('labId') labId?: string) {
+  @ApiOperation({ summary: '获取仪器列表', description: '查询所有仪器设备' })
+  @ApiQuery({ name: 'keyword', required: false, description: '搜索关键词' })
+  @ApiQuery({ name: 'labId', required: false, description: '实验室ID' })
+  @ApiResponse({
+    status: 200,
+    description: '查询成功',
+  })
+  findAll(
+    @Query('keyword') keyword?: string,
+    @Query('labId') labId?: string,
+  ) {
     return this.instrumentService.findAll(keyword, labId);
   }
 
   @Get(':id')
+  @ApiOperation({ summary: '获取仪器详情', description: '根据ID获取仪器详细信息' })
+  @ApiParam({ name: 'id', description: '仪器ID', example: 'instrument-001' })
+  @ApiResponse({
+    status: 200,
+    description: '查询成功',
+  })
   findOne(@Param('id') id: string) {
     return this.instrumentService.findOne(id);
   }
 
   @Post(':id/apply')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: '申请使用仪器',
+    description: '申请使用指定的仪器设备',
+  })
+  @ApiParam({ name: 'id', description: '仪器ID', example: 'instrument-001' })
+  @ApiBody({ type: ApplyInstrumentDto })
+  @ApiResponse({
+    status: 201,
+    description: '申请提交成功',
+  })
   apply(
     @Param('id') id: string,
     @Body() applyDto: ApplyInstrumentDto,
@@ -48,12 +92,43 @@ export class InstrumentController {
 
   @Get('applications')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '获取使用申请列表', description: '查询仪器使用申请' })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    description: '申请状态',
+    enum: ApplicationStatus,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '查询成功',
+  })
   getApplications(@Query('status') status?: ApplicationStatus) {
     return this.instrumentService.getApplications(status);
   }
 
   @Post('applications/:id/review')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: '审核使用申请',
+    description: '审核仪器使用申请（仅管理员和教师可操作）',
+  })
+  @ApiParam({ name: 'id', description: '申请ID', example: 'app-001' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        approved: { type: 'boolean', description: '是否通过' },
+        reason: { type: 'string', description: '审核意见' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: '审核完成',
+  })
   reviewApplication(
     @Param('id') id: string,
     @Body('approved') approved: boolean,
@@ -70,6 +145,17 @@ export class InstrumentController {
 
   @Post(':id/repair')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: '报告仪器故障',
+    description: '报告仪器设备故障并申请维修',
+  })
+  @ApiParam({ name: 'id', description: '仪器ID', example: 'instrument-001' })
+  @ApiBody({ type: ReportInstrumentDto })
+  @ApiResponse({
+    status: 201,
+    description: '报告提交成功',
+  })
   report(
     @Param('id') id: string,
     @Body() reportDto: ReportInstrumentDto,
@@ -80,12 +166,47 @@ export class InstrumentController {
 
   @Get('repairs')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '获取维修记录', description: '查询仪器维修记录' })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    description: '维修状态',
+    enum: RepairStatus,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '查询成功',
+  })
   getRepairs(@Query('status') status?: RepairStatus) {
     return this.instrumentService.getRepairs(status);
   }
 
   @Post('repairs/:id/update')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: '更新维修状态',
+    description: '更新仪器维修状态（仅管理员可操作）',
+  })
+  @ApiParam({ name: 'id', description: '维修记录ID', example: 'repair-001' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        status: {
+          type: 'string',
+          enum: Object.values(RepairStatus),
+          description: '维修状态',
+        },
+        summary: { type: 'string', description: '维修总结' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: '更新成功',
+  })
   updateRepairStatus(
     @Param('id') id: string,
     @Body('status') status: RepairStatus,

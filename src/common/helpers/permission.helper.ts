@@ -98,8 +98,8 @@ export class PermissionHelper {
     const descriptions = {
       [Role.SUPER_ADMIN]: '超级管理员',
       [Role.ADMIN]: '管理员',
-      [Role.RECRUITER]: '招聘者',
-      [Role.JOB_SEEKER]: '求职者',
+      [Role.TEACHER]: '招聘者',
+      [Role.STUDENT]: '求职者',
     };
     return descriptions[role] || '未知角色';
   }
@@ -122,6 +122,6 @@ export class PermissionHelper {
    * 检查是否为普通用户角色
    */
   static isRegularUser(role: Role): boolean {
-    return role === Role.JOB_SEEKER || role === Role.RECRUITER;
+    return role === Role.STUDENT || role === Role.TEACHER;
   }
 }

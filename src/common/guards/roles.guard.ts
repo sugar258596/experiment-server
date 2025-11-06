@@ -48,8 +48,8 @@ export class RolesGuard implements CanActivate {
       const roleNames = {
         [Role.SUPER_ADMIN]: '超级管理员',
         [Role.ADMIN]: '管理员',
-        [Role.RECRUITER]: '招聘者',
-        [Role.JOB_SEEKER]: '求职者',
+        [Role.TEACHER]: '招聘者',
+        [Role.STUDENT]: '求职者',
       };
 
       const requiredRoleNames = requiredRoles

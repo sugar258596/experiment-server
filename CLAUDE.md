@@ -1,84 +1,111 @@
+好的 ✅ 以下是完整中文版的 **`CLAUDE.md`** 文件内容，内容完全保留原有结构，并将所有说明与命令翻译为中文版本，同时保留技术名词（如 NestJS、JWT、TypeORM 等）以便开发者参考。
+文件结尾也保留了“强制使用 pnpm”的规范说明。
+
+---
+
+````markdown
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+本文件用于为 **Claude Code**（[claude.ai/code](https://claude.ai/code)）提供在本项目中编写和维护代码的开发指引。
 
-## Project Overview
+---
 
-This is a **University Laboratory Reservation Management System** built with NestJS. The system provides digital laboratory management capabilities supporting student reservations, teacher reviews, and administrator management.
+## 一、项目概述
 
-### Tech Stack
+本项目是一个基于 **NestJS** 的 **高校实验室预约管理系统（University Laboratory Reservation Management System）**。  
+系统提供数字化实验室管理能力，支持学生预约、教师审核以及管理员管理等功能。
 
-- **Framework**: NestJS 10.x
-- **Database**: MySQL 8.0.x with TypeORM
-- **Authentication**: JWT with bcryptjs
-- **Validation**: class-validator & class-transformer
-- **Language**: TypeScript
+---
 
-## Development Commands
+## 二、技术栈
 
-### Starting the Application
+- **后端框架**：NestJS 10.x
+- **数据库**：MySQL 8.0.x（使用 TypeORM）
+- **认证机制**：JWT（结合 bcryptjs）
+- **数据验证**：class-validator 与 class-transformer
+- **语言**：TypeScript
+- **包管理器**：⚙️ **pnpm（强制使用）**
+
+> ⚠️ 所有开发者必须使用 **pnpm** 进行依赖管理。  
+> 项目已根据 pnpm 的锁定文件与工作区行为进行优化。禁止使用 npm 或 yarn。
+
+---
+
+## 三、开发命令
+
+### 启动项目
+
 ```bash
-# Development mode with hot reload
-npm run start:dev
+# 开发模式（热更新）
+pnpm start:dev
 
-# Production build and start
-npm run build
-npm run start:prod
+# 构建并启动生产环境
+pnpm build
+pnpm start:prod
+```
+````
+
+### 测试命令
+
+```bash
+# 运行全部测试
+pnpm test
+
+# 监听模式
+pnpm test:watch
+
+# 生成覆盖率报告
+pnpm test:cov
+
+# 端到端测试（E2E）
+pnpm test:e2e
+
+# 调试测试
+pnpm test:debug
 ```
 
-### Testing
+### 代码质量
+
 ```bash
-# Run all tests
-npm run test
+# 执行 Lint 并自动修复
+pnpm lint
 
-# Watch mode for tests
-npm run test:watch
-
-# Coverage report
-npm run test:cov
-
-# E2E tests
-npm run test:e2e
-
-# Debug tests
-npm run test:debug
+# 使用 Prettier 格式化代码
+pnpm format
 ```
 
-### Code Quality
-```bash
-# Lint and auto-fix
-npm run lint
+---
 
-# Format code with Prettier
-npm run format
-```
+## 四、系统架构
 
-## Architecture
+### 模块化结构
 
-### Module Structure
+本项目采用 **模块化架构**，共包含 9 个主要功能模块（见 `src/app.module.ts` 第 18–40 行）：
 
-The application uses a **modular architecture** with 9 main modules (src/app.module.ts:18-40):
+1. **UserModule** – 用户管理（学生、教师、管理员）
+2. **AuthModule** – 登录认证与 JWT 令牌管理
+3. **LabModule** – 实验室信息管理
+4. **InstrumentModule** – 仪器设备管理与申请流程
+5. **AppointmentModule** – 实验室预约系统
+6. **NewsModule** – 实验室公告与动态
+7. **NotificationModule** – 消息通知模块
+8. **FavoritesModule** – 用户收藏模块
+9. **EvaluationModule** – 实验室与设备评价模块
 
-1. **UserModule** - User management (students, teachers, admins)
-2. **AuthModule** - Authentication & JWT token handling
-3. **LabModule** - Laboratory information management
-4. **InstrumentModule** - Equipment/仪器 management and applications
-5. **AppointmentModule** - Laboratory reservation system
-6. **NewsModule** - Laboratory announcements and updates
-7. **NotificationModule** - User notifications
-8. **FavoritesModule** - User favorites
-9. **EvaluationModule** - Reviews and ratings
+---
 
-### Key Configuration
+## 五、配置文件说明
 
-**Database** (src/config/mysl.config.ts):
-- MySQL database with TypeORM
-- Auto-sync enabled for development (synchronize: true)
-- Entities auto-loaded
-- Connection retry logic configured
-- Timezone set to +08:00 (Asia/Shanghai)
+**数据库配置**（`src/config/mysql.config.ts`）：
 
-**Environment Variables** (.env.example):
+- 使用 MySQL 8.0 + TypeORM
+- 开发环境启用自动同步（`synchronize: true`）
+- 自动加载实体（`autoLoadEntities: true`）
+- 含连接重试机制
+- 时区设置为 `+08:00`（Asia/Shanghai）
+
+**环境变量示例**（`.env.example`）：
+
 ```env
 DB_HOST=localhost
 DB_PORT=3306
@@ -88,105 +115,165 @@ DB_DATABASE=lab_management
 JWT_SECRET=your-secret-key-change-this-in-production
 ```
 
-## Authentication Flow
+---
 
-The system implements JWT-based authentication (src/auth/auth.service.ts):
+## 六、认证流程
 
-1. **Registration** (auth.service.ts:18): Username uniqueness check, bcrypt password hashing (10 rounds), user creation with role assignment
-2. **Login** (auth.service.ts:55): User lookup, password validation, status verification, JWT token generation
-3. **Token Structure**: Contains username, user ID (sub), and role
+系统使用 JWT 认证机制（`src/auth/auth.service.ts`）：
 
-User roles: STUDENT, TEACHER, ADMIN
+1. **注册**（`auth.service.ts:18`）
+   - 检查用户名唯一性
+   - 使用 bcrypt 进行密码加密（10 轮盐值）
+   - 创建用户并分配角色
 
-## Module Details
+2. **登录**（`auth.service.ts:55`）
+   - 根据用户名查找用户
+   - 验证密码与账户状态
+   - 生成 JWT Token
 
-### Core Patterns
+3. **令牌结构**
+   包含：`username`、`sub`（用户ID）与 `role`
 
-Each module follows NestJS best practices:
-- **Controller**: Handles HTTP requests/responses
-- **Service**: Contains business logic
-- **Entity**: TypeORM database models
-- **DTOs**: Data transfer objects with validation
+用户角色包括：`STUDENT`（学生）、`TEACHER`（教师）、`ADMIN`（管理员）
 
-### User Management
+---
 
-User entity (src/user/entities/user.entity.ts) includes:
-- Personal info (username, email, phone)
-- Role-based access control
-- Status tracking (ACTIVE, DISABLED)
+## 七、模块说明
 
-### Laboratory & Appointments
+### 通用模式
 
-The reservation workflow (src/appointment/):
-- Students/teachers can make reservations
-- Teachers can review/approve appointments
-- Support for multiple time slots (morning/afternoon/evening)
-- Status tracking (PENDING/APPROVED/REJECTED/COMPLETED/CANCELLED)
+每个模块均遵循 NestJS 最佳实践：
 
-### Equipment Management (InstrumentModule)
+- **Controller**：处理 HTTP 请求与响应
+- **Service**：封装业务逻辑
+- **Entity**：TypeORM 实体模型
+- **DTO**：数据传输与验证对象
 
-Manages:
-- Equipment/仪器 information
-- Application processes for using equipment
-- Repair requests and tracking
-- Equipment status management
+---
 
-## Development Environment Setup
+### 用户管理模块（UserModule）
 
-1. **Install dependencies**:
+`src/user/entities/user.entity.ts`：
+
+- 用户基本信息（用户名、邮箱、手机号）
+- 基于角色的访问控制
+- 账户状态（ACTIVE / DISABLED）
+
+---
+
+### 实验室与预约模块（AppointmentModule）
+
+`src/appointment/` 目录：
+
+- 学生与教师可发起预约
+- 教师可审批预约申请
+- 支持多时段（上午/下午/晚上）预约
+- 状态管理：`PENDING`、`APPROVED`、`REJECTED`、`COMPLETED`、`CANCELLED`
+
+---
+
+### 仪器设备模块（InstrumentModule）
+
+主要功能：
+
+- 管理仪器/设备信息
+- 仪器使用申请与维修申请
+- 仪器状态更新与追踪
+
+---
+
+## 八、开发环境搭建步骤
+
+1. **安装依赖**
+
    ```bash
-   npm install
-   # or
    pnpm install
    ```
 
-2. **Configure database** (MySQL 8.0+):
-   - Create database `lab_management`
-   - Update `.env` with connection credentials
-   - TypeORM will auto-sync entities in development
+2. **配置数据库（MySQL 8.0+）**
+   - 创建数据库 `lab_management`
+   - 在 `.env` 中填写正确的数据库连接信息
+   - 开发环境下 TypeORM 自动同步实体结构
 
-3. **Start development server**:
+3. **启动开发服务器**
+
    ```bash
-   npm run start:dev
+   pnpm start:dev
    ```
 
-## Testing
+---
 
-Test files follow the `.spec.ts` naming convention. Current test files:
-- src/user/user.controller.spec.ts
-- src/user/user.service.spec.ts
-- src/app.controller.spec.ts
+## 九、测试
 
-Run specific test files:
+测试文件统一使用 `.spec.ts` 后缀。
+示例：
+
+- `src/user/user.controller.spec.ts`
+- `src/user/user.service.spec.ts`
+- `src/app.controller.spec.ts`
+
+运行指定测试文件：
+
 ```bash
-npm test -- user.service.spec.ts
+pnpm test -- user.service.spec.ts
 ```
 
-## Important Notes
+---
 
-- Database synchronization is **enabled** for development (src/config/mysl.config.ts:15) - disable in production!
-- Entities are auto-loaded by TypeORM (autoLoadEntities: true)
-- JWT tokens include user role for authorization decisions
-- All timestamps use Asia/Shanghai timezone (+08:00)
-- Passwords are bcrypt hashed with 10 salt rounds
-- The system follows RESTful API conventions
+## 十、注意事项
 
-## API Structure
+- **开发环境** 开启 TypeORM 自动同步（生产环境需关闭）。
+- JWT Token 内包含用户角色信息，用于权限判断。
+- 所有时间戳统一使用 `Asia/Shanghai (+08:00)` 时区。
+- 密码使用 bcrypt 加密（10 轮盐值）。
+- 系统遵循 **RESTful API** 设计规范。
 
-Controllers are organized by feature module:
-- `/api/users` - User management
-- `/api/auth` - Authentication
-- `/api/labs` - Laboratory operations
-- `/api/instruments` - Equipment management
-- `/api/appointments` - Reservations
-- `/api/news` - Announcements
-- `/api/notifications` - Notifications
-- `/api/favorites` - User favorites
-- `/api/evaluations` - Reviews/ratings
+---
 
-## Troubleshooting
+## 十一、API 路由结构
 
-- **Database connection issues**: Check `.env` credentials, ensure MySQL is running
-- **JWT errors**: Verify `JWT_SECRET` is set and consistent across environments
-- **TypeORM sync issues**: In production, disable `synchronize: true` and use migrations
-- **Module import errors**: Ensure all modules are registered in app.module.ts
+| 模块       | 路由前缀         | 功能描述       |
+| :--------- | :--------------- | :------------- |
+| 用户模块   | `/users`         | 用户管理       |
+| 认证模块   | `/auth`          | 登录与注册     |
+| 实验室模块 | `/labs`          | 实验室操作     |
+| 仪器模块   | `/instruments`   | 仪器管理       |
+| 预约模块   | `/appointments`  | 实验室预约     |
+| 公告模块   | `/news`          | 新闻公告       |
+| 通知模块   | `/notifications` | 用户通知       |
+| 收藏模块   | `/favorites`     | 用户收藏       |
+| 评价模块   | `/evaluations`   | 用户评价与评分 |
+
+---
+
+## 十二、常见问题与解决方案
+
+| 问题             | 可能原因                           | 解决方案                                  |
+| :--------------- | :--------------------------------- | :---------------------------------------- |
+| 无法连接数据库   | `.env` 配置错误或 MySQL 未启动     | 检查数据库连接信息并启动服务              |
+| JWT 报错         | `JWT_SECRET` 未设置或不一致        | 确认 `.env` 文件中密钥一致                |
+| TypeORM 同步异常 | 生产环境启用了 `synchronize: true` | 禁用自动同步并使用 migration              |
+| 模块导入错误     | 未在 `app.module.ts` 注册模块      | 确认模块已正确引入                        |
+| 包版本冲突       | 使用了 npm/yarn 安装依赖           | 删除 `node_modules` 并使用 `pnpm install` |
+
+---
+
+## 十三、强制使用 pnpm
+
+项目严格使用 pnpm 管理依赖。请在 `package.json` 中保持如下配置：
+
+```json
+{
+  "engines": {
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.0.0"
+}
+```
+
+> 🧩 提示：如误用 npm/yarn 安装依赖，请删除以下内容后重新安装：
+>
+> ```bash
+> rm -rf node_modules package-lock.json yarn.lock
+> pnpm install
+> ```
