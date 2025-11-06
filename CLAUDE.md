@@ -1,9 +1,3 @@
-好的 ✅ 以下是完整中文版的 **`CLAUDE.md`** 文件内容，内容完全保留原有结构，并将所有说明与命令翻译为中文版本，同时保留技术名词（如 NestJS、JWT、TypeORM 等）以便开发者参考。
-文件结尾也保留了“强制使用 pnpm”的规范说明。
-
----
-
-````markdown
 # CLAUDE.md
 
 本文件用于为 **Claude Code**（[claude.ai/code](https://claude.ai/code)）提供在本项目中编写和维护代码的开发指引。
@@ -12,7 +6,7 @@
 
 ## 一、项目概述
 
-本项目是一个基于 **NestJS** 的 **高校实验室预约管理系统（University Laboratory Reservation Management System）**。  
+本项目是一个基于 **NestJS** 的 **高校实验室预约管理系统（University Laboratory Reservation Management System）**。
 系统提供数字化实验室管理能力，支持学生预约、教师审核以及管理员管理等功能。
 
 ---
@@ -26,8 +20,11 @@
 - **语言**：TypeScript
 - **包管理器**：⚙️ **pnpm（强制使用）**
 
-> ⚠️ 所有开发者必须使用 **pnpm** 进行依赖管理。  
-> 项目已根据 pnpm 的锁定文件与工作区行为进行优化。禁止使用 npm 或 yarn。
+> ⚠️ **严格强制要求**
+> - 所有开发者**必须**使用 **pnpm** 进行依赖管理
+> - **禁止**使用 npm 或 yarn
+> - 项目已根据 pnpm 的锁定文件与工作区行为进行优化
+> - **每次修改代码后必须执行** `pnpm run lint` 进行代码质量检查
 
 ---
 
@@ -43,7 +40,6 @@ pnpm start:dev
 pnpm build
 pnpm start:prod
 ```
-````
 
 ### 测试命令
 
@@ -64,15 +60,23 @@ pnpm test:e2e
 pnpm test:debug
 ```
 
-### 代码质量
+### 代码质量（**必须执行**）
 
 ```bash
-# 执行 Lint 并自动修复
+# ⚠️ 每次修改代码后必须执行此命令
+# 执行 Lint 并自动修复（强制要求）
 pnpm lint
 
 # 使用 Prettier 格式化代码
 pnpm format
 ```
+
+> ✅ **开发流程规范**：
+> 1. 修改代码
+> 2. 执行 `pnpm run lint`（强制要求）
+> 3. 确保通过所有 lint 检查
+> 4. 提交代码
+
 
 ---
 
@@ -220,17 +224,44 @@ pnpm test -- user.service.spec.ts
 
 ---
 
-## 十、注意事项
+## 十、代码质量规范
 
-- **开发环境** 开启 TypeORM 自动同步（生产环境需关闭）。
-- JWT Token 内包含用户角色信息，用于权限判断。
-- 所有时间戳统一使用 `Asia/Shanghai (+08:00)` 时区。
-- 密码使用 bcrypt 加密（10 轮盐值）。
-- 系统遵循 **RESTful API** 设计规范。
+### Lint 检查（强制要求）
+
+**每次修改代码后必须执行：**
+
+```bash
+pnpm lint
+```
+
+> ⚠️ **重要说明**：
+> - 提交代码前必须通过 lint 检查
+> - lint 检查包括 ESLint 规则和代码格式化
+> - 使用 `--fix` 参数自动修复可修复的问题
+> - 不可修复的问题需要手动调整代码
+
+### 开发工作流程
+
+1. **编写代码**
+2. **运行 lint 检查**：`pnpm run lint`（必须）
+3. **修复所有 lint 错误**
+4. **测试功能**：确保测试通过
+5. **提交代码**：仅在通过 lint 检查后提交
 
 ---
 
-## 十一、API 路由结构
+## 十一、注意事项
+
+- **开发环境** 开启 TypeORM 自动同步（生产环境需关闭）
+- JWT Token 内包含用户角色信息，用于权限判断
+- 所有时间戳统一使用 `Asia/Shanghai (+08:00)` 时区
+- 密码使用 bcrypt 加密（10 轮盐值）
+- 系统遵循 **RESTful API** 设计规范
+- **严格禁止使用 npm 或 yarn**，所有依赖管理必须通过 pnpm
+
+---
+
+## 十二、API 路由结构
 
 | 模块       | 路由前缀         | 功能描述       |
 | :--------- | :--------------- | :------------- |
@@ -246,7 +277,7 @@ pnpm test -- user.service.spec.ts
 
 ---
 
-## 十二、常见问题与解决方案
+## 十三、常见问题与解决方案
 
 | 问题             | 可能原因                           | 解决方案                                  |
 | :--------------- | :--------------------------------- | :---------------------------------------- |
@@ -255,12 +286,25 @@ pnpm test -- user.service.spec.ts
 | TypeORM 同步异常 | 生产环境启用了 `synchronize: true` | 禁用自动同步并使用 migration              |
 | 模块导入错误     | 未在 `app.module.ts` 注册模块      | 确认模块已正确引入                        |
 | 包版本冲突       | 使用了 npm/yarn 安装依赖           | 删除 `node_modules` 并使用 `pnpm install` |
+| Lint 检查失败    | 代码不符合 ESLint 规范             | 运行 `pnpm lint` 并修复所有错误           |
 
 ---
 
-## 十三、强制使用 pnpm
+## 十四、包管理器规范（强制执行）
 
-项目严格使用 pnpm 管理依赖。请在 `package.json` 中保持如下配置：
+### 严格使用 pnpm
+
+项目**强制**使用 pnpm 管理依赖。请确保系统中已安装 pnpm 9.0.0 或更高版本。
+
+#### 安装 pnpm（如未安装）
+
+```bash
+npm install -g pnpm@latest
+```
+
+#### package.json 配置
+
+项目 `package.json` 中包含以下强制配置：
 
 ```json
 {
@@ -271,9 +315,53 @@ pnpm test -- user.service.spec.ts
 }
 ```
 
-> 🧩 提示：如误用 npm/yarn 安装依赖，请删除以下内容后重新安装：
->
-> ```bash
-> rm -rf node_modules package-lock.json yarn.lock
-> pnpm install
-> ```
+#### 依赖安装
+
+```bash
+# ✅ 正确方式
+pnpm install
+
+# ❌ 错误方式（严格禁止）
+npm install
+yarn install
+```
+
+#### 错误恢复流程
+
+如误用 npm/yarn 安装依赖，请执行以下操作：
+
+```bash
+# 删除错误的锁定文件和依赖
+rm -rf node_modules package-lock.json yarn.lock
+
+# 重新安装
+pnpm install
+```
+
+---
+
+## 十五、开发流程检查清单
+
+在每次提交代码前，请确认以下所有项目：
+
+- [ ] 代码已修改完成
+- [ ] 执行了 `pnpm run lint` 命令
+- [ ] 所有 lint 检查通过（无错误或警告）
+- [ ] 所有测试通过 `pnpm test`
+- [ ] 功能测试正常
+- [ ] 使用 `pnpm` 管理所有依赖（未使用 npm/yarn）
+- [ ] 代码符合项目的 TypeScript 和 NestJS 规范
+
+---
+
+## 十六、联系与支持
+
+如遇到问题，请检查：
+
+1. 是否正确使用 pnpm
+2. 是否执行了 `pnpm run lint`
+3. 是否已解决所有 lint 错误
+4. 依赖是否正确安装
+
+严格遵循以上规范，确保代码质量和团队协作效率。
+
