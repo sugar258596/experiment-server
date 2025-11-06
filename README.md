@@ -1,98 +1,311 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 高校实验室预约管理系统开发文档
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## 1. 项目概述
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+### 1.1 项目背景
 
-## Description
+解决高校实验室管理中的核心痛点：
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- 预约流程繁琐
+- 设备管理分散
+- 使用记录难追溯
 
-## Project setup
+### 1.2 项目目标
 
-```bash
-$ pnpm install
-```
+实现实验室全流程数字化管理，支持学生预约、教师审核、管理员统一管理。
 
-## Compile and run the project
+### 1.3 用户角色
 
-```bash
-# development
-$ pnpm run start
+| 角色   | 权限说明                                            |
+| ------ | --------------------------------------------------- |
+| 学生   | 预约实验室/设备、查看记录、收藏评价、仪器申请、报修 |
+| 教师   | 审核预约、发布动态、维护标签、仪器申请、报修        |
+| 管理员 | 系统管理、实验室管理、预约管理、仪器管理、内容审核  |
 
-# watch mode
-$ pnpm run start:dev
+---
 
-# production mode
-$ pnpm run start:prod
-```
+### 2.2 技术架构说明
 
-## Run tests
+- **前后端分离**：RESTful API交互
+- **会话管理**：JWT Token + Redis缓存
+- **文件存储**：本地文件系统/OSS
+- **消息通知**：WebSocket + 数据库轮询
 
-```bash
-# unit tests
-$ pnpm run test
+---
 
-# e2e tests
-$ pnpm run test:e2e
+## 3. 技术栈
 
-# test coverage
-$ pnpm run test:cov
-```
+### 3.1 前端技术栈
 
-## Deployment
+| 技术         | 版本 | 用途       |
+| ------------ | ---- | ---------- |
+| Vue.js       | 3.x  | 前端框架   |
+| Element Plus | 2.x  | UI组件库   |
+| Axios        | 1.x  | HTTP客户端 |
+| Vue Router   | 4.x  | 路由管理   |
+| Pinia        | 2.x  | 状态管理   |
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### 3.2 后端技术栈
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+| 技术     | 版本  | 用途               |
+| -------- | ----- | ------------------ |
+| Nnst.js  | 3.x   | Node.js 企业级框架 |
+| TypeORM  | 6.x   | ORM框架            |
+| JWT      | 9.x   | Token生成验证      |
+| MySQL    | 8.0.x | 关系数据库         |
+| bcryptjs | 2.x   | 密码加密           |
 
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
-```
+---
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## 4. 功能模块设计
 
-## Resources
+## 4.1 前台模块
 
-Check out a few resources that may come in handy when working with NestJS:
+### 4.1.1 首页
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+**功能元素**：
 
-## Support
+- 顶部导航栏（登录状态、用户信息）
+- 轮播图（规范、通知，最多5张）
+- 搜索栏（实验室名称、设备类型）
+- 功能入口卡片（预约、申请、报修、记录）
+- 热门实验室（TOP6轮播）
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### 4.1.2 用户注册
 
-## Stay in touch
+**表单字段**：
+| 字段 | 验证规则 | 必填 |
+|------|----------|------|
+| username | 4-20字符，字母+数字 | 是 |
+| password | 8-20字符，含大小写+数字 | 是 |
+| confirmPassword | 与password一致 | 是 |
+| role | STUDENT/TEACHER | 是 |
+| email | 邮箱格式 | 否 |
+| phone | 11位手机号 | 否 |
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+**业务逻辑**：
 
-## License
+- 实时校验用户名唯一性（防抖500ms）
+- 密码BCrypt加密存储
+- 注册成功后自动登录
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### 4.1.3 用户登录
+
+**功能**：
+
+- 用户名+密码认证
+- 记住密码（localStorage存储7天）
+- 返回JWT Token
+- 自动跳转至登录前页面
+
+### 4.1.4 个人中心
+
+#### 学生视图
+
+1. **基础信息编辑**：昵称、头像、邮箱、手机号
+2. **预约历史**：状态（待审核/已通过/已驳回/已完成/已取消），支持取消待审核预约
+3. **仪器申请记录**：按状态筛选
+4. **报修记录**：查看进度
+5. **我的收藏**：快速预约、取消收藏
+
+#### 教师视图
+
+1. **基础信息编辑**（同学生）
+2. **教学标签维护**：添加擅长领域
+3. **审核时段设置**：设置可审核时间
+4. **预约审核记录**
+5. **仪器申请审核记录**
+
+### 4.1.5 实验室预约
+
+**筛选条件**：院系、容量范围、设备类型、状态
+
+**预约流程**：
+
+1. 选择实验室（卡片展示）
+2. 选择时间（未来7天，上午/下午/晚上三个时段）
+3. 填写信息：实验用途、内容描述、使用人数
+4. 提交预约（前端校验时间冲突）
+
+**预约管理**：
+
+- 待审核：可取消
+- 已通过：倒计时提醒
+- 已驳回：显示原因
+- 已完成：可评价
+
+### 4.1.6 实验室收藏与评价
+
+**收藏功能**：
+
+- 详情页收藏/取消
+- 个人中心快速查看
+
+**评价功能**：
+
+- 评分（1-5星）
+- 评价维度：设备状态、环境卫生、管理服务
+- 文字评价（选填，最多200字）
+
+### 4.1.7 实验室动态
+
+**内容类型**：
+
+- 实验操作技巧
+- 安全注意事项
+- 设备使用教程
+- 实验室通知
+
+**功能**：按标签筛选、点赞、收藏
+
+### 4.1.8 消息通知
+
+**通知类型**：
+| 类型 | 触发时机 |
+|------|----------|
+| 预约审核 | 教师审核后 |
+| 临时通知 | 实验室状态变更 |
+| 预约提醒 | 预约前1天 |
+| 仪器申请 | 申请审核后 |
+| 报修进度 | 维修状态变更 |
+
+**展示方式**：
+
+- 顶部铃铛图标（未读红点）
+- 未读消息标红
+- 点击跳转相关页面
+
+### 4.1.9 仪器申请
+
+**申请流程**：
+
+1. 筛选仪器（名称、类型、所属实验室）
+2. 填写申请表：
+   - 使用用途（必填）
+   - 详细说明（必填，最少50字）
+   - 使用时段（必填）
+3. 提交申请（教师优先级高于学生）
+
+**申请状态**：待审核/已通过/已驳回
+
+### 4.1.10 仪器报修
+
+**报修流程**：
+
+1. 选择故障仪器
+2. 填写报修信息：
+   - 故障类型（硬件/软件/操作异常/其他）
+   - 故障描述（必填，最少20字）
+   - 故障图片（选填，最多3张）
+   - 紧急程度
+3. 提交报修（生成报修单编号）
+
+**报修进度**：待处理/维修中/已完成
+
+---
+
+## 4.2 后台管理模块
+
+### 4.2.1 管理员登录
+
+管理员账号密码认证，返回JWT Token（有效期2小时）
+
+### 4.2.2 管理后台首页
+
+**数据看板**：
+
+- 新增用户数（对比昨日）
+- 今日预约量
+- 仪器申请量
+- 待处理报修数
+
+**快捷操作**：用户管理、实验室管理、预约审核、仪器管理、报修处理
+
+**实时图表**：
+
+- 最近7天预约趋势（折线图）
+- 实验室预约占比（饼图）
+- 仪器使用率排行（柱状图）
+
+### 4.2.3 系统管理
+
+#### 用户管理
+
+**功能**：
+
+- 分页展示用户列表
+- 筛选：角色、状态、院系、关键词
+- 操作：编辑、启用/禁用、删除、重置密码
+- 批量操作：启用/禁用、导出Excel
+
+#### 权限控制
+
+**角色类型**：
+
+- 超级管理员：所有权限
+- 普通管理员：除系统配置外的所有权限
+- 实验室管理员：实验室、预约、仪器管理
+- 内容审核员：内容审核、标签管理
+
+### 4.2.4 实验室管理
+
+**功能**：
+
+- 维护实验室信息（名称、位置、容量、设备清单）
+- 上传实验室图片（最多5张）
+- 设置状态（正常/维护/停用）
+- 查看实验室统计数据
+
+### 4.2.5 预约管理
+
+**功能**：
+
+- 查询全量预约记录
+- 筛选：日期、状态、实验室、院系、预约人
+- 查看预约详情
+- 强制取消预约（填写原因，自动通知）
+- 预约统计分析
+- 导出预约数据（Excel）
+
+### 4.2.6 仪器管理
+
+#### 仪器信息维护
+
+- 新增/编辑/删除仪器
+- 生成仪器二维码
+- 查看使用记录
+
+#### 仪器申请审核
+
+- 按申请时间排序
+- 教师申请优先
+- 审核通过/驳回
+- 自动通知申请人
+
+#### 仪器报修处理
+
+**流程**：
+
+1. **待处理**：分配维修人员
+2. **维修中**：更新进度
+3. **已完成**：填写维修总结
+
+### 4.2.7 内容与标签管理
+
+#### 标签管理
+
+**标签类型**：院系、设备类型、实验用途、仪器类型、故障类型
+
+**操作**：新增、编辑、删除、排序，实时同步
+
+#### 内容审核
+
+- 审核教师发布的动态
+- 敏感词检测
+- 通过/驳回
+
+---
+
+## 5. 数据库设计
+
+### 5.1 核心表结构
