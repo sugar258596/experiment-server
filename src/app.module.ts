@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, ValidationPipe } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
@@ -14,6 +14,10 @@ import { NewsModule } from './news/news.module';
 import { NotificationModule } from './notification/notification.module';
 import { FavoritesModule } from './favorites/favorites.module';
 import { EvaluationModule } from './evaluation/evaluation.module';
+import { APP_PIPE, APP_INTERCEPTOR, APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { AllExceptionsFilter } from './common/filters';
+import { AuthRolesGuard } from './common/guards';
+import { LoggingInterceptor, ResponseInterceptor } from './common/interceptors';
 
 @Module({
   imports: [
@@ -40,6 +44,38 @@ import { EvaluationModule } from './evaluation/evaluation.module';
     EvaluationModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      // 配置全局的验证管道
+      provide: APP_PIPE,
+      useValue: new ValidationPipe({
+        transform: true, // 启用自动类型转换
+        transformOptions: {
+          enableImplicitConversion: true, // 启用隐式类型转换
+        },
+      }),
+    },
+    {
+      // 全局日志拦截器（先记录请求）
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
+    {
+      // 全局响应拦截器（后格式化响应）
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseInterceptor,
+    },
+    {
+      // 全局异常过滤器
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+    {
+      // 全局认证和角色守卫
+      provide: APP_GUARD,
+      useClass: AuthRolesGuard,
+    },
+  ],
 })
 export class AppModule {}
