@@ -21,45 +21,47 @@ export enum InstrumentStatus {
 
 @Entity('instruments')
 export class Instrument {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn({ comment: '设备唯一标识' })
   id: string;
 
-  @Column()
+  @Column({ comment: '设备名称' })
   name: string;
 
-  @Column()
+  @Column({ comment: '设备型号' })
   model: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, comment: '设备序列号' })
   serialNumber: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'text', nullable: true, comment: '设备描述' })
   description: string;
 
   @Column({
     type: 'enum',
     enum: InstrumentStatus,
     default: InstrumentStatus.ACTIVE,
+    comment:
+      '设备状态：ACTIVE-正常，INACTIVE-停用，MAINTENANCE-维护中，FAULT-故障',
   })
   status: InstrumentStatus;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'text', nullable: true, comment: '设备技术规格' })
   specifications: string;
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'json', nullable: true, comment: '设备图片URL数组' })
   images: string[];
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, comment: '设备二维码' })
   qrCode: string;
 
   @ManyToOne(() => Lab, (lab) => lab.id, { nullable: true })
-  @JoinColumn()
+  @JoinColumn({ name: 'labId' })
   lab: Lab;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ comment: '创建时间' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ comment: '更新时间' })
   updatedAt: Date;
 
   @OneToMany(

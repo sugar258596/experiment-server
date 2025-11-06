@@ -18,49 +18,50 @@ export enum ApplicationStatus {
 
 @Entity('instrument_applications')
 export class InstrumentApplication {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn({ comment: '申请表唯一标识' })
   id: string;
 
   @ManyToOne(() => Instrument, (instrument) => instrument.applications)
-  @JoinColumn()
+  @JoinColumn({ name: 'instrumentId' })
   instrument: Instrument;
 
   @ManyToOne(() => User)
-  @JoinColumn()
+  @JoinColumn({ name: 'applicantId' })
   applicant: User;
 
-  @Column()
+  @Column({ comment: '使用目的' })
   purpose: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', comment: '详细描述' })
   description: string;
 
-  @Column({ type: 'datetime' })
+  @Column({ type: 'datetime', comment: '使用开始时间' })
   startTime: Date;
 
-  @Column({ type: 'datetime' })
+  @Column({ type: 'datetime', comment: '使用结束时间' })
   endTime: Date;
 
   @Column({
     type: 'enum',
     enum: ApplicationStatus,
     default: ApplicationStatus.PENDING,
+    comment: '申请状态：PENDING-待审核，APPROVED-已通过，REJECTED-已拒绝',
   })
   status: ApplicationStatus;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, comment: '拒绝原因' })
   rejectionReason: string;
 
   @ManyToOne(() => User, { nullable: true })
-  @JoinColumn()
+  @JoinColumn({ name: 'reviewerId' })
   reviewer: User;
 
-  @Column({ type: 'datetime', nullable: true })
+  @Column({ type: 'datetime', nullable: true, comment: '审核时间' })
   reviewTime: Date;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ comment: '创建时间' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ comment: '更新时间' })
   updatedAt: Date;
 }

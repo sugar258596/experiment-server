@@ -10,17 +10,17 @@ import { Lab } from '../../lab/entities/lab.entity';
 
 @Entity('favorites')
 export class Favorites {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn({ comment: '收藏记录唯一标识' })
   id: string;
 
   @ManyToOne(() => User)
-  @JoinColumn()
+  @JoinColumn({ name: 'userId' })
   user: User;
 
   @ManyToOne(() => Lab)
-  @JoinColumn()
+  @JoinColumn({ name: 'labId' })
   lab: Lab;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ comment: '收藏时间' })
   createdAt: Date;
 }

@@ -12,35 +12,35 @@ import { Lab } from '../../lab/entities/lab.entity';
 
 @Entity('evaluations')
 export class Evaluation {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn({ comment: '评价记录唯一标识' })
   id: string;
 
   @ManyToOne(() => Lab, (lab) => lab.evaluations)
-  @JoinColumn()
+  @JoinColumn({ name: 'labId' })
   lab: Lab;
 
   @ManyToOne(() => User)
-  @JoinColumn()
+  @JoinColumn({ name: 'userId' })
   user: User;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', comment: '总体评分（1-5分）' })
   overallRating: number;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', comment: '设备评分（1-5分）' })
   equipmentRating: number;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', comment: '环境评分（1-5分）' })
   environmentRating: number;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', comment: '服务评分（1-5分）' })
   serviceRating: number;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'text', nullable: true, comment: '评价文字内容' })
   comment: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ comment: '评价时间' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ comment: '更新时间' })
   updatedAt: Date;
 }
