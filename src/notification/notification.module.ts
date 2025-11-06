@@ -4,9 +4,10 @@ import { NotificationService } from './notification.service';
 import { NotificationController } from './notification.controller';
 import { Notification } from './entities/notification.entity';
 import { User } from '../user/entities/user.entity';
+import { CommonModule } from '../common/common.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Notification, User])],
+  imports: [TypeOrmModule.forFeature([Notification, User]), CommonModule],
   controllers: [NotificationController],
   providers: [NotificationService],
   exports: [NotificationService],

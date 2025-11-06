@@ -6,6 +6,7 @@ import { Instrument } from './entities/instrument.entity';
 import { InstrumentApplication } from './entities/instrument-application.entity';
 import { InstrumentRepair } from './entities/instrument-repair.entity';
 import { Lab } from '../lab/entities/lab.entity';
+import { CommonModule } from '../common/common.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { Lab } from '../lab/entities/lab.entity';
       InstrumentRepair,
       Lab,
     ]),
+    CommonModule,
   ],
   controllers: [InstrumentController],
   providers: [InstrumentService],

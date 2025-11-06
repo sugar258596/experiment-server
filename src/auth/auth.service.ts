@@ -6,7 +6,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcryptjs';
+import bcrypt from 'bcryptjs';
 import { User, UserRole, UserStatus } from '../user/entities/user.entity';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -46,13 +46,8 @@ export class AuthService {
 
     await this.userRepository.save(user);
 
-    // 返回token和用户信息
-    const token = this.generateToken(user);
-    const { password: _, ...userInfo } = user;
-
     return {
-      token,
-      user: userInfo,
+      message: '注册成功',
     };
   }
 
@@ -75,17 +70,15 @@ export class AuthService {
     }
 
     // 检查用户状态
-    if (user.status !== 'ACTIVE') {
+    if (user.status !== UserStatus.ACTIVE) {
       throw new UnauthorizedException('账号已被禁用');
     }
 
     // 生成token
     const token = this.generateToken(user);
-    const { password: _, ...userInfo } = user;
 
     return {
       token,
-      user: userInfo,
     };
   }
 

@@ -5,7 +5,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between } from 'typeorm';
+import { Repository } from 'typeorm';
 import {
   Appointment,
   AppointmentStatus,
@@ -14,8 +14,9 @@ import {
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { ReviewAppointmentDto } from './dto/review-appointment.dto';
 import { SearchAppointmentDto } from './dto/search-appointment.dto';
-import { User } from '../user/entities/user.entity';
+import { User, UserRole } from '../user/entities/user.entity';
 import { Lab } from '../lab/entities/lab.entity';
+import type { UserPayload } from '../common/interfaces/request.interface';
 
 @Injectable()
 export class AppointmentService {
@@ -26,7 +27,7 @@ export class AppointmentService {
     private labRepository: Repository<Lab>,
   ) {}
 
-  async create(user: User, createDto: CreateAppointmentDto) {
+  async create(user: UserPayload, createDto: CreateAppointmentDto) {
     const lab = await this.labRepository.findOne({
       where: { id: createDto.labId },
     });
@@ -48,7 +49,7 @@ export class AppointmentService {
 
     const appointment = this.appointmentRepository.create({
       lab,
-      user,
+      userId: user.id,
       appointmentDate: createDto.appointmentDate,
       timeSlot: createDto.timeSlot,
       purpose: createDto.purpose,
@@ -119,7 +120,7 @@ export class AppointmentService {
     };
   }
 
-  async findMyAppointments(userId: string) {
+  async findMyAppointments(userId: number) {
     return await this.appointmentRepository.find({
       where: { user: { id: userId } },
       relations: ['lab'],
@@ -127,7 +128,7 @@ export class AppointmentService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     const appointment = await this.appointmentRepository.findOne({
       where: { id },
       relations: ['lab', 'user', 'reviewer'],
@@ -140,7 +141,11 @@ export class AppointmentService {
     return appointment;
   }
 
-  async review(id: string, reviewer: User, reviewDto: ReviewAppointmentDto) {
+  async review(
+    id: number,
+    reviewer: UserPayload,
+    reviewDto: ReviewAppointmentDto,
+  ) {
     const appointment = await this.findOne(id);
 
     if (appointment.status !== AppointmentStatus.PENDING) {
@@ -150,7 +155,7 @@ export class AppointmentService {
     appointment.status = reviewDto.approved
       ? AppointmentStatus.APPROVED
       : AppointmentStatus.REJECTED;
-    appointment.reviewer = reviewer;
+    appointment.reviewerId = reviewer.id;
     appointment.reviewTime = new Date();
 
     if (!reviewDto.approved && reviewDto.reason) {
@@ -160,13 +165,13 @@ export class AppointmentService {
     return await this.appointmentRepository.save(appointment);
   }
 
-  async cancel(id: string, user: User) {
+  async cancel(id: number, user: UserPayload) {
     const appointment = await this.findOne(id);
 
     if (
-      appointment.user.id !== user.id &&
-      user.role !== 'TEACHER' &&
-      user.role !== 'ADMIN'
+      appointment.userId !== user.id &&
+      user.role !== 'teacher' &&
+      user.role !== 'admin'
     ) {
       throw new ForbiddenException('只能取消自己的预约');
     }
@@ -183,14 +188,14 @@ export class AppointmentService {
   }
 
   private async checkTimeConflict(
-    labId: string,
+    id: number,
     date: string,
     timeSlot: TimeSlot,
   ): Promise<boolean> {
     const appointmentDate = new Date(date);
     const existingAppointment = await this.appointmentRepository.findOne({
       where: {
-        lab: { id: labId },
+        lab: { id },
         appointmentDate,
         timeSlot,
         status: AppointmentStatus.APPROVED,

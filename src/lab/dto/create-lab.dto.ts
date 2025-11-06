@@ -50,10 +50,7 @@ export class CreateLabDto {
 
   @ApiPropertyOptional({
     description: '实验室图片URL列表',
-    example: [
-      'https://example.com/lab1.jpg',
-      'https://example.com/lab2.jpg',
-    ],
+    example: ['https://example.com/lab1.jpg', 'https://example.com/lab2.jpg'],
   })
   @IsOptional()
   @IsArray()

@@ -13,6 +13,7 @@ import {
   UploadConfigOptions,
   createUploadConfig,
 } from '../../config';
+import { SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 
 // 单文件上传装饰器
 export function SingleFileUpload(
@@ -67,7 +68,7 @@ export function MultiFieldFileUpload(
   uploadFields: Array<{ name: string; maxCount?: number }>,
   options?: MulterOptions,
 ) {
-  const properties: any = {};
+  const properties: Record<string, SchemaObject> = {};
 
   uploadFields.forEach((field) => {
     if (field.maxCount && field.maxCount > 1) {

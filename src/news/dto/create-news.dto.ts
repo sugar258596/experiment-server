@@ -37,10 +37,7 @@ export class CreateNewsDto {
 
   @ApiPropertyOptional({
     description: '新闻图片URL列表',
-    example: [
-      'https://example.com/news1.jpg',
-      'https://example.com/news2.jpg',
-    ],
+    example: ['https://example.com/news1.jpg', 'https://example.com/news2.jpg'],
   })
   @IsOptional()
   @IsArray()

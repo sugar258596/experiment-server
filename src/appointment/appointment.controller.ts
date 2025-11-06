@@ -8,6 +8,7 @@ import {
   Query,
   UseGuards,
   Req,
+  ParseIntPipe,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -15,14 +16,14 @@ import {
   ApiResponse,
   ApiBearerAuth,
   ApiParam,
-  ApiQuery,
   ApiBody,
 } from '@nestjs/swagger';
 import { AppointmentService } from './appointment.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { ReviewAppointmentDto } from './dto/review-appointment.dto';
 import { SearchAppointmentDto } from './dto/search-appointment.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/common/guards';
+import type { AuthenticatedRequest } from 'src/common/interfaces/request.interface';
 
 @ApiTags('实验室预约')
 @Controller('appointments')
@@ -38,7 +39,10 @@ export class AppointmentController {
     status: 201,
     description: '预约创建成功',
   })
-  create(@Body() createDto: CreateAppointmentDto, @Req() req: any) {
+  create(
+    @Body() createDto: CreateAppointmentDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
     return this.appointmentService.create(req.user, createDto);
   }
 
@@ -55,12 +59,15 @@ export class AppointmentController {
   @Get('my')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '获取我的预约', description: '查询当前用户的预约记录' })
+  @ApiOperation({
+    summary: '获取我的预约',
+    description: '查询当前用户的预约记录',
+  })
   @ApiResponse({
     status: 200,
     description: '查询成功',
   })
-  findMyAppointments(@Req() req: any) {
+  findMyAppointments(@Req() req: AuthenticatedRequest) {
     return this.appointmentService.findMyAppointments(req.user.id);
   }
 
@@ -80,13 +87,16 @@ export class AppointmentController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: '获取预约详情', description: '根据ID获取预约详细信息' })
+  @ApiOperation({
+    summary: '获取预约详情',
+    description: '根据ID获取预约详细信息',
+  })
   @ApiParam({ name: 'id', description: '预约ID', example: 'appointment-001' })
   @ApiResponse({
     status: 200,
     description: '查询成功',
   })
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.appointmentService.findOne(id);
   }
 
@@ -104,9 +114,9 @@ export class AppointmentController {
     description: '审核完成',
   })
   review(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() reviewDto: ReviewAppointmentDto,
-    @Req() req: any,
+    @Req() req: AuthenticatedRequest,
   ) {
     return this.appointmentService.review(id, req.user, reviewDto);
   }
@@ -123,7 +133,10 @@ export class AppointmentController {
     status: 200,
     description: '取消成功',
   })
-  cancel(@Param('id') id: string, @Req() req: any) {
+  cancel(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: AuthenticatedRequest,
+  ) {
     return this.appointmentService.cancel(id, req.user);
   }
 }

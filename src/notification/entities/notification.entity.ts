@@ -20,7 +20,7 @@ export enum NotificationType {
 @Entity('notifications')
 export class Notification {
   @PrimaryGeneratedColumn({ comment: '通知唯一标识' })
-  id: string;
+  id: number;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'userId' })

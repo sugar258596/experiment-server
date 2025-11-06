@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
+  ParseIntPipe,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -18,8 +20,16 @@ import {
 } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../common/guards';
+import { UpdateUserDto } from './dto/update-user.dto';
+
+interface RequestWithUser extends Request {
+  user: {
+    sub: number;
+    username: string;
+    role: string;
+  };
+}
 
 @ApiTags('用户管理')
 @Controller('user')
@@ -37,6 +47,32 @@ export class UserController {
   })
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
+  }
+
+  @Get('profile')
+  @ApiOperation({
+    summary: '获取当前用户信息',
+    description: '获取当前登录用户的详细信息',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '获取成功',
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', description: '用户ID' },
+        username: { type: 'string', description: '用户名' },
+        nickname: { type: 'string', description: '用户昵称' },
+        email: { type: 'string', description: '用户邮箱' },
+        phone: { type: 'string', description: '用户手机号' },
+        department: { type: 'string', description: '所属院系/部门' },
+        role: { type: 'string', description: '用户角色' },
+        status: { type: 'string', description: '用户状态' },
+      },
+    },
+  })
+  async getProfile(@Request() req: RequestWithUser) {
+    return this.userService.getCurrentUser(req.user);
   }
 
   @Get()
@@ -59,8 +95,8 @@ export class UserController {
     status: 200,
     description: '查询成功',
   })
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.userService.findOne(id);
   }
 
   @Patch(':id')
@@ -71,8 +107,11 @@ export class UserController {
     status: 200,
     description: '更新成功',
   })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
@@ -82,7 +121,7 @@ export class UserController {
     status: 200,
     description: '删除成功',
   })
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.userService.remove(id);
   }
 }

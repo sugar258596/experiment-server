@@ -6,6 +6,6 @@ const config = loadConfig();
 export const jwtConfig: JwtModuleOptions = {
   secret: config?.JWT_SECRET || 'your-secret-key',
   signOptions: {
-    expiresIn: config?.JWT_EXPIRES_IN || '24h',
+    expiresIn: (config?.JWT_EXPIRES_IN || '24h') as any,
   },
 };

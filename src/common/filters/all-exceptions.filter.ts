@@ -5,9 +5,17 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { AppLogger } from '../utils/logger.util';
 import { ErrorMessages } from '../constants/error-messages';
+
+interface RequestWithUser extends Request {
+  user?: {
+    id: number;
+    username: string;
+    role: string;
+  };
+}
 
 /**
  * 全局异常过滤器
@@ -18,7 +26,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest();
+    const request = ctx.getRequest<RequestWithUser>();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = ErrorMessages.SYSTEM.INTERNAL_ERROR;

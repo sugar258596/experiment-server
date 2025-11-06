@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Instrument, InstrumentStatus } from './entities/instrument.entity';
+import { Instrument } from './entities/instrument.entity';
 import {
   InstrumentApplication,
   ApplicationStatus,
@@ -17,7 +17,7 @@ import {
 import { CreateInstrumentDto } from './dto/create-instrument.dto';
 import { ApplyInstrumentDto } from './dto/apply-instrument.dto';
 import { ReportInstrumentDto } from './dto/report-instrument.dto';
-import { User } from '../user/entities/user.entity';
+import { UserPayload } from '../common/interfaces/request.interface';
 import { Lab } from '../lab/entities/lab.entity';
 
 @Injectable()
@@ -70,7 +70,7 @@ export class InstrumentService {
     return await queryBuilder.getMany();
   }
 
-  async findOne(id: string): Promise<Instrument> {
+  async findOne(id: number): Promise<Instrument> {
     const instrument = await this.instrumentRepository.findOne({
       where: { id },
       relations: ['lab'],
@@ -83,7 +83,11 @@ export class InstrumentService {
     return instrument;
   }
 
-  async apply(instrumentId: string, user: User, applyDto: ApplyInstrumentDto) {
+  async apply(
+    instrumentId: number,
+    user: UserPayload,
+    applyDto: ApplyInstrumentDto,
+  ) {
     const instrument = await this.findOne(instrumentId);
 
     if (applyDto.startTime >= applyDto.endTime) {
@@ -92,7 +96,7 @@ export class InstrumentService {
 
     const application = this.applicationRepository.create({
       instrument,
-      applicant: user,
+      applicantId: user.id,
       purpose: applyDto.purpose,
       description: applyDto.description,
       startTime: applyDto.startTime,
@@ -103,8 +107,8 @@ export class InstrumentService {
   }
 
   async reviewApplication(
-    applicationId: string,
-    reviewer: User,
+    applicationId: number,
+    reviewer: UserPayload,
     approved: boolean,
     reason?: string,
   ) {
@@ -120,7 +124,7 @@ export class InstrumentService {
     application.status = approved
       ? ApplicationStatus.APPROVED
       : ApplicationStatus.REJECTED;
-    application.reviewer = reviewer;
+    application.reviewerId = reviewer.id;
     application.reviewTime = new Date();
 
     if (!approved && reason) {
@@ -131,15 +135,15 @@ export class InstrumentService {
   }
 
   async report(
-    instrumentId: string,
-    user: User,
+    instrumentId: number,
+    user: UserPayload,
     reportDto: ReportInstrumentDto,
   ) {
     const instrument = await this.findOne(instrumentId);
 
     const repair = this.repairRepository.create({
       instrument,
-      reporter: user,
+      reporterId: user.id,
       faultType: reportDto.faultType,
       description: reportDto.description,
       urgency: reportDto.urgency,
@@ -150,7 +154,7 @@ export class InstrumentService {
   }
 
   async updateRepairStatus(
-    repairId: string,
+    repairId: number,
     status: RepairStatus,
     summary?: string,
   ) {

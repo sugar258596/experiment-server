@@ -33,7 +33,7 @@ export enum UrgencyLevel {
 @Entity('instrument_repairs')
 export class InstrumentRepair {
   @PrimaryGeneratedColumn({ comment: '维修单唯一标识' })
-  id: string;
+  id: number;
 
   @Column({ unique: true, comment: '维修单号（唯一）' })
   repairNumber: string;
@@ -41,6 +41,9 @@ export class InstrumentRepair {
   @ManyToOne(() => Instrument, (instrument) => instrument.repairs)
   @JoinColumn({ name: 'instrumentId' })
   instrument: Instrument;
+
+  @Column({ comment: '报告人ID' })
+  reporterId: number;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'reporterId' })

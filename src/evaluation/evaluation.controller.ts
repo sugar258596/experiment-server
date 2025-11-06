@@ -17,7 +17,8 @@ import {
 } from '@nestjs/swagger';
 import { EvaluationService } from './evaluation.service';
 import { CreateEvaluationDto } from './dto/create-evaluation.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/common/guards';
+import type { AuthenticatedRequest } from 'src/common/interfaces/request.interface';
 
 @ApiTags('实验室评价')
 @Controller('evaluations')
@@ -36,7 +37,10 @@ export class EvaluationController {
     status: 201,
     description: '评价提交成功',
   })
-  create(@Body() createDto: CreateEvaluationDto, @Req() req: any) {
+  create(
+    @Body() createDto: CreateEvaluationDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
     return this.evaluationService.create(req.user, createDto);
   }
 
@@ -50,8 +54,8 @@ export class EvaluationController {
     status: 200,
     description: '查询成功',
   })
-  findByLab(@Param('labId') labId: string) {
-    return this.evaluationService.findByLab(labId);
+  findByLab(@Param('labId') id: number) {
+    return this.evaluationService.findByLab(id);
   }
 
   @Get('lab/:labId/statistics')
@@ -64,7 +68,7 @@ export class EvaluationController {
     status: 200,
     description: '查询成功',
   })
-  getStatistics(@Param('labId') labId: string) {
-    return this.evaluationService.getStatistics(labId);
+  getStatistics(@Param('labId') id: number) {
+    return this.evaluationService.getStatistics(id);
   }
 }

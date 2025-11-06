@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -22,7 +23,7 @@ import { LabService } from './lab.service';
 import { CreateLabDto } from './dto/create-lab.dto';
 import { UpdateLabDto } from './dto/update-lab.dto';
 import { SearchLabDto } from './dto/search-lab.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/common/guards';
 
 @ApiTags('实验室管理')
 @Controller('labs')
@@ -43,7 +44,10 @@ export class LabController {
   }
 
   @Get()
-  @ApiOperation({ summary: '获取实验室列表', description: '查询所有实验室，支持搜索和筛选' })
+  @ApiOperation({
+    summary: '获取实验室列表',
+    description: '查询所有实验室，支持搜索和筛选',
+  })
   @ApiResponse({
     status: 200,
     description: '查询成功',
@@ -53,8 +57,16 @@ export class LabController {
   }
 
   @Get('popular')
-  @ApiOperation({ summary: '获取热门实验室', description: '查询热门实验室列表' })
-  @ApiQuery({ name: 'limit', required: false, description: '返回数量限制', example: 6 })
+  @ApiOperation({
+    summary: '获取热门实验室',
+    description: '查询热门实验室列表',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: '返回数量限制',
+    example: 6,
+  })
   @ApiResponse({
     status: 200,
     description: '查询成功',
@@ -64,27 +76,36 @@ export class LabController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: '获取实验室详情', description: '根据ID获取实验室详细信息' })
+  @ApiOperation({
+    summary: '获取实验室详情',
+    description: '根据ID获取实验室详细信息',
+  })
   @ApiParam({ name: 'id', description: '实验室ID', example: 'lab-001' })
   @ApiResponse({
     status: 200,
     description: '查询成功',
   })
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.labService.findOne(id);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '更新实验室信息', description: '根据ID更新实验室信息' })
+  @ApiOperation({
+    summary: '更新实验室信息',
+    description: '根据ID更新实验室信息',
+  })
   @ApiParam({ name: 'id', description: '实验室ID', example: 'lab-001' })
   @ApiBody({ type: UpdateLabDto })
   @ApiResponse({
     status: 200,
     description: '更新成功',
   })
-  update(@Param('id') id: string, @Body() updateLabDto: UpdateLabDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateLabDto: UpdateLabDto,
+  ) {
     return this.labService.update(id, updateLabDto);
   }
 
@@ -97,7 +118,7 @@ export class LabController {
     status: 200,
     description: '删除成功',
   })
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.labService.remove(id);
   }
 }

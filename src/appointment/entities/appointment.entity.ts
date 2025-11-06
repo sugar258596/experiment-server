@@ -27,7 +27,7 @@ export enum TimeSlot {
 @Entity('appointments')
 export class Appointment {
   @PrimaryGeneratedColumn({ comment: '预约单唯一标识' })
-  id: string;
+  id: number;
 
   @ManyToOne(() => Lab, (lab) => lab.appointments)
   @JoinColumn({ name: 'labId' })
@@ -36,6 +36,9 @@ export class Appointment {
   @ManyToOne(() => User)
   @JoinColumn({ name: 'userId' })
   user: User;
+
+  @Column({ comment: '用户ID' })
+  userId: number;
 
   @Column({ type: 'date', comment: '预约日期' })
   appointmentDate: Date;
@@ -71,6 +74,9 @@ export class Appointment {
   @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'reviewerId' })
   reviewer: User;
+
+  @Column({ nullable: true, comment: '审核人ID' })
+  reviewerId: number;
 
   @Column({ type: 'datetime', nullable: true, comment: '审核时间' })
   reviewTime: Date;

@@ -7,6 +7,7 @@ import {
   Query,
   UseGuards,
   Req,
+  ParseIntPipe,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -21,9 +22,10 @@ import { InstrumentService } from './instrument.service';
 import { CreateInstrumentDto } from './dto/create-instrument.dto';
 import { ApplyInstrumentDto } from './dto/apply-instrument.dto';
 import { ReportInstrumentDto } from './dto/report-instrument.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/common/guards';
 import { ApplicationStatus } from './entities/instrument-application.entity';
 import { RepairStatus } from './entities/instrument-repair.entity';
+import type { AuthenticatedRequest } from 'src/common/interfaces/request.interface';
 
 @ApiTags('仪器管理')
 @Controller('instruments')
@@ -51,21 +53,21 @@ export class InstrumentController {
     status: 200,
     description: '查询成功',
   })
-  findAll(
-    @Query('keyword') keyword?: string,
-    @Query('labId') labId?: string,
-  ) {
+  findAll(@Query('keyword') keyword?: string, @Query('labId') labId?: string) {
     return this.instrumentService.findAll(keyword, labId);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: '获取仪器详情', description: '根据ID获取仪器详细信息' })
+  @ApiOperation({
+    summary: '获取仪器详情',
+    description: '根据ID获取仪器详细信息',
+  })
   @ApiParam({ name: 'id', description: '仪器ID', example: 'instrument-001' })
   @ApiResponse({
     status: 200,
     description: '查询成功',
   })
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.instrumentService.findOne(id);
   }
 
@@ -83,9 +85,9 @@ export class InstrumentController {
     description: '申请提交成功',
   })
   apply(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() applyDto: ApplyInstrumentDto,
-    @Req() req: any,
+    @Req() req: AuthenticatedRequest,
   ) {
     return this.instrumentService.apply(id, req.user, applyDto);
   }
@@ -93,7 +95,10 @@ export class InstrumentController {
   @Get('applications')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '获取使用申请列表', description: '查询仪器使用申请' })
+  @ApiOperation({
+    summary: '获取使用申请列表',
+    description: '查询仪器使用申请',
+  })
   @ApiQuery({
     name: 'status',
     required: false,
@@ -130,10 +135,10 @@ export class InstrumentController {
     description: '审核完成',
   })
   reviewApplication(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body('approved') approved: boolean,
+    @Req() req: AuthenticatedRequest,
     @Body('reason') reason?: string,
-    @Req() req?: any,
   ) {
     return this.instrumentService.reviewApplication(
       id,
@@ -157,9 +162,9 @@ export class InstrumentController {
     description: '报告提交成功',
   })
   report(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() reportDto: ReportInstrumentDto,
-    @Req() req: any,
+    @Req() req: AuthenticatedRequest,
   ) {
     return this.instrumentService.report(id, req.user, reportDto);
   }
@@ -208,7 +213,7 @@ export class InstrumentController {
     description: '更新成功',
   })
   updateRepairStatus(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body('status') status: RepairStatus,
     @Body('summary') summary?: string,
   ) {

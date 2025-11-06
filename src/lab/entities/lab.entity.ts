@@ -19,7 +19,7 @@ export enum LabStatus {
 @Entity('labs')
 export class Lab {
   @PrimaryGeneratedColumn({ comment: '实验室唯一标识' })
-  id: string;
+  id: number;
 
   @Column({ comment: '实验室名称' })
   name: string;

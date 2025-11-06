@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Notification, NotificationType } from './entities/notification.entity';
+import { Repository, FindOptionsWhere } from 'typeorm';
+import { Notification } from './entities/notification.entity';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { User } from '../user/entities/user.entity';
 
@@ -34,8 +34,8 @@ export class NotificationService {
     return await this.notificationRepository.save(notification);
   }
 
-  async findMyNotifications(userId: string, isRead?: boolean) {
-    const where: any = { user: { id: userId } };
+  async findMyNotifications(userId: number, isRead?: boolean) {
+    const where: FindOptionsWhere<Notification> = { user: { id: userId } };
     if (isRead !== undefined) {
       where.isRead = isRead;
     }
@@ -46,7 +46,7 @@ export class NotificationService {
     });
   }
 
-  async markAsRead(id: string, userId: string) {
+  async markAsRead(id: number, userId: number) {
     const notification = await this.notificationRepository.findOne({
       where: { id, user: { id: userId } },
     });
@@ -59,7 +59,7 @@ export class NotificationService {
     return await this.notificationRepository.save(notification);
   }
 
-  async markAllAsRead(userId: string) {
+  async markAllAsRead(userId: number) {
     await this.notificationRepository.update(
       { user: { id: userId }, isRead: false },
       { isRead: true },
@@ -67,14 +67,14 @@ export class NotificationService {
     return { message: '所有通知已标记为已读' };
   }
 
-  async getUnreadCount(userId: string) {
+  async getUnreadCount(userId: number) {
     const count = await this.notificationRepository.count({
       where: { user: { id: userId }, isRead: false },
     });
     return { count };
   }
 
-  async remove(id: string, userId: string) {
+  async remove(id: number, userId: number) {
     const notification = await this.notificationRepository.findOne({
       where: { id, user: { id: userId } },
     });

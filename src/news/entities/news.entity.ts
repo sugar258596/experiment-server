@@ -18,7 +18,7 @@ export enum NewsStatus {
 @Entity('news')
 export class News {
   @PrimaryGeneratedColumn({ comment: '新闻公告唯一标识' })
-  id: string;
+  id: number;
 
   @Column({ comment: '新闻标题' })
   title: string;
@@ -48,6 +48,9 @@ export class News {
 
   @Column({ type: 'int', default: 0, comment: '收藏数' })
   favorites: number;
+
+  @Column({ comment: '作者ID' })
+  authorId: number;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'authorId' })

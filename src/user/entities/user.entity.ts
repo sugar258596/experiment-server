@@ -28,9 +28,9 @@ export enum UserStatus {
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn({ comment: '用户唯一标识' })
-  id: string;
+  id: number;
 
-  @Column({ unique: true, comment: '用户名，唯一标识' })
+  @Column({ unique: true, nullable: false, comment: '用户名，唯一标识' })
   username: string;
 
   @Column({ comment: '用户密码（bcrypt加密）' })

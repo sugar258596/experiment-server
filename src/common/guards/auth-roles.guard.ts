@@ -12,6 +12,18 @@ import { Role, RolePriority, RoleLabels } from '../enums/role.enum';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 import { JwtErrorHelper } from '../helpers/jwt-error.helper';
 
+interface JwtPayload {
+  sub: number;
+  username: string;
+  role: string;
+  iat?: number;
+  exp?: number;
+}
+
+interface RequestWithUser extends Request {
+  user?: JwtPayload;
+}
+
 @Injectable()
 export class AuthRolesGuard implements CanActivate {
   constructor(
@@ -26,7 +38,7 @@ export class AuthRolesGuard implements CanActivate {
       context.getClass(),
     ]);
 
-    const request = context.switchToHttp().getRequest<Request>();
+    const request = context.switchToHttp().getRequest<RequestWithUser>();
     const token = this.extractTokenFromHeader(request);
 
     // 公开路由处理
@@ -34,8 +46,8 @@ export class AuthRolesGuard implements CanActivate {
       if (token) {
         try {
           const payload = await this.jwtService.verifyAsync(token);
-          request['user'] = payload;
-        } catch (error) {
+          request.user = payload;
+        } catch {
           // 公开路由中token无效时不抛出错误，只是不设置user
         }
       }
@@ -51,16 +63,22 @@ export class AuthRolesGuard implements CanActivate {
 
     try {
       const payload = await this.jwtService.verifyAsync(token);
-      request['user'] = payload;
+      request.user = payload;
     } catch (error) {
       JwtErrorHelper.handleJwtError(error);
     }
 
     // 检查角色权限
-    return this.checkRolePermissions(context, request['user']);
+    if (!request.user) {
+      throw new UnauthorizedException('用户身份验证失败');
+    }
+    return this.checkRolePermissions(context, request.user);
   }
 
-  private checkRolePermissions(context: ExecutionContext, user: any): boolean {
+  private checkRolePermissions(
+    context: ExecutionContext,
+    user: JwtPayload,
+  ): boolean {
     const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -94,7 +112,7 @@ export class AuthRolesGuard implements CanActivate {
       }
 
       // 权限不足，抛出友好的错误提示
-      this.throwFriendlyForbiddenException(user.role, requiredRoles);
+      this.throwFriendlyForbiddenException(user.role as Role, requiredRoles);
     }
 
     return hasRole;

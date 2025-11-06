@@ -8,6 +8,7 @@ import {
   Query,
   UseGuards,
   Req,
+  ParseIntPipe,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -15,13 +16,13 @@ import {
   ApiResponse,
   ApiBearerAuth,
   ApiParam,
-  ApiQuery,
   ApiBody,
 } from '@nestjs/swagger';
 import { NewsService } from './news.service';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { SearchNewsDto } from './dto/search-news.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/common/guards';
+import type { AuthenticatedRequest } from 'src/common/interfaces/request.interface';
 
 @ApiTags('新闻公告')
 @Controller('news')
@@ -37,7 +38,7 @@ export class NewsController {
     status: 201,
     description: '发布成功',
   })
-  create(@Body() createDto: CreateNewsDto, @Req() req: any) {
+  create(@Body() createDto: CreateNewsDto, @Req() req: AuthenticatedRequest) {
     return this.newsService.create(createDto, req.user);
   }
 
@@ -67,13 +68,16 @@ export class NewsController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: '获取新闻详情', description: '根据ID获取新闻详细信息' })
+  @ApiOperation({
+    summary: '获取新闻详情',
+    description: '根据ID获取新闻详细信息',
+  })
   @ApiParam({ name: 'id', description: '新闻ID', example: 'news-001' })
   @ApiResponse({
     status: 200,
     description: '查询成功',
   })
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.newsService.findOne(id);
   }
 
@@ -89,7 +93,7 @@ export class NewsController {
     status: 200,
     description: '点赞成功',
   })
-  like(@Param('id') id: string) {
+  like(@Param('id', ParseIntPipe) id: number) {
     return this.newsService.like(id);
   }
 
@@ -113,7 +117,10 @@ export class NewsController {
     status: 200,
     description: '审核完成',
   })
-  review(@Param('id') id: string, @Body('approved') approved: boolean) {
+  review(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('approved') approved: boolean,
+  ) {
     return this.newsService.review(id, approved);
   }
 }

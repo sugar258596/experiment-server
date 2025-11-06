@@ -2,7 +2,7 @@ import {
   IsString,
   IsOptional,
   IsEnum,
-  IsUUID,
+  IsNumber,
   MaxLength,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -74,9 +74,9 @@ export class CreateInstrumentDto {
 
   @ApiPropertyOptional({
     description: '所属实验室ID',
-    example: 'lab-001',
+    example: 1,
   })
   @IsOptional()
-  @IsUUID('4', { message: '实验室ID格式不正确' })
-  labId?: string;
+  @IsNumber({}, { message: '实验室ID必须为数字' })
+  labId?: number;
 }

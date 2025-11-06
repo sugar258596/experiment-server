@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { News, NewsStatus } from './entities/news.entity';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { SearchNewsDto } from './dto/search-news.dto';
-import { User } from '../user/entities/user.entity';
+import { UserPayload } from '../common/interfaces/request.interface';
 
 @Injectable()
 export class NewsService {
@@ -13,10 +13,10 @@ export class NewsService {
     private newsRepository: Repository<News>,
   ) {}
 
-  async create(createDto: CreateNewsDto, user: User) {
+  async create(createDto: CreateNewsDto, user: UserPayload) {
     const news = this.newsRepository.create({
       ...createDto,
-      author: user,
+      authorId: user.id,
     });
     return await this.newsRepository.save(news);
   }
@@ -55,7 +55,7 @@ export class NewsService {
     };
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     const news = await this.newsRepository.findOne({
       where: { id },
       relations: ['author'],
@@ -68,7 +68,7 @@ export class NewsService {
     return news;
   }
 
-  async like(id: string) {
+  async like(id: number) {
     const news = await this.findOne(id);
     news.likes += 1;
     return await this.newsRepository.save(news);
@@ -82,7 +82,7 @@ export class NewsService {
     });
   }
 
-  async review(id: string, approved: boolean) {
+  async review(id: number, approved: boolean) {
     const news = await this.findOne(id);
     news.status = approved ? NewsStatus.APPROVED : NewsStatus.REJECTED;
     return await this.newsRepository.save(news);

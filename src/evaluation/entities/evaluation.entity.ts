@@ -13,7 +13,7 @@ import { Lab } from '../../lab/entities/lab.entity';
 @Entity('evaluations')
 export class Evaluation {
   @PrimaryGeneratedColumn({ comment: '评价记录唯一标识' })
-  id: string;
+  id: number;
 
   @ManyToOne(() => Lab, (lab) => lab.evaluations)
   @JoinColumn({ name: 'labId' })
@@ -22,6 +22,12 @@ export class Evaluation {
   @ManyToOne(() => User)
   @JoinColumn({ name: 'userId' })
   user: User;
+
+  @Column({ comment: '用户ID' })
+  userId: number;
+
+  @Column({ comment: '实验室ID' })
+  labId: number;
 
   @Column({ type: 'int', comment: '总体评分（1-5分）' })
   overallRating: number;

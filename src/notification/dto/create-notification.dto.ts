@@ -1,4 +1,10 @@
-import { IsString, IsUUID, IsEnum, IsOptional, MaxLength } from 'class-validator';
+import {
+  IsString,
+  IsUUID,
+  IsEnum,
+  IsOptional,
+  MaxLength,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { NotificationType } from '../entities/notification.entity';
 
@@ -11,7 +17,7 @@ export class CreateNotificationDto {
     example: 'user-001',
   })
   @IsUUID('4', { message: '用户ID格式不正确' })
-  userId: string;
+  userId: number;
 
   @ApiProperty({
     description: '通知类型',

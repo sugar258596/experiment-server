@@ -1,6 +1,5 @@
 import {
   IsString,
-  IsUUID,
   IsDateString,
   IsEnum,
   IsInt,
@@ -16,10 +15,11 @@ import { TimeSlot } from '../entities/appointment.entity';
 export class CreateAppointmentDto {
   @ApiProperty({
     description: '实验室ID',
-    example: 'lab-001',
+    example: 1,
   })
-  @IsUUID('4', { message: '实验室ID格式不正确' })
-  labId: string;
+  @IsInt({ message: '实验室ID必须为整数' })
+  @Min(1, { message: '实验室ID必须为正整数' })
+  labId: number;
 
   @ApiProperty({
     description: '预约日期',

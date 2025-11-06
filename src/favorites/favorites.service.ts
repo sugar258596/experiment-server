@@ -20,7 +20,7 @@ export class FavoritesService {
     private labRepository: Repository<Lab>,
   ) {}
 
-  async add(userId: string, labId: string) {
+  async add(userId: number, labId: number) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     const lab = await this.labRepository.findOne({ where: { id: labId } });
 
@@ -41,16 +41,16 @@ export class FavoritesService {
     }
 
     const favorite = this.favoritesRepository.create({
-      user,
-      lab,
+      userId,
+      labId,
     });
 
     return await this.favoritesRepository.save(favorite);
   }
 
-  async remove(userId: string, labId: string) {
+  async remove(userId: number, id: number) {
     const favorite = await this.favoritesRepository.findOne({
-      where: { user: { id: userId }, lab: { id: labId } },
+      where: { user: { id: userId }, lab: { id } },
     });
 
     if (!favorite) {
@@ -61,7 +61,7 @@ export class FavoritesService {
     return { message: '已取消收藏' };
   }
 
-  async getMyFavorites(userId: string) {
+  async getMyFavorites(userId: number) {
     return await this.favoritesRepository.find({
       where: { user: { id: userId } },
       relations: ['lab'],
@@ -69,7 +69,7 @@ export class FavoritesService {
     });
   }
 
-  async isFavorited(userId: string, labId: string) {
+  async isFavorited(userId: number, labId: number) {
     const favorite = await this.favoritesRepository.findOne({
       where: { user: { id: userId }, lab: { id: labId } },
     });

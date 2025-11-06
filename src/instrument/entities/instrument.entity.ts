@@ -22,7 +22,7 @@ export enum InstrumentStatus {
 @Entity('instruments')
 export class Instrument {
   @PrimaryGeneratedColumn({ comment: '设备唯一标识' })
-  id: string;
+  id: number;
 
   @Column({ comment: '设备名称' })
   name: string;

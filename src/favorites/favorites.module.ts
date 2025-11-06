@@ -5,9 +5,10 @@ import { FavoritesController } from './favorites.controller';
 import { Favorites } from './entities/favorites.entity';
 import { User } from '../user/entities/user.entity';
 import { Lab } from '../lab/entities/lab.entity';
+import { CommonModule } from '../common/common.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Favorites, User, Lab])],
+  imports: [TypeOrmModule.forFeature([Favorites, User, Lab]), CommonModule],
   controllers: [FavoritesController],
   providers: [FavoritesService],
   exports: [FavoritesService],

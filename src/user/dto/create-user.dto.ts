@@ -2,13 +2,14 @@ import {
   IsString,
   IsEmail,
   IsPhoneNumber,
-  IsIn,
   MinLength,
   MaxLength,
   IsOptional,
   Matches,
+  IsEnum,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { UserRole } from '../entities/user.entity';
 
 /**
  * 创建用户DTO
@@ -42,11 +43,11 @@ export class CreateUserDto {
 
   @ApiProperty({
     description: '用户角色',
-    enum: ['STUDENT', 'TEACHER', 'ADMIN'],
-    example: 'STUDENT',
+    enum: UserRole,
+    example: UserRole.STUDENT,
   })
-  @IsIn(['STUDENT', 'TEACHER', 'ADMIN'])
-  role: string;
+  @IsEnum(UserRole)
+  role: UserRole;
 
   @ApiPropertyOptional({
     description: '用户昵称',

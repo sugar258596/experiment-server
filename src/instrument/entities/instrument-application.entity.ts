@@ -19,11 +19,14 @@ export enum ApplicationStatus {
 @Entity('instrument_applications')
 export class InstrumentApplication {
   @PrimaryGeneratedColumn({ comment: '申请表唯一标识' })
-  id: string;
+  id: number;
 
   @ManyToOne(() => Instrument, (instrument) => instrument.applications)
   @JoinColumn({ name: 'instrumentId' })
   instrument: Instrument;
+
+  @Column({ comment: '申请人ID' })
+  applicantId: number;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'applicantId' })
@@ -51,6 +54,9 @@ export class InstrumentApplication {
 
   @Column({ nullable: true, comment: '拒绝原因' })
   rejectionReason: string;
+
+  @Column({ nullable: true, comment: '审核人ID' })
+  reviewerId: number;
 
   @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'reviewerId' })

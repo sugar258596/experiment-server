@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like, Between } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Lab, LabStatus } from './entities/lab.entity';
 import { CreateLabDto } from './dto/create-lab.dto';
 import { UpdateLabDto } from './dto/update-lab.dto';
@@ -76,7 +76,7 @@ export class LabService {
     };
   }
 
-  async findOne(id: string): Promise<Lab> {
+  async findOne(id: number): Promise<Lab> {
     const lab = await this.labRepository.findOne({
       where: { id },
       relations: ['appointments', 'favorites', 'evaluations'],
@@ -89,13 +89,13 @@ export class LabService {
     return lab;
   }
 
-  async update(id: string, updateLabDto: UpdateLabDto): Promise<Lab> {
+  async update(id: number, updateLabDto: UpdateLabDto): Promise<Lab> {
     const lab = await this.findOne(id);
     Object.assign(lab, updateLabDto);
     return await this.labRepository.save(lab);
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: number): Promise<void> {
     const lab = await this.findOne(id);
     await this.labRepository.remove(lab);
   }

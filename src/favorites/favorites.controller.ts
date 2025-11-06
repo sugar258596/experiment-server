@@ -15,7 +15,8 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import { FavoritesService } from './favorites.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/common/guards';
+import type { AuthenticatedRequest } from 'src/common/interfaces/request.interface';
 
 @ApiTags('我的收藏')
 @Controller('favorites')
@@ -34,7 +35,7 @@ export class FavoritesController {
     status: 201,
     description: '收藏成功',
   })
-  add(@Param('labId') labId: string, @Req() req: any) {
+  add(@Param('labId') labId: number, @Req() req: AuthenticatedRequest) {
     return this.favoritesService.add(req.user.id, labId);
   }
 
@@ -48,7 +49,7 @@ export class FavoritesController {
     status: 200,
     description: '取消成功',
   })
-  remove(@Param('labId') labId: string, @Req() req: any) {
+  remove(@Param('labId') labId: number, @Req() req: AuthenticatedRequest) {
     return this.favoritesService.remove(req.user.id, labId);
   }
 
@@ -61,7 +62,7 @@ export class FavoritesController {
     status: 200,
     description: '查询成功',
   })
-  getMyFavorites(@Req() req: any) {
+  getMyFavorites(@Req() req: AuthenticatedRequest) {
     return this.favoritesService.getMyFavorites(req.user.id);
   }
 
@@ -75,7 +76,7 @@ export class FavoritesController {
     status: 200,
     description: '查询成功',
   })
-  isFavorited(@Param('labId') labId: string, @Req() req: any) {
+  isFavorited(@Param('labId') labId: number, @Req() req: AuthenticatedRequest) {
     return this.favoritesService.isFavorited(req.user.id, labId);
   }
 }
