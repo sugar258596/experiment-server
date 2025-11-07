@@ -8,7 +8,9 @@ import {
   Matches,
   IsOptional,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Role } from '../../common/enums/role.enum';
 
 /**
  * 用户注册DTO
@@ -54,8 +56,15 @@ export class RegisterDto {
     enum: ['STUDENT', 'TEACHER'],
     example: 'STUDENT',
   })
-  @IsIn(['STUDENT', 'TEACHER'], { message: '角色只能是STUDENT或TEACHER' })
-  role: string;
+  @Transform(({ value }: { value: unknown }) => {
+    // Convert uppercase input to lowercase enum value
+    if (typeof value === 'string') {
+      return value.toLowerCase() as Role;
+    }
+    return value as Role;
+  })
+  @IsIn([Role.STUDENT, Role.TEACHER], { message: '角色只能是STUDENT或TEACHER' })
+  role: Role;
 
   @ApiPropertyOptional({
     description: '用户邮箱',

@@ -9,7 +9,6 @@ import { Repository } from 'typeorm';
 import bcrypt from 'bcryptjs';
 import { User } from '../user/entities/user.entity';
 import { Status } from '../common/enums/status.enum';
-import { Role } from '../common/enums/role.enum';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 
@@ -42,7 +41,7 @@ export class AuthService {
       password: hashedPassword,
       email,
       phone,
-      role: role as Role,
+      role,
       status: Status.ACTIVE,
     });
 

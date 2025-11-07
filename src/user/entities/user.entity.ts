@@ -28,10 +28,11 @@ export class User {
   password: string;
 
   @Column({
-    type: 'enum',
-    enum: Role,
+    type: 'varchar',
+    length: 50,
     default: Role.STUDENT,
-    comment: '用户角色：STUDENT-学生，TEACHER-教师，ADMIN-管理员',
+    comment:
+      '用户角色：student-学生，teacher-教师，admin-管理员，super_admin-超级管理员',
   })
   role: Role;
 
