@@ -24,6 +24,7 @@ import { CreateLabDto } from './dto/create-lab.dto';
 import { UpdateLabDto } from './dto/update-lab.dto';
 import { SearchLabDto } from './dto/search-lab.dto';
 import { JwtAuthGuard } from 'src/common/guards';
+import { Public } from 'src/common/decorators';
 
 @ApiTags('实验室管理')
 @Controller('labs')
@@ -44,6 +45,7 @@ export class LabController {
   }
 
   @Get()
+  @Public()
   @ApiOperation({
     summary: '获取实验室列表',
     description: '查询所有实验室，支持搜索和筛选',
@@ -57,6 +59,7 @@ export class LabController {
   }
 
   @Get('popular')
+  @Public()
   @ApiOperation({
     summary: '获取热门实验室',
     description: '查询热门实验室列表',
@@ -76,6 +79,7 @@ export class LabController {
   }
 
   @Get(':id')
+  @Public()
   @ApiOperation({
     summary: '获取实验室详情',
     description: '根据ID获取实验室详细信息',

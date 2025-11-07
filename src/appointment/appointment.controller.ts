@@ -23,6 +23,7 @@ import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { ReviewAppointmentDto } from './dto/review-appointment.dto';
 import { SearchAppointmentDto } from './dto/search-appointment.dto';
 import { JwtAuthGuard } from 'src/common/guards';
+import { Public } from 'src/common/decorators';
 import type { AuthenticatedRequest } from 'src/common/interfaces/request.interface';
 
 @ApiTags('实验室预约')
@@ -47,6 +48,7 @@ export class AppointmentController {
   }
 
   @Get()
+  @Public()
   @ApiOperation({ summary: '获取预约列表', description: '查询所有预约记录' })
   @ApiResponse({
     status: 200,
@@ -87,6 +89,7 @@ export class AppointmentController {
   }
 
   @Get(':id')
+  @Public()
   @ApiOperation({
     summary: '获取预约详情',
     description: '根据ID获取预约详细信息',

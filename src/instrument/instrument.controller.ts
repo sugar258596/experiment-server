@@ -23,6 +23,7 @@ import { CreateInstrumentDto } from './dto/create-instrument.dto';
 import { ApplyInstrumentDto } from './dto/apply-instrument.dto';
 import { ReportInstrumentDto } from './dto/report-instrument.dto';
 import { JwtAuthGuard } from 'src/common/guards';
+import { Public } from 'src/common/decorators';
 
 import type { AuthenticatedRequest } from 'src/common/interfaces/request.interface';
 import { ApplicationStatus, RepairStatus } from 'src/common/enums/status.enum';
@@ -46,6 +47,7 @@ export class InstrumentController {
   }
 
   @Get()
+  @Public()
   @ApiOperation({ summary: '获取仪器列表', description: '查询所有仪器设备' })
   @ApiQuery({ name: 'keyword', required: false, description: '搜索关键词' })
   @ApiQuery({ name: 'labId', required: false, description: '实验室ID' })
@@ -58,6 +60,7 @@ export class InstrumentController {
   }
 
   @Get(':id')
+  @Public()
   @ApiOperation({
     summary: '获取仪器详情',
     description: '根据ID获取仪器详细信息',

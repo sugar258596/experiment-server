@@ -18,6 +18,7 @@ import {
 import { EvaluationService } from './evaluation.service';
 import { CreateEvaluationDto } from './dto/create-evaluation.dto';
 import { JwtAuthGuard } from 'src/common/guards';
+import { Public } from 'src/common/decorators';
 import type { AuthenticatedRequest } from 'src/common/interfaces/request.interface';
 
 @ApiTags('实验室评价')
@@ -45,6 +46,7 @@ export class EvaluationController {
   }
 
   @Get('lab/:labId')
+  @Public()
   @ApiOperation({
     summary: '获取实验室评价',
     description: '查询指定实验室的所有评价',
@@ -59,6 +61,7 @@ export class EvaluationController {
   }
 
   @Get('lab/:labId/statistics')
+  @Public()
   @ApiOperation({
     summary: '获取实验室评价统计',
     description: '查询指定实验室的评价统计数据',

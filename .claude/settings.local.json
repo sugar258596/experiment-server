@@ -3,7 +3,8 @@
     "allow": [
       "Bash(pkill -f \"nest start\")",
       "Bash(findstr :3000)",
-      "Bash(mysql:*)"
+      "Bash(mysql:*)",
+      "Bash(test -f package-lock.json)"
     ],
     "deny": [],
     "ask": []

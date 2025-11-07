@@ -22,6 +22,7 @@ import { NewsService } from './news.service';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { SearchNewsDto } from './dto/search-news.dto';
 import { JwtAuthGuard } from 'src/common/guards';
+import { Public } from 'src/common/decorators';
 import type { AuthenticatedRequest } from 'src/common/interfaces/request.interface';
 
 @ApiTags('新闻公告')
@@ -43,6 +44,7 @@ export class NewsController {
   }
 
   @Get()
+  @Public()
   @ApiOperation({ summary: '获取新闻列表', description: '查询所有新闻公告' })
   @ApiResponse({
     status: 200,
@@ -68,6 +70,7 @@ export class NewsController {
   }
 
   @Get(':id')
+  @Public()
   @ApiOperation({
     summary: '获取新闻详情',
     description: '根据ID获取新闻详细信息',
