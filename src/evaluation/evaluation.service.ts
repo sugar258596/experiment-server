@@ -28,9 +28,15 @@ export class EvaluationService {
     }
 
     const evaluation = this.evaluationRepository.create({
-      ...createDto,
+      user: { id: user.id },
+      lab: { id: createDto.labId },
       userId: user.id,
       labId: createDto.labId,
+      overallRating: createDto.overallRating,
+      equipmentRating: createDto.equipmentRating,
+      environmentRating: createDto.environmentRating,
+      serviceRating: createDto.serviceRating,
+      comment: createDto.comment,
     });
 
     const savedEvaluation = await this.evaluationRepository.save(evaluation);

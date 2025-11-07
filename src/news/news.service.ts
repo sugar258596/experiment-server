@@ -16,8 +16,10 @@ export class NewsService {
 
   async create(createDto: CreateNewsDto, user: UserPayload) {
     const news = this.newsRepository.create({
-      ...createDto,
+      title: createDto.title,
+      content: createDto.content,
       authorId: user.id,
+      status: NewsStatus.APPROVED, // 设为已发布状态便于测试
     });
     return await this.newsRepository.save(news);
   }

@@ -4,7 +4,8 @@
       "Bash(pkill -f \"nest start\")",
       "Bash(findstr :3000)",
       "Bash(mysql:*)",
-      "Bash(test -f package-lock.json)"
+      "Bash(test -f package-lock.json)",
+      "Bash(wmic process where \"ProcessId=7432\" delete)"
     ],
     "deny": [],
     "ask": []

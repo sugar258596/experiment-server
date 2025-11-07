@@ -1,0 +1,26 @@
+=== 完整API测试报告 ===
+测试时间: 2025/11/7 22:03:44
+服务器地址: http://localhost:3000
+
+=== 总结 ===
+总测试数: 12
+通过: 12
+失败: 0
+跳过: 0
+通过率(不含跳过): 100.00%
+
+=== 详细结果 ===
+✓ PASS GET /labs (10ms)
+✓ PASS GET /labs/popular?limit=5 (8ms)
+✓ PASS GET /instruments (11ms)
+✓ PASS GET /news (12ms)
+✓ PASS GET /appointments (10ms)
+✓ PASS GET /user/profile (11ms)
+✓ PASS GET /user (8ms)
+✓ PASS GET /appointments/my (8ms)
+✓ PASS GET /notifications (5ms)
+✓ PASS GET /notifications/unread-count (7ms)
+✓ PASS GET /favorites (7ms)
+✓ PASS PATCH /notifications/read-all (7ms)
+
+=== 失败详情 ===

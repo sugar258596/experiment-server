@@ -60,10 +60,17 @@ export class NotificationService {
   }
 
   async markAllAsRead(userId: number) {
-    await this.notificationRepository.update(
-      { user: { id: userId }, isRead: false },
-      { isRead: true },
-    );
+    const notifications = await this.notificationRepository.find({
+      where: { user: { id: userId }, isRead: false },
+    });
+
+    if (notifications.length > 0) {
+      for (const notification of notifications) {
+        notification.isRead = true;
+      }
+      await this.notificationRepository.save(notifications);
+    }
+
     return { message: '所有通知已标记为已读' };
   }
 

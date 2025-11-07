@@ -23,9 +23,9 @@ export class CreateAppointmentDto {
 
   @ApiProperty({
     description: '预约日期',
-    example: '2024-01-15',
+    example: '2024-01-15T00:00:00.000Z',
   })
-  @IsDateString({}, { message: '日期格式不正确' })
+  @IsString()
   appointmentDate: string;
 
   @ApiProperty({

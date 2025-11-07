@@ -90,7 +90,7 @@ export class InstrumentService {
     }
 
     const application = this.applicationRepository.create({
-      instrument,
+      instrument: { id: instrumentId },
       applicantId: user.id,
       purpose: applyDto.purpose,
       description: applyDto.description,

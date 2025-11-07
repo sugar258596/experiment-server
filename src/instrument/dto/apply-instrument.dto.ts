@@ -1,6 +1,5 @@
 import {
   IsString,
-  IsUUID,
   IsDate,
   MinLength,
   MaxLength,
@@ -13,13 +12,6 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
  * 仪器使用申请DTO
  */
 export class ApplyInstrumentDto {
-  @ApiProperty({
-    description: '仪器ID',
-    example: 'instrument-001',
-  })
-  @IsUUID('4', { message: '仪器ID格式不正确' })
-  instrumentId: string;
-
   @ApiPropertyOptional({
     description: '使用目的',
     example: '信号测量实验',

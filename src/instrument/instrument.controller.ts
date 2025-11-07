@@ -102,18 +102,12 @@ export class InstrumentController {
     summary: '获取使用申请列表',
     description: '查询仪器使用申请',
   })
-  @ApiQuery({
-    name: 'status',
-    required: false,
-    description: '申请状态',
-    enum: ApplicationStatus,
-  })
   @ApiResponse({
     status: 200,
     description: '查询成功',
   })
-  getApplications(@Query('status') status?: ApplicationStatus) {
-    return this.instrumentService.getApplications(status);
+  getApplications() {
+    return this.instrumentService.getApplications();
   }
 
   @Post('applications/:id/review')
@@ -176,18 +170,12 @@ export class InstrumentController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '获取维修记录', description: '查询仪器维修记录' })
-  @ApiQuery({
-    name: 'status',
-    required: false,
-    description: '维修状态',
-    enum: RepairStatus,
-  })
   @ApiResponse({
     status: 200,
     description: '查询成功',
   })
-  getRepairs(@Query('status') status?: RepairStatus) {
-    return this.instrumentService.getRepairs(status);
+  getRepairs() {
+    return this.instrumentService.getRepairs();
   }
 
   @Post('repairs/:id/update')

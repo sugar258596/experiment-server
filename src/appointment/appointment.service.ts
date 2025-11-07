@@ -45,7 +45,8 @@ export class AppointmentService {
     }
 
     const appointment = this.appointmentRepository.create({
-      lab,
+      lab: { id: createDto.labId },
+      user: { id: user.id },
       userId: user.id,
       appointmentDate: createDto.appointmentDate,
       timeSlot: createDto.timeSlot,
