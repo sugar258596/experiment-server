@@ -37,23 +37,23 @@
 
 ### 3.1 前端技术栈
 
-| 技术         | 版本 | 用途       |
-| ------------ | ---- | ---------- |
-| Vue.js       | 3.x  | 前端框架   |
-| Element Plus | 2.x  | UI组件库   |
-| Axios        | 1.x  | HTTP客户端 |
-| Vue Router   | 4.x  | 路由管理   |
-| Pinia        | 2.x  | 状态管理   |
+| 技术         | 用途       |
+| ------------ | ---------- |
+| Vue.js       | 前端框架   |
+| Element Plus | UI组件库   |
+| Axios        | HTTP客户端 |
+| Vue Router   | 路由管理   |
+| Pinia        | 状态管理   |
 
 ### 3.2 后端技术栈
 
-| 技术     | 版本  | 用途               |
-| -------- | ----- | ------------------ |
-| Nnst.js  | 3.x   | Node.js 企业级框架 |
-| TypeORM  | 6.x   | ORM框架            |
-| JWT      | 9.x   | Token生成验证      |
-| MySQL    | 8.0.x | 关系数据库         |
-| bcryptjs | 2.x   | 密码加密           |
+| 技术     | 用途               |
+| -------- | ------------------ |
+| Nnst.js  | Node.js 企业级框架 |
+| TypeORM  | ORM框架            |
+| JWT      | Token生成验证      |
+| MySQL    | 关系数据库         |
+| bcryptjs | 密码加密           |
 
 ---
 
