@@ -1,0 +1,480 @@
+### 完整测试流程
+### 按顺序执行以下测试用例，确保系统各项功能正常
+
+### ================================
+### 第一部分：环境准备
+### ================================
+
+### 1. 检查服务状态
+GET http://localhost:3000/
+
+### 2. 配置变量（请根据实际情况修改）
+@baseUrl = http://localhost:3000
+@studentUsername = student001
+@studentPassword = 123456
+@studentEmail = student001@example.com
+@teacherUsername = teacher001
+@teacherPassword = 123456
+@teacherEmail = teacher001@example.com
+@adminUsername = admin001
+@adminPassword = 123456
+@adminEmail = admin001@example.com
+
+### ================================
+### 第二部分：用户注册
+### ================================
+
+### 3. 注册学生账号
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "{{studentUsername}}",
+  "password": "{{studentPassword}}",
+  "email": "{{studentEmail}}",
+  "nickname": "学生001",
+  "phone": "13800138001",
+  "department": "计算机学院",
+  "role": "STUDENT"
+}
+
+### 4. 注册教师账号
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "{{teacherUsername}}",
+  "password": "{{teacherPassword}}",
+  "email": "{{teacherEmail}}",
+  "nickname": "教师001",
+  "phone": "13800138002",
+  "department": "计算机学院",
+  "role": "TEACHER"
+}
+
+### 5. 注册管理员账号
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "{{adminUsername}}",
+  "password": "{{adminPassword}}",
+  "email": "{{adminEmail}}",
+  "nickname": "管理员001",
+  "phone": "13800138003",
+  "department": "管理部门",
+  "role": "ADMIN"
+}
+
+### ================================
+### 第三部分：用户登录
+### ================================
+
+### 6. 学生登录
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "{{studentUsername}}",
+  "password": "{{studentPassword}}"
+}
+
+### 7. 教师登录
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "{{teacherUsername}}",
+  "password": "{{teacherPassword}}"
+}
+
+### 8. 管理员登录
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "{{adminUsername}}",
+  "password": "{{adminPassword}}"
+}
+
+### ================================
+### 第四部分：实验室管理测试
+### ================================
+
+### 9. 创建实验室（使用管理员 token）
+POST {{baseUrl}}/labs
+Authorization: Bearer YOUR_ADMIN_TOKEN
+Content-Type: application/json
+
+{
+  "name": "计算机实验室A101",
+  "location": "教学楼A座101",
+  "capacity": 50,
+  "description": "配备50台高性能计算机",
+  "equipment": "Dell台式机、投影仪、空调",
+  "available": true
+}
+
+### 10. 创建第二个实验室
+POST {{baseUrl}}/labs
+Authorization: Bearer YOUR_ADMIN_TOKEN
+Content-Type: application/json
+
+{
+  "name": "生物实验室B201",
+  "location": "教学楼B座201",
+  "capacity": 30,
+  "description": "生物实验专用实验室",
+  "equipment": "显微镜、实验台、通风设备",
+  "available": true
+}
+
+### 11. 获取实验室列表
+GET {{baseUrl}}/labs
+Authorization: Bearer YOUR_ADMIN_TOKEN
+
+### ================================
+### 第五部分：仪器管理测试
+### ================================
+
+### 12. 创建仪器设备
+POST {{baseUrl}}/instruments
+Authorization: Bearer YOUR_ADMIN_TOKEN
+Content-Type: application/json
+
+{
+  "name": "光学显微镜",
+  "model": "Olympus BX51",
+  "labId": 1,
+  "manufacturer": "Olympus",
+  "purchaseDate": "2023-01-01",
+  "status": "AVAILABLE",
+  "description": "用于观察细胞和组织切片"
+}
+
+### 13. 创建第二个仪器
+POST {{baseUrl}}/instruments
+Authorization: Bearer YOUR_ADMIN_TOKEN
+Content-Type: application/json
+
+{
+  "name": "高性能服务器",
+  "model": "Dell PowerEdge R750",
+  "labId": 1,
+  "manufacturer": "Dell",
+  "purchaseDate": "2023-06-01",
+  "status": "AVAILABLE",
+  "description": "用于大数据处理和机器学习"
+}
+
+### 14. 获取仪器列表
+GET {{baseUrl}}/instruments
+Authorization: Bearer YOUR_STUDENT_TOKEN
+
+### ================================
+### 第六部分：预约功能测试
+### ================================
+
+### 15. 学生创建预约
+POST {{baseUrl}}/appointments
+Authorization: Bearer YOUR_STUDENT_TOKEN
+Content-Type: application/json
+
+{
+  "labId": 1,
+  "date": "2024-12-30",
+  "timeSlot": "MORNING",
+  "purpose": "软件工程实验课程",
+  "participants": 30,
+  "notes": "需要安装特定软件"
+}
+
+### 16. 学生创建第二个预约
+POST {{baseUrl}}/appointments
+Authorization: Bearer YOUR_STUDENT_TOKEN
+Content-Type: application/json
+
+{
+  "labId": 2,
+  "date": "2024-12-31",
+  "timeSlot": "AFTERNOON",
+  "purpose": "生物样本观察",
+  "participants": 15,
+  "notes": "需要使用显微镜"
+}
+
+### 17. 获取我的预约
+GET {{baseUrl}}/appointments/my
+Authorization: Bearer YOUR_STUDENT_TOKEN
+
+### 18. 教师查看待审核预约
+GET {{baseUrl}}/appointments/pending
+Authorization: Bearer YOUR_TEACHER_TOKEN
+
+### 19. 教师审核预约
+PATCH {{baseUrl}}/appointments/1/review
+Authorization: Bearer YOUR_TEACHER_TOKEN
+Content-Type: application/json
+
+{
+  "approved": true,
+  "reason": "时间安排合理，同意预约"
+}
+
+### 20. 审核第二个预约
+PATCH {{baseUrl}}/appointments/2/review
+Authorization: Bearer YOUR_TEACHER_TOKEN
+Content-Type: application/json
+
+{
+  "approved": false,
+  "reason": "实验室容量不足，请调整参与者数量"
+}
+
+### ================================
+### 第七部分：仪器申请测试
+### ================================
+
+### 21. 学生申请使用仪器
+POST {{baseUrl}}/instruments/1/apply
+Authorization: Bearer YOUR_STUDENT_TOKEN
+Content-Type: application/json
+
+{
+  "purpose": "生物样本观察",
+  "startTime": "2024-12-30T09:00:00",
+  "endTime": "2024-12-30T12:00:00",
+  "notes": "需要使用偏光功能"
+}
+
+### 22. 学生申请使用第二个仪器
+POST {{baseUrl}}/instruments/2/apply
+Authorization: Bearer YOUR_STUDENT_TOKEN
+Content-Type: application/json
+
+{
+  "purpose": "机器学习模型训练",
+  "startTime": "2024-12-30T14:00:00",
+  "endTime": "2024-12-30T18:00:00",
+  "notes": "需要GPU计算资源"
+}
+
+### 23. 教师查看仪器申请
+GET {{baseUrl}}/instruments/applications
+Authorization: Bearer YOUR_TEACHER_TOKEN
+
+### 24. 教师审核仪器申请
+POST {{baseUrl}}/instruments/applications/1/review
+Authorization: Bearer YOUR_TEACHER_TOKEN
+Content-Type: application/json
+
+{
+  "approved": true,
+  "reason": "申请符合使用规范"
+}
+
+### ================================
+### 第八部分：新闻公告测试
+### ================================
+
+### 25. 创建新闻公告
+POST {{baseUrl}}/news
+Authorization: Bearer YOUR_TEACHER_TOKEN
+Content-Type: application/json
+
+{
+  "title": "实验室安全培训通知",
+  "content": "请所有同学参加实验室安全培训，时间：2024年12月30日 14:00-17:00，地点：教学楼A101",
+  "type": "NOTICE"
+}
+
+### 26. 创建新闻公告2
+POST {{baseUrl}}/news
+Authorization: Bearer YOUR_TEACHER_TOKEN
+Content-Type: application/json
+
+{
+  "title": "设备维护通知",
+  "content": "实验室将于2024年12月25日进行设备维护，期间实验室暂停开放。",
+  "type": "ANNOUNCEMENT"
+}
+
+### 27. 获取新闻列表
+GET {{baseUrl}}/news
+Authorization: Bearer YOUR_STUDENT_TOKEN
+
+### 28. 点赞新闻
+POST {{baseUrl}}/news/1/like
+Authorization: Bearer YOUR_STUDENT_TOKEN
+
+### 29. 管理员审核新闻
+PATCH {{baseUrl}}/news/1/review
+Authorization: Bearer YOUR_ADMIN_TOKEN
+Content-Type: application/json
+
+{
+  "approved": true
+}
+
+### ================================
+### 第九部分：收藏功能测试
+### ================================
+
+### 30. 添加收藏
+POST {{baseUrl}}/favorites/1
+Authorization: Bearer YOUR_STUDENT_TOKEN
+
+### 31. 添加第二个收藏
+POST {{baseUrl}}/favorites/2
+Authorization: Bearer YOUR_STUDENT_TOKEN
+
+### 32. 获取我的收藏
+GET {{baseUrl}}/favorites
+Authorization: Bearer YOUR_STUDENT_TOKEN
+
+### 33. 检查是否收藏
+GET {{baseUrl}}/favorites/1/check
+Authorization: Bearer YOUR_STUDENT_TOKEN
+
+### ================================
+### 第十部分：评价功能测试
+### ================================
+
+### 34. 提交实验室评价
+POST {{baseUrl}}/evaluations
+Authorization: Bearer YOUR_STUDENT_TOKEN
+Content-Type: application/json
+
+{
+  "labId": 1,
+  "rating": 5,
+  "equipmentRating": 5,
+  "environmentRating": 4,
+  "serviceRating": 5,
+  "comment": "实验室设备先进，环境舒适，管理员服务周到"
+}
+
+### 35. 提交第二个评价
+POST {{baseUrl}}/evaluations
+Authorization: Bearer YOUR_STUDENT_TOKEN
+Content-Type: application/json
+
+{
+  "labId": 2,
+  "rating": 4,
+  "equipmentRating": 4,
+  "environmentRating": 5,
+  "serviceRating": 4,
+  "comment": "显微镜清晰度很好，实验室环境整洁"
+}
+
+### 36. 获取实验室评价
+GET {{baseUrl}}/evaluations/lab/1
+Authorization: Bearer YOUR_STUDENT_TOKEN
+
+### 37. 获取实验室评价统计
+GET {{baseUrl}}/evaluations/lab/1/statistics
+Authorization: Bearer YOUR_STUDENT_TOKEN
+
+### ================================
+### 第十一部分：通知功能测试
+### ================================
+
+### 38. 创建通知（模拟系统通知）
+POST {{baseUrl}}/notifications
+Authorization: Bearer YOUR_ADMIN_TOKEN
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "title": "预约审核结果",
+  "content": "您的实验室预约已通过审核"
+}
+
+### 39. 获取我的通知
+GET {{baseUrl}}/notifications
+Authorization: Bearer YOUR_STUDENT_TOKEN
+
+### 40. 获取未读通知数量
+GET {{baseUrl}}/notifications/unread-count
+Authorization: Bearer YOUR_STUDENT_TOKEN
+
+### 41. 标记通知为已读
+PATCH {{baseUrl}}/notifications/1/read
+Authorization: Bearer YOUR_STUDENT_TOKEN
+
+### 42. 全部标记为已读
+PATCH {{baseUrl}}/notifications/read-all
+Authorization: Bearer YOUR_STUDENT_TOKEN
+
+### ================================
+### 第十二部分：用户管理测试
+### ================================
+
+### 43. 获取所有用户
+GET {{baseUrl}}/user
+Authorization: Bearer YOUR_ADMIN_TOKEN
+
+### 44. 获取当前用户信息
+GET {{baseUrl}}/user/profile
+Authorization: Bearer YOUR_STUDENT_TOKEN
+
+### 45. 更新用户信息
+PATCH {{baseUrl}}/user/1
+Authorization: Bearer YOUR_STUDENT_TOKEN
+Content-Type: application/json
+
+{
+  "nickname": "更新的昵称",
+  "phone": "13500135000"
+}
+
+### ================================
+### 第十三部分：仪器故障报告测试
+### ================================
+
+### 46. 报告仪器故障
+POST {{baseUrl}}/instruments/1/repair
+Authorization: Bearer YOUR_STUDENT_TOKEN
+Content-Type: application/json
+
+{
+  "description": "显微镜镜头出现污渍",
+  "urgency": "MEDIUM"
+}
+
+### 47. 获取维修记录
+GET {{baseUrl}}/instruments/repairs
+Authorization: Bearer YOUR_ADMIN_TOKEN
+
+### 48. 更新维修状态
+POST {{baseUrl}}/instruments/repairs/1/update
+Authorization: Bearer YOUR_ADMIN_TOKEN
+Content-Type: application/json
+
+{
+  "status": "COMPLETED",
+  "summary": "已清洁镜头并校准，设备恢复正常"
+}
+
+### ================================
+### 第十四部分：取消操作测试
+### ================================
+
+### 49. 取消预约
+PATCH {{baseUrl}}/appointments/1/cancel
+Authorization: Bearer YOUR_STUDENT_TOKEN
+
+### 50. 取消收藏
+DELETE {{baseUrl}}/favorites/2
+Authorization: Bearer YOUR_STUDENT_TOKEN
+
+### 51. 删除通知
+DELETE {{baseUrl}}/notifications/1
+Authorization: Bearer YOUR_STUDENT_TOKEN
+
+### ================================
+### 测试完成！
+### ================================
+### 请检查所有请求的响应结果，确保状态码为2xx
+### 如有错误，请根据错误信息进行排查

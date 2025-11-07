@@ -1,0 +1,49 @@
+### 实验室管理模块测试
+### 基础配置
+@baseUrl = http://localhost:3000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoidGVzdHVzZXIiLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTY0MjYyNzQwN30.example
+
+### 1. 获取实验室列表
+GET {{baseUrl}}/labs
+Authorization: Bearer {{token}}
+
+### 2. 获取实验室列表（带搜索条件）
+GET {{baseUrl}}/labs?name=计算机&location=教学楼
+Authorization: Bearer {{token}}
+
+### 3. 获取热门实验室
+GET {{baseUrl}}/labs/popular?limit=6
+Authorization: Bearer {{token}}
+
+### 4. 获取实验室详情（替换 :id 为实际ID）
+GET {{baseUrl}}/labs/1
+Authorization: Bearer {{token}}
+
+### 5. 创建实验室
+POST {{baseUrl}}/labs
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "计算机实验室A101",
+  "location": "教学楼A座101",
+  "capacity": 50,
+  "description": "配备50台高性能计算机",
+  "equipment": "Dell台式机、投影仪、空调",
+  "available": true
+}
+
+### 6. 更新实验室信息（替换 :id 为实际ID）
+PATCH {{baseUrl}}/labs/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "计算机实验室A101（已更新）",
+  "capacity": 60,
+  "description": "配备60台高性能计算机"
+}
+
+### 7. 删除实验室（替换 :id 为实际ID）
+DELETE {{baseUrl}}/labs/1
+Authorization: Bearer {{token}}

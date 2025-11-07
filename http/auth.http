@@ -1,0 +1,58 @@
+### 认证模块测试
+### 基础配置
+@baseUrl = http://localhost:3000
+@username = testuser
+@password = 123456
+@email = test@example.com
+@nickname = 测试用户
+
+### 1. 用户注册
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "password": "{{password}}",
+  "email": "{{email}}",
+  "nickname": "{{nickname}}",
+  "phone": "13800138000",
+  "department": "计算机学院",
+  "role": "STUDENT"
+}
+
+### 2. 用户登录
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "password": "{{password}}"
+}
+
+### 3. 管理员注册（需要手动修改）
+# POST {{baseUrl}}/auth/register
+# Content-Type: application/json
+#
+# {
+#   "username": "admin",
+#   "password": "admin123",
+#   "email": "admin@example.com",
+#   "nickname": "管理员",
+#   "phone": "13900139000",
+#   "department": "管理部门",
+#   "role": "ADMIN"
+# }
+
+### 4. 教师注册（需要手动修改）
+# POST {{baseUrl}}/auth/register
+# Content-Type: application/json
+#
+# {
+#   "username": "teacher",
+#   "password": "teacher123",
+#   "email": "teacher@example.com",
+#   "nickname": "教师",
+#   "phone": "13700137000",
+#   "department": "计算机学院",
+#   "role": "TEACHER"
+# }

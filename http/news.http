@@ -1,0 +1,44 @@
+### 新闻公告模块测试
+### 基础配置
+@baseUrl = http://localhost:3000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoidGVzdHVzZXIiLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTY0MjYyNzQwN30.example
+
+### 1. 发布新闻
+POST {{baseUrl}}/news
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "实验室安全培训通知",
+  "content": "请所有同学参加实验室安全培训，时间：2024年12月30日 14:00-17:00，地点：教学楼A101",
+  "type": "NOTICE"
+}
+
+### 2. 获取新闻列表
+GET {{baseUrl}}/news
+Authorization: Bearer {{token}}
+
+### 3. 获取新闻列表（带搜索条件）
+GET {{baseUrl}}/news?keyword=安全&type=NOTICE
+Authorization: Bearer {{token}}
+
+### 4. 获取待审核新闻（仅管理员可查看）
+GET {{baseUrl}}/news/pending
+Authorization: Bearer {{token}}
+
+### 5. 获取新闻详情（替换 :id 为实际ID）
+GET {{baseUrl}}/news/1
+Authorization: Bearer {{token}}
+
+### 6. 点赞新闻（替换 :id 为实际ID）
+POST {{baseUrl}}/news/1/like
+Authorization: Bearer {{token}}
+
+### 7. 审核新闻（替换 :id 为实际新闻ID）
+PATCH {{baseUrl}}/news/1/review
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "approved": true
+}

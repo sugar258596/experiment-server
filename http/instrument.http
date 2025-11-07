@@ -1,0 +1,89 @@
+### 仪器设备管理模块测试
+### 基础配置
+@baseUrl = http://localhost:3000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoidGVzdHVzZXIiLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTY0MjYyNzQwN30.example
+
+### 1. 获取仪器列表
+GET {{baseUrl}}/instruments
+Authorization: Bearer {{token}}
+
+### 2. 获取仪器列表（带搜索条件）
+GET {{baseUrl}}/instruments?keyword=显微镜&labId=1
+Authorization: Bearer {{token}}
+
+### 3. 获取仪器详情（替换 :id 为实际ID）
+GET {{baseUrl}}/instruments/1
+Authorization: Bearer {{token}}
+
+### 4. 创建仪器
+POST {{baseUrl}}/instruments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "光学显微镜",
+  "model": "Olympus BX51",
+  "labId": 1,
+  "manufacturer": "Olympus",
+  "purchaseDate": "2023-01-01",
+  "status": "AVAILABLE",
+  "description": "用于观察细胞和组织切片"
+}
+
+### 5. 申请使用仪器（替换 :id 为实际ID）
+POST {{baseUrl}}/instruments/1/apply
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "purpose": "生物样本观察",
+  "startTime": "2024-12-20T09:00:00",
+  "endTime": "2024-12-20T12:00:00",
+  "notes": "需要使用偏光功能"
+}
+
+### 6. 获取使用申请列表
+GET {{baseUrl}}/instruments/applications
+Authorization: Bearer {{token}}
+
+### 7. 获取使用申请列表（带状态筛选）
+GET {{baseUrl}}/instruments/applications?status=PENDING
+Authorization: Bearer {{token}}
+
+### 8. 审核使用申请（替换 :id 为实际申请ID）
+POST {{baseUrl}}/instruments/applications/1/review
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "approved": true,
+  "reason": "申请符合使用规范"
+}
+
+### 9. 报告仪器故障（替换 :id 为实际仪器ID）
+POST {{baseUrl}}/instruments/1/repair
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "description": "显微镜镜头出现污渍",
+  "urgency": "MEDIUM"
+}
+
+### 10. 获取维修记录
+GET {{baseUrl}}/instruments/repairs
+Authorization: Bearer {{token}}
+
+### 11. 获取维修记录（带状态筛选）
+GET {{baseUrl}}/instruments/repairs?status=PENDING
+Authorization: Bearer {{token}}
+
+### 12. 更新维修状态（替换 :id 为实际维修记录ID）
+POST {{baseUrl}}/instruments/repairs/1/update
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "COMPLETED",
+  "summary": "已清洁镜头并校准，设备恢复正常"
+}

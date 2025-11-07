@@ -1,0 +1,26 @@
+### 实验室评价模块测试
+### 基础配置
+@baseUrl = http://localhost:3000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoidGVzdHVzZXIiLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTY0MjYyNzQwN30.example
+
+### 1. 提交实验室评价
+POST {{baseUrl}}/evaluations
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "labId": 1,
+  "rating": 5,
+  "equipmentRating": 5,
+  "environmentRating": 4,
+  "serviceRating": 5,
+  "comment": "实验室设备先进，环境舒适，管理员服务周到"
+}
+
+### 2. 获取实验室评价列表（替换 :labId 为实际实验室ID）
+GET {{baseUrl}}/evaluations/lab/1
+Authorization: Bearer {{token}}
+
+### 3. 获取实验室评价统计（替换 :labId 为实际实验室ID）
+GET {{baseUrl}}/evaluations/lab/1/statistics
+Authorization: Bearer {{token}}

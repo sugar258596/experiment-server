@@ -1,0 +1,20 @@
+### 收藏模块测试
+### 基础配置
+@baseUrl = http://localhost:3000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoidGVzdHVzZXIiLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTY0MjYyNzQwN30.example
+
+### 1. 添加收藏（替换 :labId 为实际实验室ID）
+POST {{baseUrl}}/favorites/1
+Authorization: Bearer {{token}}
+
+### 2. 获取我的收藏
+GET {{baseUrl}}/favorites
+Authorization: Bearer {{token}}
+
+### 3. 检查是否收藏（替换 :labId 为实际实验室ID）
+GET {{baseUrl}}/favorites/1/check
+Authorization: Bearer {{token}}
+
+### 4. 取消收藏（替换 :labId 为实际实验室ID）
+DELETE {{baseUrl}}/favorites/1
+Authorization: Bearer {{token}}

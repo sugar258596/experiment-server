@@ -1,0 +1,47 @@
+### 用户管理模块测试
+### 基础配置
+@baseUrl = http://localhost:3000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoidGVzdHVzZXIiLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTY0MjYyNzQwN30.example
+
+### 1. 获取当前用户信息
+GET {{baseUrl}}/user/profile
+Authorization: Bearer {{token}}
+
+### 2. 获取所有用户
+GET {{baseUrl}}/user
+Authorization: Bearer {{token}}
+
+### 3. 获取用户详情（替换 :id 为实际ID）
+GET {{baseUrl}}/user/1
+Authorization: Bearer {{token}}
+
+### 4. 创建用户
+POST {{baseUrl}}/user
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "username": "newuser",
+  "password": "123456",
+  "email": "newuser@example.com",
+  "nickname": "新用户",
+  "phone": "13600136000",
+  "department": "软件学院",
+  "role": "STUDENT"
+}
+
+### 5. 更新用户信息（替换 :id 为实际ID）
+PATCH {{baseUrl}}/user/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nickname": "更新的昵称",
+  "email": "updated@example.com",
+  "phone": "13500135000",
+  "department": "更新后的院系"
+}
+
+### 6. 删除用户（替换 :id 为实际ID）
+DELETE {{baseUrl}}/user/1
+Authorization: Bearer {{token}}
