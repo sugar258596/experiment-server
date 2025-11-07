@@ -11,13 +11,7 @@ import {
 import { Lab } from '../../lab/entities/lab.entity';
 import { InstrumentApplication } from './instrument-application.entity';
 import { InstrumentRepair } from './instrument-repair.entity';
-
-export enum InstrumentStatus {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
-  MAINTENANCE = 'MAINTENANCE',
-  FAULT = 'FAULT',
-}
+import { InstrumentStatus } from '../../common/enums/status.enum';
 
 @Entity('instruments')
 export class Instrument {

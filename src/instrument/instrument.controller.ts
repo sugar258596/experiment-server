@@ -23,9 +23,9 @@ import { CreateInstrumentDto } from './dto/create-instrument.dto';
 import { ApplyInstrumentDto } from './dto/apply-instrument.dto';
 import { ReportInstrumentDto } from './dto/report-instrument.dto';
 import { JwtAuthGuard } from 'src/common/guards';
-import { ApplicationStatus } from './entities/instrument-application.entity';
-import { RepairStatus } from './entities/instrument-repair.entity';
+
 import type { AuthenticatedRequest } from 'src/common/interfaces/request.interface';
+import { ApplicationStatus, RepairStatus } from 'src/common/enums/status.enum';
 
 @ApiTags('仪器管理')
 @Controller('instruments')

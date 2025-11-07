@@ -8,7 +8,7 @@ import {
   MaxLength,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { LabStatus } from '../entities/lab.entity';
+import { LabStatus } from '../../common/enums/status.enum';
 
 /**
  * 创建实验室DTO

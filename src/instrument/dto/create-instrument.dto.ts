@@ -6,7 +6,7 @@ import {
   MaxLength,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { InstrumentStatus } from '../entities/instrument.entity';
+import { InstrumentStatus } from '../../common/enums/status.enum';
 
 /**
  * 创建仪器DTO

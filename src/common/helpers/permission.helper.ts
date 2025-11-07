@@ -5,15 +5,15 @@ export class PermissionHelper {
   /**
    * 检查用户是否有指定角色
    */
-  static hasRole(userRole: Role, requiredRole: Role): boolean {
-    return userRole === requiredRole;
+  static hasRole(Role: Role, requiredRole: Role): boolean {
+    return Role === requiredRole;
   }
 
   /**
    * 检查用户是否有足够权限（权限级别）
    */
-  static hasPermission(userRole: Role, requiredRole: Role): boolean {
-    const userPriority = RolePriority[userRole];
+  static hasPermission(Role: Role, requiredRole: Role): boolean {
+    const userPriority = RolePriority[Role];
     const requiredPriority = RolePriority[requiredRole];
     return userPriority >= requiredPriority;
   }
@@ -21,15 +21,15 @@ export class PermissionHelper {
   /**
    * 检查用户是否有任意一个指定角色
    */
-  static hasAnyRole(userRole: Role, requiredRoles: Role[]): boolean {
-    return requiredRoles.includes(userRole);
+  static hasAnyRole(Role: Role, requiredRoles: Role[]): boolean {
+    return requiredRoles.includes(Role);
   }
 
   /**
    * 检查用户是否有足够权限访问任意一个指定角色的资源
    */
-  static hasAnyPermission(userRole: Role, requiredRoles: Role[]): boolean {
-    const userPriority = RolePriority[userRole];
+  static hasAnyPermission(Role: Role, requiredRoles: Role[]): boolean {
+    const userPriority = RolePriority[Role];
     const requiredPriorities = requiredRoles.map((role) => RolePriority[role]);
     const minRequiredPriority = Math.min(...requiredPriorities);
     return userPriority >= minRequiredPriority;

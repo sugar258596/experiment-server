@@ -8,14 +8,14 @@ import {
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { Role, RolePriority, RoleLabels } from '../enums/role.enum';
+import { Role, RolePriority, RoleLabels, AdminRoles } from '../enums/role.enum';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 import { JwtErrorHelper } from '../helpers/jwt-error.helper';
 
 interface JwtPayload {
   sub: number;
   username: string;
-  role: string;
+  role: Role;
   iat?: number;
   exp?: number;
 }
@@ -112,17 +112,17 @@ export class AuthRolesGuard implements CanActivate {
       }
 
       // 权限不足，抛出友好的错误提示
-      this.throwFriendlyForbiddenException(user.role as Role, requiredRoles);
+      this.throwFriendlyForbiddenException(user.role, requiredRoles);
     }
 
     return hasRole;
   }
 
   private throwFriendlyForbiddenException(
-    userRole: Role,
+    Role: Role,
     requiredRoles: Role[],
   ): never {
-    const userRoleLabel = RoleLabels[userRole] || userRole;
+    const userRoleLabel = RoleLabels[Role] || Role;
     const requiredRoleLabels = requiredRoles
       .map((role) => RoleLabels[role] || role)
       .join('或');
@@ -130,10 +130,7 @@ export class AuthRolesGuard implements CanActivate {
     let message = `权限不足：当前角色为【${userRoleLabel}】，此操作需要【${requiredRoleLabels}】权限`;
 
     // 根据不同角色给出不同的提示
-    if (
-      requiredRoles.includes(Role.ADMIN) ||
-      requiredRoles.includes(Role.SUPER_ADMIN)
-    ) {
+    if (requiredRoles.some((role) => AdminRoles.includes(role))) {
       message += '。如需访问此功能，请联系系统管理员';
     }
 

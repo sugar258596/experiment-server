@@ -6,7 +6,7 @@ import {
   MaxLength,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { FaultType, UrgencyLevel } from '../entities/instrument-repair.entity';
+import { FaultType, UrgencyLevel } from '../../common/enums/status.enum';
 
 /**
  * 仪器故障报告DTO

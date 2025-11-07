@@ -9,7 +9,7 @@ import {
   IsEnum,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { UserRole } from '../entities/user.entity';
+import { Role } from '../../common/enums/role.enum';
 
 /**
  * 创建用户DTO
@@ -43,11 +43,11 @@ export class CreateUserDto {
 
   @ApiProperty({
     description: '用户角色',
-    enum: UserRole,
-    example: UserRole.STUDENT,
+    enum: Role,
+    example: Role.STUDENT,
   })
-  @IsEnum(UserRole)
-  role: UserRole;
+  @IsEnum(Role)
+  role: Role;
 
   @ApiPropertyOptional({
     description: '用户昵称',

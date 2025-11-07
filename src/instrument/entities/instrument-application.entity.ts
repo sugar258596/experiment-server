@@ -9,12 +9,7 @@ import {
 } from 'typeorm';
 import { Instrument } from './instrument.entity';
 import { User } from '../../user/entities/user.entity';
-
-export enum ApplicationStatus {
-  PENDING = 'PENDING',
-  APPROVED = 'APPROVED',
-  REJECTED = 'REJECTED',
-}
+import { ApplicationStatus } from 'src/common/enums/status.enum';
 
 @Entity('instrument_applications')
 export class InstrumentApplication {

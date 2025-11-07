@@ -7,7 +7,9 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import bcrypt from 'bcryptjs';
-import { User, UserRole, UserStatus } from '../user/entities/user.entity';
+import { User } from '../user/entities/user.entity';
+import { Status } from '../common/enums/status.enum';
+import { Role } from '../common/enums/role.enum';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 
@@ -40,8 +42,8 @@ export class AuthService {
       password: hashedPassword,
       email,
       phone,
-      role: role as UserRole,
-      status: UserStatus.ACTIVE,
+      role: role as Role,
+      status: Status.ACTIVE,
     });
 
     await this.userRepository.save(user);
@@ -70,7 +72,7 @@ export class AuthService {
     }
 
     // 检查用户状态
-    if (user.status !== UserStatus.ACTIVE) {
+    if (user.status !== Status.ACTIVE) {
       throw new UnauthorizedException('账号已被禁用');
     }
 

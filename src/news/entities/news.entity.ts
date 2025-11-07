@@ -8,12 +8,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
-
-export enum NewsStatus {
-  PENDING = 'PENDING',
-  APPROVED = 'APPROVED',
-  REJECTED = 'REJECTED',
-}
+import { NewsStatus } from '../../common/enums/status.enum';
 
 @Entity('news')
 export class News {

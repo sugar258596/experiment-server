@@ -9,26 +9,11 @@ import {
 } from 'typeorm';
 import { Instrument } from './instrument.entity';
 import { User } from '../../user/entities/user.entity';
-
-export enum RepairStatus {
-  PENDING = 'PENDING',
-  IN_PROGRESS = 'IN_PROGRESS',
-  COMPLETED = 'COMPLETED',
-}
-
-export enum FaultType {
-  HARDWARE = 'HARDWARE',
-  SOFTWARE = 'SOFTWARE',
-  OPERATION_ERROR = 'OPERATION_ERROR',
-  OTHER = 'OTHER',
-}
-
-export enum UrgencyLevel {
-  LOW = 'LOW',
-  MEDIUM = 'MEDIUM',
-  HIGH = 'HIGH',
-  URGENT = 'URGENT',
-}
+import {
+  FaultType,
+  UrgencyLevel,
+  RepairStatus,
+} from 'src/common/enums/status.enum';
 
 @Entity('instrument_repairs')
 export class InstrumentRepair {

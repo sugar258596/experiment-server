@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Lab, LabStatus } from './entities/lab.entity';
+import { Lab } from './entities/lab.entity';
+import { LabStatus } from '../common/enums/status.enum';
 import { CreateLabDto } from './dto/create-lab.dto';
 import { UpdateLabDto } from './dto/update-lab.dto';
 import { SearchLabDto } from './dto/search-lab.dto';

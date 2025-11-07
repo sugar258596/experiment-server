@@ -5,7 +5,7 @@ import {
   IsString,
   IsDateString,
 } from 'class-validator';
-import { AppointmentStatus } from '../entities/appointment.entity';
+import { AppointmentStatus } from 'src/common/enums/status.enum';
 
 export class SearchAppointmentDto {
   @IsOptional()

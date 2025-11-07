@@ -9,12 +9,7 @@ import {
 import { Appointment } from '../../appointment/entities/appointment.entity';
 import { Favorites } from '../../favorites/entities/favorites.entity';
 import { Evaluation } from '../../evaluation/entities/evaluation.entity';
-
-export enum LabStatus {
-  ACTIVE = 'ACTIVE',
-  MAINTENANCE = 'MAINTENANCE',
-  INACTIVE = 'INACTIVE',
-}
+import { LabStatus } from '../../common/enums/status.enum';
 
 @Entity('labs')
 export class Lab {

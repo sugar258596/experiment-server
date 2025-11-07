@@ -9,20 +9,7 @@ import {
 } from 'typeorm';
 import { Lab } from '../../lab/entities/lab.entity';
 import { User } from '../../user/entities/user.entity';
-
-export enum AppointmentStatus {
-  PENDING = 'PENDING',
-  APPROVED = 'APPROVED',
-  REJECTED = 'REJECTED',
-  CANCELLED = 'CANCELLED',
-  COMPLETED = 'COMPLETED',
-}
-
-export enum TimeSlot {
-  MORNING = 'MORNING',
-  AFTERNOON = 'AFTERNOON',
-  EVENING = 'EVENING',
-}
+import { AppointmentStatus, TimeSlot } from '../../common/enums/status.enum';
 
 @Entity('appointments')
 export class Appointment {

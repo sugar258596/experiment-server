@@ -6,15 +6,12 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import {
-  Appointment,
-  AppointmentStatus,
-  TimeSlot,
-} from './entities/appointment.entity';
+import { Appointment } from './entities/appointment.entity';
+import { AppointmentStatus, TimeSlot } from '../common/enums/status.enum';
+import { Role } from '../common/enums/role.enum';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { ReviewAppointmentDto } from './dto/review-appointment.dto';
 import { SearchAppointmentDto } from './dto/search-appointment.dto';
-import { User, UserRole } from '../user/entities/user.entity';
 import { Lab } from '../lab/entities/lab.entity';
 import type { UserPayload } from '../common/interfaces/request.interface';
 
@@ -170,8 +167,8 @@ export class AppointmentService {
 
     if (
       appointment.userId !== user.id &&
-      user.role !== 'teacher' &&
-      user.role !== 'admin'
+      user.role !== Role.TEACHER &&
+      user.role !== Role.ADMIN
     ) {
       throw new ForbiddenException('只能取消自己的预约');
     }

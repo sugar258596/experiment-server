@@ -7,7 +7,7 @@ import {
   MaxLength,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { TimeSlot } from '../entities/appointment.entity';
+import { TimeSlot } from 'src/common/enums/status.enum';
 
 /**
  * 创建预约DTO

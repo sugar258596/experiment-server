@@ -13,17 +13,8 @@ import { Evaluation } from '../../evaluation/entities/evaluation.entity';
 import { News } from '../../news/entities/news.entity';
 import { InstrumentApplication } from '../../instrument/entities/instrument-application.entity';
 import { InstrumentRepair } from '../../instrument/entities/instrument-repair.entity';
-
-export enum UserRole {
-  STUDENT = 'STUDENT',
-  TEACHER = 'TEACHER',
-  ADMIN = 'ADMIN',
-}
-
-export enum UserStatus {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
-}
+import { Role } from '../../common/enums/role.enum';
+import { Status } from '../../common/enums/status.enum';
 
 @Entity('users')
 export class User {
@@ -38,19 +29,19 @@ export class User {
 
   @Column({
     type: 'enum',
-    enum: UserRole,
-    default: UserRole.STUDENT,
+    enum: Role,
+    default: Role.STUDENT,
     comment: '用户角色：STUDENT-学生，TEACHER-教师，ADMIN-管理员',
   })
-  role: UserRole;
+  role: Role;
 
   @Column({
     type: 'enum',
-    enum: UserStatus,
-    default: UserStatus.ACTIVE,
-    comment: '用户状态：ACTIVE-正常，INACTIVE-禁用',
+    enum: Status,
+    default: Status.ACTIVE,
+    comment: '用户状态：ACTIVE-正常，INACTIVE-禁用，BANNED-封禁',
   })
-  status: UserStatus;
+  status: Status;
 
   @Column({ nullable: true, comment: '用户昵称' })
   nickname: string;

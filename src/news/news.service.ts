@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { News, NewsStatus } from './entities/news.entity';
+import { News } from './entities/news.entity';
+import { NewsStatus } from '../common/enums/status.enum';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { SearchNewsDto } from './dto/search-news.dto';
 import { UserPayload } from '../common/interfaces/request.interface';

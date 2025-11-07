@@ -1,6 +1,6 @@
 import { IsOptional, IsString, IsEnum, IsInt, Min } from 'class-validator';
 import { Type } from 'class-transformer';
-import { LabStatus } from '../entities/lab.entity';
+import { LabStatus } from 'src/common/enums/status.enum';
 
 export class SearchLabDto {
   @IsOptional()

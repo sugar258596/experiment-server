@@ -3,7 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User, UserStatus } from './entities/user.entity';
+import { User } from './entities/user.entity';
+import { Status } from '../common/enums/status.enum';
 
 interface JwtPayload {
   sub: number;
@@ -21,7 +22,7 @@ export class UserService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     const user = this.userRepository.create({
       ...createUserDto,
-      status: UserStatus.ACTIVE,
+      status: Status.ACTIVE,
     });
     return await this.userRepository.save(user);
   }

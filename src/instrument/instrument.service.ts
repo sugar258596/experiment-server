@@ -6,14 +6,9 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Instrument } from './entities/instrument.entity';
-import {
-  InstrumentApplication,
-  ApplicationStatus,
-} from './entities/instrument-application.entity';
-import {
-  InstrumentRepair,
-  RepairStatus,
-} from './entities/instrument-repair.entity';
+import { InstrumentApplication } from './entities/instrument-application.entity';
+import { InstrumentRepair } from './entities/instrument-repair.entity';
+import { ApplicationStatus, RepairStatus } from '../common/enums/status.enum';
 import { CreateInstrumentDto } from './dto/create-instrument.dto';
 import { ApplyInstrumentDto } from './dto/apply-instrument.dto';
 import { ReportInstrumentDto } from './dto/report-instrument.dto';
