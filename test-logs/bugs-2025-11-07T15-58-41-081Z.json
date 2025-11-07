@@ -1,0 +1,140 @@
+[
+  {
+    "timestamp": "2025-11-07T15:58:40.939Z",
+    "method": "POST",
+    "url": "/auth/login",
+    "error": "HTTP 401: {\"code\":401,\"message\":\"用户名或密码错误\",\"timestamp\":\"2025-11-07T15:58:40.938Z\",\"path\":\"/auth/login\",\"error\":\"Unauthorized\"}",
+    "statusCode": 401,
+    "response": {
+      "code": 401,
+      "message": "用户名或密码错误",
+      "timestamp": "2025-11-07T15:58:40.938Z",
+      "path": "/auth/login",
+      "error": "Unauthorized"
+    },
+    "requestData": {
+      "username": "nonexistent",
+      "password": "wrongpassword"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T15:58:40.952Z",
+    "method": "POST",
+    "url": "/user",
+    "error": "HTTP 400: {\"code\":400,\"message\":[\"用户名只能包含字母和数字\",\"用户名长度不能超过20位\",\"role must be one of the following values: super_admin, admin, student, teacher\"],\"timestamp\":\"2025-11-07T15:58:40.951Z\",\"path\":\"/user\",\"error\":\"Bad Request\"}",
+    "statusCode": 400,
+    "response": {
+      "code": 400,
+      "message": [
+        "用户名只能包含字母和数字",
+        "用户名长度不能超过20位",
+        "role must be one of the following values: super_admin, admin, student, teacher"
+      ],
+      "timestamp": "2025-11-07T15:58:40.951Z",
+      "path": "/user",
+      "error": "Bad Request"
+    },
+    "requestData": {
+      "username": "admin_test_1762531120946",
+      "password": "Admin123456",
+      "email": "admin_1762531120946@example.com",
+      "role": "ADMIN"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T15:58:40.982Z",
+    "method": "POST",
+    "url": "/labs",
+    "error": "HTTP 400: {\"code\":400,\"message\":[\"status must be one of the following values: 0, 1, 2\",\"院系名称不能超过100个字符\",\"department must be a string\"],\"timestamp\":\"2025-11-07T15:58:40.981Z\",\"path\":\"/labs\",\"error\":\"Bad Request\"}",
+    "statusCode": 400,
+    "response": {
+      "code": 400,
+      "message": [
+        "status must be one of the following values: 0, 1, 2",
+        "院系名称不能超过100个字符",
+        "department must be a string"
+      ],
+      "timestamp": "2025-11-07T15:58:40.981Z",
+      "path": "/labs",
+      "error": "Bad Request"
+    },
+    "requestData": {
+      "name": "测试实验室_1762531120976",
+      "location": "实验楼A座101",
+      "capacity": 30,
+      "description": "这是一个测试实验室",
+      "equipment": "电脑30台，投影仪1台",
+      "openTime": "08:00-22:00",
+      "status": "AVAILABLE"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T15:58:41.000Z",
+    "method": "POST",
+    "url": "/instruments",
+    "error": "HTTP 400: {\"code\":400,\"message\":[\"status must be one of the following values: 0, 1, 2, 3\"],\"timestamp\":\"2025-11-07T15:58:40.999Z\",\"path\":\"/instruments\",\"error\":\"Bad Request\"}",
+    "statusCode": 400,
+    "response": {
+      "code": 400,
+      "message": [
+        "status must be one of the following values: 0, 1, 2, 3"
+      ],
+      "timestamp": "2025-11-07T15:58:40.999Z",
+      "path": "/instruments",
+      "error": "Bad Request"
+    },
+    "requestData": {
+      "name": "测试仪器_1762531120994",
+      "model": "TEST-MODEL-001",
+      "manufacturer": "测试厂商",
+      "purchaseDate": "2025-11-07",
+      "price": 50000,
+      "status": "AVAILABLE",
+      "specifications": "测试规格参数",
+      "labId": 1
+    }
+  },
+  {
+    "timestamp": "2025-11-07T15:58:41.043Z",
+    "method": "POST",
+    "url": "/news",
+    "error": "HTTP 500: {\"code\":500,\"message\":\"Field 'authorId' doesn't have a default value\",\"timestamp\":\"2025-11-07T15:58:41.042Z\",\"path\":\"/news\",\"error\":\"QueryFailedError: Field 'authorId' doesn't have a default value\\n    at Query.onResult (/home/engine/project/node_modules/.pnpm/typeorm@0.3.27_mysql2@3.15.3_reflect-metadata@0.2.2_sqlite3@5.1.7_ts-node@10.9.2_@types+node@22.19.0_typescript@5.9.3_/node_modules/typeorm/driver/src/driver/mysql/MysqlQueryRunner.ts:248:33)\\n    at Query.execute (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/commands/command.js:36:14)\\n    at PoolConnection.handlePacket (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/base/connection.js:477:34)\\n    at PacketParser.onPacket (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/base/connection.js:93:12)\\n    at PacketParser.executeStart (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/packet_parser.js:75:16)\\n    at Socket.<anonymous> (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/base/connection.js:100:25)\\n    at Socket.emit (node:events:524:28)\\n    at addChunk (node:internal/streams/readable:561:12)\\n    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)\\n    at Readable.push (node:internal/streams/readable:392:5)\"}",
+    "statusCode": 500,
+    "response": {
+      "code": 500,
+      "message": "Field 'authorId' doesn't have a default value",
+      "timestamp": "2025-11-07T15:58:41.042Z",
+      "path": "/news",
+      "error": "QueryFailedError: Field 'authorId' doesn't have a default value\n    at Query.onResult (/home/engine/project/node_modules/.pnpm/typeorm@0.3.27_mysql2@3.15.3_reflect-metadata@0.2.2_sqlite3@5.1.7_ts-node@10.9.2_@types+node@22.19.0_typescript@5.9.3_/node_modules/typeorm/driver/src/driver/mysql/MysqlQueryRunner.ts:248:33)\n    at Query.execute (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/commands/command.js:36:14)\n    at PoolConnection.handlePacket (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/base/connection.js:477:34)\n    at PacketParser.onPacket (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/base/connection.js:93:12)\n    at PacketParser.executeStart (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/packet_parser.js:75:16)\n    at Socket.<anonymous> (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/base/connection.js:100:25)\n    at Socket.emit (node:events:524:28)\n    at addChunk (node:internal/streams/readable:561:12)\n    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)\n    at Readable.push (node:internal/streams/readable:392:5)"
+    },
+    "requestData": {
+      "title": "测试新闻_1762531121021",
+      "content": "这是一条测试新闻内容",
+      "category": "ANNOUNCEMENT",
+      "coverImage": "https://example.com/image.jpg"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T15:58:41.063Z",
+    "method": "POST",
+    "url": "/notifications",
+    "error": "HTTP 400: {\"code\":400,\"message\":[\"用户ID格式不正确\",\"type must be one of the following values: APPOINTMENT_REVIEW, TEMPORARY_NOTICE, APPOINTMENT_REMINDER, INSTRUMENT_APPLICATION, REPAIR_PROGRESS\"],\"timestamp\":\"2025-11-07T15:58:41.062Z\",\"path\":\"/notifications\",\"error\":\"Bad Request\"}",
+    "statusCode": 400,
+    "response": {
+      "code": 400,
+      "message": [
+        "用户ID格式不正确",
+        "type must be one of the following values: APPOINTMENT_REVIEW, TEMPORARY_NOTICE, APPOINTMENT_REMINDER, INSTRUMENT_APPLICATION, REPAIR_PROGRESS"
+      ],
+      "timestamp": "2025-11-07T15:58:41.062Z",
+      "path": "/notifications",
+      "error": "Bad Request"
+    },
+    "requestData": {
+      "userId": 2,
+      "type": "SYSTEM",
+      "title": "测试通知",
+      "content": "这是一条测试通知"
+    }
+  }
+]

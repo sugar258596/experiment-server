@@ -15,6 +15,10 @@ export class NewsService {
   ) {}
 
   async create(createDto: CreateNewsDto, user: UserPayload) {
+    if (!user || !user.id) {
+      throw new Error('用户信息不完整，无法创建新闻');
+    }
+
     const news = this.newsRepository.create({
       title: createDto.title,
       content: createDto.content,

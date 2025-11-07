@@ -1,0 +1,974 @@
+[
+  {
+    "timestamp": "2025-11-07T16:01:03.960Z",
+    "method": "POST",
+    "url": "/auth/register",
+    "status": 201,
+    "duration": 224,
+    "data": {
+      "code": 200,
+      "data": {
+        "message": "注册成功"
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.045Z",
+    "method": "POST",
+    "url": "/auth/login",
+    "status": 201,
+    "duration": 84,
+    "data": {
+      "code": 200,
+      "data": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMTc2MjUzMTI2MzczIiwic3ViIjozLCJyb2xlIjoic3R1ZGVudCIsImVtYWlsIjoidGVzdDE3NjI1MzEyNjM3MzZAZXhhbXBsZS5jb20iLCJzdGF0dXMiOjAsImlhdCI6MTc2MjUzMTI2NCwiZXhwIjoxNzY0NjA0ODY0fQ.Xx9RVSMeCCjqMK3KCsieG_AomgnEaD1dCPRMvWRjDH0"
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.052Z",
+    "method": "POST",
+    "url": "/auth/login",
+    "status": 401,
+    "duration": 7,
+    "data": {
+      "code": 401,
+      "message": "用户名或密码错误",
+      "timestamp": "2025-11-07T16:01:04.051Z",
+      "path": "/auth/login",
+      "error": "Unauthorized"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.060Z",
+    "method": "GET",
+    "url": "/user/profile",
+    "status": 200,
+    "duration": 7,
+    "data": {
+      "code": 200,
+      "data": {
+        "id": 3,
+        "username": "testuser176253126373",
+        "role": "student",
+        "status": 0,
+        "nickname": null,
+        "avatar": null,
+        "email": "test1762531263736@example.com",
+        "phone": "13800138000",
+        "department": null,
+        "teachingTags": null,
+        "auditTimeSlots": null,
+        "createdAt": "2025-11-07T08:01:03.947Z",
+        "updatedAt": "2025-11-07T08:01:03.947Z"
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.070Z",
+    "method": "POST",
+    "url": "/user",
+    "status": 201,
+    "duration": 10,
+    "data": {
+      "code": 200,
+      "data": {
+        "id": 4,
+        "username": "admintest17625312640",
+        "password": "Admin123456",
+        "role": "admin",
+        "status": 0,
+        "nickname": null,
+        "avatar": null,
+        "email": "admin_1762531264060@example.com",
+        "phone": null,
+        "department": null,
+        "teachingTags": null,
+        "auditTimeSlots": null,
+        "createdAt": "2025-11-07T08:01:04.065Z",
+        "updatedAt": "2025-11-07T08:01:04.065Z"
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.076Z",
+    "method": "GET",
+    "url": "/user",
+    "status": 200,
+    "duration": 6,
+    "data": {
+      "code": 200,
+      "data": {
+        "list": [
+          {
+            "id": 1,
+            "username": "testuser176253107319",
+            "role": "student",
+            "status": 0,
+            "nickname": null,
+            "avatar": null,
+            "email": "test1762531073193@example.com",
+            "phone": "13800138000",
+            "department": null,
+            "createdAt": "2025-11-07T07:57:53.338Z",
+            "updatedAt": "2025-11-07T07:57:53.338Z"
+          },
+          {
+            "id": 2,
+            "username": "testuser176253112066",
+            "role": "student",
+            "status": 0,
+            "nickname": "更新后的昵称",
+            "avatar": null,
+            "email": "test1762531120660@example.com",
+            "phone": "13800138000",
+            "department": "软件学院",
+            "createdAt": "2025-11-07T07:58:40.832Z",
+            "updatedAt": "2025-11-07T07:58:40.000Z"
+          },
+          {
+            "id": 3,
+            "username": "testuser176253126373",
+            "role": "student",
+            "status": 0,
+            "nickname": null,
+            "avatar": null,
+            "email": "test1762531263736@example.com",
+            "phone": "13800138000",
+            "department": null,
+            "createdAt": "2025-11-07T08:01:03.947Z",
+            "updatedAt": "2025-11-07T08:01:03.947Z"
+          },
+          {
+            "id": 4,
+            "username": "admintest17625312640",
+            "role": "admin",
+            "status": 0,
+            "nickname": null,
+            "avatar": null,
+            "email": "admin_1762531264060@example.com",
+            "phone": null,
+            "department": null,
+            "createdAt": "2025-11-07T08:01:04.065Z",
+            "updatedAt": "2025-11-07T08:01:04.065Z"
+          }
+        ],
+        "total": 4
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.081Z",
+    "method": "GET",
+    "url": "/user/3",
+    "status": 200,
+    "duration": 5,
+    "data": {
+      "code": 200,
+      "data": {
+        "id": 3,
+        "username": "testuser176253126373",
+        "role": "student",
+        "status": 0,
+        "nickname": null,
+        "avatar": null,
+        "email": "test1762531263736@example.com",
+        "phone": "13800138000",
+        "department": null,
+        "teachingTags": null,
+        "auditTimeSlots": null,
+        "createdAt": "2025-11-07T08:01:03.947Z",
+        "updatedAt": "2025-11-07T08:01:03.947Z"
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.094Z",
+    "method": "PATCH",
+    "url": "/user/3",
+    "status": 200,
+    "duration": 13,
+    "data": {
+      "code": 200,
+      "data": {
+        "id": 3,
+        "username": "testuser176253126373",
+        "role": "student",
+        "nickname": "更新后的昵称",
+        "avatar": null,
+        "email": "test1762531263736@example.com",
+        "phone": "13800138000",
+        "department": "软件学院",
+        "teachingTags": null,
+        "auditTimeSlots": null,
+        "createdAt": "2025-11-07T08:01:03.947Z",
+        "updatedAt": "2025-11-07T08:01:04.000Z"
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.103Z",
+    "method": "POST",
+    "url": "/labs",
+    "status": 201,
+    "duration": 9,
+    "data": {
+      "code": 200,
+      "data": {
+        "id": 1,
+        "name": "测试实验室_1762531264094",
+        "location": "实验楼A座101",
+        "capacity": 30,
+        "description": "这是一个测试实验室",
+        "images": null,
+        "status": 0,
+        "department": "计算机学院",
+        "equipmentList": null,
+        "tags": null,
+        "rating": "0.00",
+        "createdAt": "2025-11-07T08:01:04.099Z",
+        "updatedAt": "2025-11-07T08:01:04.099Z"
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.109Z",
+    "method": "GET",
+    "url": "/labs",
+    "status": 200,
+    "duration": 5,
+    "data": {
+      "code": 200,
+      "data": {
+        "list": [
+          {
+            "id": 1,
+            "name": "测试实验室_1762531264094",
+            "location": "实验楼A座101",
+            "capacity": 30,
+            "description": "这是一个测试实验室",
+            "images": null,
+            "status": 0,
+            "department": "计算机学院",
+            "equipmentList": null,
+            "tags": null,
+            "rating": "0.00",
+            "createdAt": "2025-11-07T08:01:04.099Z",
+            "updatedAt": "2025-11-07T08:01:04.099Z"
+          }
+        ],
+        "total": 1
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.113Z",
+    "method": "GET",
+    "url": "/labs?keyword=测试",
+    "status": 200,
+    "duration": 4,
+    "data": {
+      "code": 200,
+      "data": {
+        "list": [
+          {
+            "id": 1,
+            "name": "测试实验室_1762531264094",
+            "location": "实验楼A座101",
+            "capacity": 30,
+            "description": "这是一个测试实验室",
+            "images": null,
+            "status": 0,
+            "department": "计算机学院",
+            "equipmentList": null,
+            "tags": null,
+            "rating": "0.00",
+            "createdAt": "2025-11-07T08:01:04.099Z",
+            "updatedAt": "2025-11-07T08:01:04.099Z"
+          }
+        ],
+        "total": 1
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.116Z",
+    "method": "GET",
+    "url": "/labs/popular?limit=6",
+    "status": 200,
+    "duration": 3,
+    "data": {
+      "code": 200,
+      "data": {
+        "list": [],
+        "total": 0
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.126Z",
+    "method": "GET",
+    "url": "/labs/1",
+    "status": 200,
+    "duration": 10,
+    "data": {
+      "code": 200,
+      "data": {
+        "id": 1,
+        "name": "测试实验室_1762531264094",
+        "location": "实验楼A座101",
+        "capacity": 30,
+        "description": "这是一个测试实验室",
+        "images": null,
+        "status": 0,
+        "department": "计算机学院",
+        "equipmentList": null,
+        "tags": null,
+        "rating": "0.00",
+        "createdAt": "2025-11-07T08:01:04.099Z",
+        "updatedAt": "2025-11-07T08:01:04.099Z",
+        "appointments": [],
+        "favorites": [],
+        "evaluations": []
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.141Z",
+    "method": "PATCH",
+    "url": "/labs/1",
+    "status": 200,
+    "duration": 15,
+    "data": {
+      "code": 200,
+      "data": {
+        "id": 1,
+        "name": "测试实验室_1762531264094",
+        "location": "实验楼A座101",
+        "capacity": 35,
+        "description": "更新后的实验室描述",
+        "images": null,
+        "status": 0,
+        "department": "计算机学院",
+        "equipmentList": null,
+        "tags": null,
+        "rating": "0.00",
+        "createdAt": "2025-11-07T08:01:04.099Z",
+        "updatedAt": "2025-11-07T08:01:04.000Z",
+        "appointments": [],
+        "favorites": [],
+        "evaluations": []
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.147Z",
+    "method": "POST",
+    "url": "/appointments",
+    "status": 400,
+    "duration": 6,
+    "data": {
+      "code": 400,
+      "message": [
+        "appointmentDate must be a string",
+        "timeSlot must be one of the following values: 0, 1, 2",
+        "详细说明不能超过1000个字符",
+        "description must be a string",
+        "参与人数至少为1",
+        "participantCount must be an integer number"
+      ],
+      "timestamp": "2025-11-07T16:01:04.146Z",
+      "path": "/appointments",
+      "error": "Bad Request"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.151Z",
+    "method": "GET",
+    "url": "/appointments",
+    "status": 200,
+    "duration": 4,
+    "data": {
+      "code": 200,
+      "data": {
+        "list": [],
+        "total": 0
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.156Z",
+    "method": "GET",
+    "url": "/appointments/my",
+    "status": 200,
+    "duration": 5,
+    "data": {
+      "code": 200,
+      "data": {
+        "list": [],
+        "total": 0
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.161Z",
+    "method": "GET",
+    "url": "/appointments/pending",
+    "status": 200,
+    "duration": 5,
+    "data": {
+      "code": 200,
+      "data": {
+        "list": [],
+        "total": 0
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.171Z",
+    "method": "POST",
+    "url": "/instruments",
+    "status": 201,
+    "duration": 9,
+    "data": {
+      "code": 200,
+      "data": {
+        "id": 1,
+        "name": "测试仪器_1762531264162",
+        "model": "TEST-MODEL-001",
+        "serialNumber": null,
+        "description": null,
+        "status": 0,
+        "specifications": "测试规格参数",
+        "images": null,
+        "qrCode": null,
+        "lab": {
+          "id": 1,
+          "name": "测试实验室_1762531264094",
+          "location": "实验楼A座101",
+          "capacity": 35,
+          "description": "更新后的实验室描述",
+          "images": null,
+          "status": 0,
+          "department": "计算机学院",
+          "equipmentList": null,
+          "tags": null,
+          "rating": "0.00",
+          "createdAt": "2025-11-07T08:01:04.099Z",
+          "updatedAt": "2025-11-07T08:01:04.000Z"
+        },
+        "createdAt": "2025-11-07T08:01:04.168Z",
+        "updatedAt": "2025-11-07T08:01:04.168Z"
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.177Z",
+    "method": "GET",
+    "url": "/instruments",
+    "status": 200,
+    "duration": 6,
+    "data": {
+      "code": 200,
+      "data": {
+        "list": [
+          {
+            "id": 1,
+            "name": "测试仪器_1762531264162",
+            "model": "TEST-MODEL-001",
+            "serialNumber": null,
+            "description": null,
+            "status": 0,
+            "specifications": "测试规格参数",
+            "images": null,
+            "qrCode": null,
+            "lab": {
+              "id": 1,
+              "name": "测试实验室_1762531264094",
+              "location": "实验楼A座101",
+              "capacity": 35,
+              "description": "更新后的实验室描述",
+              "images": null,
+              "status": 0,
+              "department": "计算机学院",
+              "equipmentList": null,
+              "tags": null,
+              "rating": "0.00",
+              "createdAt": "2025-11-07T08:01:04.099Z",
+              "updatedAt": "2025-11-07T08:01:04.000Z"
+            },
+            "createdAt": "2025-11-07T08:01:04.168Z",
+            "updatedAt": "2025-11-07T08:01:04.168Z"
+          }
+        ],
+        "total": 1
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.180Z",
+    "method": "GET",
+    "url": "/instruments?keyword=测试",
+    "status": 200,
+    "duration": 3,
+    "data": {
+      "code": 200,
+      "data": {
+        "list": [
+          {
+            "id": 1,
+            "name": "测试仪器_1762531264162",
+            "model": "TEST-MODEL-001",
+            "serialNumber": null,
+            "description": null,
+            "status": 0,
+            "specifications": "测试规格参数",
+            "images": null,
+            "qrCode": null,
+            "lab": {
+              "id": 1,
+              "name": "测试实验室_1762531264094",
+              "location": "实验楼A座101",
+              "capacity": 35,
+              "description": "更新后的实验室描述",
+              "images": null,
+              "status": 0,
+              "department": "计算机学院",
+              "equipmentList": null,
+              "tags": null,
+              "rating": "0.00",
+              "createdAt": "2025-11-07T08:01:04.099Z",
+              "updatedAt": "2025-11-07T08:01:04.000Z"
+            },
+            "createdAt": "2025-11-07T08:01:04.168Z",
+            "updatedAt": "2025-11-07T08:01:04.168Z"
+          }
+        ],
+        "total": 1
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.183Z",
+    "method": "GET",
+    "url": "/instruments?labId=1",
+    "status": 200,
+    "duration": 3,
+    "data": {
+      "code": 200,
+      "data": {
+        "list": [
+          {
+            "id": 1,
+            "name": "测试仪器_1762531264162",
+            "model": "TEST-MODEL-001",
+            "serialNumber": null,
+            "description": null,
+            "status": 0,
+            "specifications": "测试规格参数",
+            "images": null,
+            "qrCode": null,
+            "lab": {
+              "id": 1,
+              "name": "测试实验室_1762531264094",
+              "location": "实验楼A座101",
+              "capacity": 35,
+              "description": "更新后的实验室描述",
+              "images": null,
+              "status": 0,
+              "department": "计算机学院",
+              "equipmentList": null,
+              "tags": null,
+              "rating": "0.00",
+              "createdAt": "2025-11-07T08:01:04.099Z",
+              "updatedAt": "2025-11-07T08:01:04.000Z"
+            },
+            "createdAt": "2025-11-07T08:01:04.168Z",
+            "updatedAt": "2025-11-07T08:01:04.168Z"
+          }
+        ],
+        "total": 1
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.187Z",
+    "method": "GET",
+    "url": "/instruments/1",
+    "status": 200,
+    "duration": 4,
+    "data": {
+      "code": 200,
+      "data": {
+        "id": 1,
+        "name": "测试仪器_1762531264162",
+        "model": "TEST-MODEL-001",
+        "serialNumber": null,
+        "description": null,
+        "status": 0,
+        "specifications": "测试规格参数",
+        "images": null,
+        "qrCode": null,
+        "lab": {
+          "id": 1,
+          "name": "测试实验室_1762531264094",
+          "location": "实验楼A座101",
+          "capacity": 35,
+          "description": "更新后的实验室描述",
+          "images": null,
+          "status": 0,
+          "department": "计算机学院",
+          "equipmentList": null,
+          "tags": null,
+          "rating": "0.00",
+          "createdAt": "2025-11-07T08:01:04.099Z",
+          "updatedAt": "2025-11-07T08:01:04.000Z"
+        },
+        "createdAt": "2025-11-07T08:01:04.168Z",
+        "updatedAt": "2025-11-07T08:01:04.168Z"
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.192Z",
+    "method": "POST",
+    "url": "/instruments/1/apply",
+    "status": 400,
+    "duration": 5,
+    "data": {
+      "code": 400,
+      "message": [
+        "详细说明不能超过1000个字符",
+        "详细说明至少需要50个字符",
+        "description must be a string"
+      ],
+      "timestamp": "2025-11-07T16:01:04.191Z",
+      "path": "/instruments/1/apply",
+      "error": "Bad Request"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.198Z",
+    "method": "GET",
+    "url": "/instruments/applications",
+    "status": 200,
+    "duration": 6,
+    "data": {
+      "code": 200,
+      "data": {
+        "list": [],
+        "total": 0
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.203Z",
+    "method": "POST",
+    "url": "/instruments/1/repair",
+    "status": 400,
+    "duration": 5,
+    "data": {
+      "code": 400,
+      "message": [
+        "仪器ID格式不正确",
+        "faultType must be one of the following values: 0, 1, 2, 3",
+        "故障描述至少需要20个字符",
+        "urgency must be one of the following values: 0, 1, 2, 3"
+      ],
+      "timestamp": "2025-11-07T16:01:04.202Z",
+      "path": "/instruments/1/repair",
+      "error": "Bad Request"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.210Z",
+    "method": "GET",
+    "url": "/instruments/repairs",
+    "status": 200,
+    "duration": 7,
+    "data": {
+      "code": 200,
+      "data": {
+        "list": [],
+        "total": 0
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.218Z",
+    "method": "POST",
+    "url": "/news",
+    "status": 500,
+    "duration": 8,
+    "data": {
+      "code": 500,
+      "message": "用户信息不完整，无法创建新闻",
+      "timestamp": "2025-11-07T16:01:04.216Z",
+      "path": "/news",
+      "error": "Error: 用户信息不完整，无法创建新闻\n    at NewsService.create (/home/engine/project/src/news/news.service.ts:19:13)\n    at NewsController.create (/home/engine/project/src/news/news.controller.ts:43:29)\n    at /home/engine/project/node_modules/.pnpm/@nestjs+core@11.1.8_@nestjs+common@11.1.8_class-transformer@0.5.1_class-validator@0.14._a3ff1a5d48f77259e9f27c70f81ffd22/node_modules/@nestjs/core/router/router-execution-context.js:38:29\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.222Z",
+    "method": "GET",
+    "url": "/news",
+    "status": 200,
+    "duration": 4,
+    "data": {
+      "code": 200,
+      "data": {
+        "list": [],
+        "total": 0
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.226Z",
+    "method": "GET",
+    "url": "/news?keyword=测试",
+    "status": 200,
+    "duration": 4,
+    "data": {
+      "code": 200,
+      "data": {
+        "list": [],
+        "total": 0
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.230Z",
+    "method": "GET",
+    "url": "/news/pending",
+    "status": 200,
+    "duration": 4,
+    "data": {
+      "code": 200,
+      "data": {
+        "list": [],
+        "total": 0
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.235Z",
+    "method": "POST",
+    "url": "/notifications",
+    "status": 400,
+    "duration": 4,
+    "data": {
+      "code": 400,
+      "message": [
+        "用户ID格式不正确"
+      ],
+      "timestamp": "2025-11-07T16:01:04.235Z",
+      "path": "/notifications",
+      "error": "Bad Request"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.240Z",
+    "method": "GET",
+    "url": "/notifications",
+    "status": 200,
+    "duration": 4,
+    "data": {
+      "code": 200,
+      "data": {
+        "list": [],
+        "total": 0
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.243Z",
+    "method": "GET",
+    "url": "/notifications?isRead=false",
+    "status": 200,
+    "duration": 3,
+    "data": {
+      "code": 200,
+      "data": {
+        "list": [],
+        "total": 0
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.248Z",
+    "method": "GET",
+    "url": "/notifications/unread-count",
+    "status": 200,
+    "duration": 5,
+    "data": {
+      "code": 200,
+      "data": {
+        "count": 0
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.252Z",
+    "method": "PATCH",
+    "url": "/notifications/read-all",
+    "status": 200,
+    "duration": 4,
+    "data": {
+      "code": 200,
+      "data": {
+        "message": "所有通知已标记为已读"
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.272Z",
+    "method": "POST",
+    "url": "/favorites/1",
+    "status": 500,
+    "duration": 20,
+    "data": {
+      "code": 500,
+      "message": "Field 'userId' doesn't have a default value",
+      "timestamp": "2025-11-07T16:01:04.269Z",
+      "path": "/favorites/1",
+      "error": "QueryFailedError: Field 'userId' doesn't have a default value\n    at Query.onResult (/home/engine/project/node_modules/.pnpm/typeorm@0.3.27_mysql2@3.15.3_reflect-metadata@0.2.2_sqlite3@5.1.7_ts-node@10.9.2_@types+node@22.19.0_typescript@5.9.3_/node_modules/typeorm/driver/src/driver/mysql/MysqlQueryRunner.ts:248:33)\n    at Query.execute (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/commands/command.js:36:14)\n    at PoolConnection.handlePacket (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/base/connection.js:477:34)\n    at PacketParser.onPacket (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/base/connection.js:93:12)\n    at PacketParser.executeStart (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/packet_parser.js:75:16)\n    at Socket.<anonymous> (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/base/connection.js:100:25)\n    at Socket.emit (node:events:524:28)\n    at addChunk (node:internal/streams/readable:561:12)\n    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)\n    at Readable.push (node:internal/streams/readable:392:5)"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.277Z",
+    "method": "GET",
+    "url": "/favorites",
+    "status": 200,
+    "duration": 4,
+    "data": {
+      "code": 200,
+      "data": {
+        "list": [],
+        "total": 0
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.282Z",
+    "method": "GET",
+    "url": "/favorites/1/check",
+    "status": 200,
+    "duration": 5,
+    "data": {
+      "code": 200,
+      "data": {
+        "isFavorited": false
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.288Z",
+    "method": "DELETE",
+    "url": "/favorites/1",
+    "status": 404,
+    "duration": 6,
+    "data": {
+      "code": 404,
+      "message": "未收藏该实验室",
+      "timestamp": "2025-11-07T16:01:04.286Z",
+      "path": "/favorites/1",
+      "error": "Not Found"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.293Z",
+    "method": "POST",
+    "url": "/evaluations",
+    "status": 400,
+    "duration": 5,
+    "data": {
+      "code": 400,
+      "message": [
+        "评分最多为5分",
+        "评分至少为1分",
+        "overallRating must be an integer number",
+        "评分最多为5分",
+        "评分至少为1分",
+        "equipmentRating must be an integer number",
+        "评分最多为5分",
+        "评分至少为1分",
+        "environmentRating must be an integer number",
+        "评分最多为5分",
+        "评分至少为1分",
+        "serviceRating must be an integer number"
+      ],
+      "timestamp": "2025-11-07T16:01:04.292Z",
+      "path": "/evaluations",
+      "error": "Bad Request"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.296Z",
+    "method": "GET",
+    "url": "/evaluations/lab/1",
+    "status": 200,
+    "duration": 3,
+    "data": {
+      "code": 200,
+      "data": {
+        "list": [],
+        "total": 0
+      },
+      "message": "操作成功"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.300Z",
+    "method": "GET",
+    "url": "/evaluations/lab/1/statistics",
+    "status": 200,
+    "duration": 4,
+    "data": {
+      "code": 200,
+      "data": {
+        "totalCount": 0,
+        "averageRating": 0,
+        "ratingDistribution": {
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 0
+        }
+      },
+      "message": "操作成功"
+    }
+  }
+]

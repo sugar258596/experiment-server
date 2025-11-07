@@ -33,7 +33,7 @@ function parseEnvFile(filePath: string): Record<string, string> {
     const envConfig = fs.readFileSync(filePath, 'utf-8');
     const config: Record<string, string> = {};
 
-    envConfig.split('\n').forEach((line, index) => {
+    envConfig.split('\n').forEach((line) => {
       // 移除注释和空行
       const trimmedLine = line.trim();
       if (!trimmedLine || trimmedLine.startsWith('#')) {
@@ -75,7 +75,9 @@ function parseEnvFile(filePath: string): Record<string, string> {
 
     return config;
   } catch (error) {
-    console.warn(`Failed to parse env file: ${filePath}`, error.message);
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
+    console.warn(`Failed to parse env file: ${filePath}`, errorMessage);
     return {};
   }
 }

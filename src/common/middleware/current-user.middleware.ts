@@ -24,13 +24,16 @@ export class CurrentUserMiddleware implements NestMiddleware {
       const jwtPayload = req.user as JwtPayload;
 
       // 转换 JWT payload 为标准的 UserPayload 格式
-      if (jwtPayload.sub) {
+      // 检查是否已经是UserPayload格式（有id字段）
+      const hasIdField = 'id' in jwtPayload;
+      
+      if (!hasIdField && jwtPayload.sub) {
         const userPayload: UserPayload = {
           id: jwtPayload.sub,
           username: jwtPayload.username,
           email: jwtPayload.email || '', // JWT 中可能没有 email，使用空字符串
           role: jwtPayload.role as Role, // 类型断言为 Role 枚举
-          status: jwtPayload.status || 1, // 默认状态为激活
+          status: jwtPayload.status !== undefined ? jwtPayload.status : 1, // 默认状态为激活
         };
 
         req.user = userPayload;

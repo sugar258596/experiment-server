@@ -1,0 +1,201 @@
+[
+  {
+    "timestamp": "2025-11-07T16:01:04.052Z",
+    "method": "POST",
+    "url": "/auth/login",
+    "error": "HTTP 401: {\"code\":401,\"message\":\"用户名或密码错误\",\"timestamp\":\"2025-11-07T16:01:04.051Z\",\"path\":\"/auth/login\",\"error\":\"Unauthorized\"}",
+    "statusCode": 401,
+    "response": {
+      "code": 401,
+      "message": "用户名或密码错误",
+      "timestamp": "2025-11-07T16:01:04.051Z",
+      "path": "/auth/login",
+      "error": "Unauthorized"
+    },
+    "requestData": {
+      "username": "nonexistent",
+      "password": "wrongpassword"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.147Z",
+    "method": "POST",
+    "url": "/appointments",
+    "error": "HTTP 400: {\"code\":400,\"message\":[\"appointmentDate must be a string\",\"timeSlot must be one of the following values: 0, 1, 2\",\"详细说明不能超过1000个字符\",\"description must be a string\",\"参与人数至少为1\",\"participantCount must be an integer number\"],\"timestamp\":\"2025-11-07T16:01:04.146Z\",\"path\":\"/appointments\",\"error\":\"Bad Request\"}",
+    "statusCode": 400,
+    "response": {
+      "code": 400,
+      "message": [
+        "appointmentDate must be a string",
+        "timeSlot must be one of the following values: 0, 1, 2",
+        "详细说明不能超过1000个字符",
+        "description must be a string",
+        "参与人数至少为1",
+        "participantCount must be an integer number"
+      ],
+      "timestamp": "2025-11-07T16:01:04.146Z",
+      "path": "/appointments",
+      "error": "Bad Request"
+    },
+    "requestData": {
+      "labId": 1,
+      "date": "2025-11-08",
+      "timeSlot": "MORNING",
+      "purpose": "进行实验测试",
+      "expectedPeople": 10
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.192Z",
+    "method": "POST",
+    "url": "/instruments/1/apply",
+    "error": "HTTP 400: {\"code\":400,\"message\":[\"详细说明不能超过1000个字符\",\"详细说明至少需要50个字符\",\"description must be a string\"],\"timestamp\":\"2025-11-07T16:01:04.191Z\",\"path\":\"/instruments/1/apply\",\"error\":\"Bad Request\"}",
+    "statusCode": 400,
+    "response": {
+      "code": 400,
+      "message": [
+        "详细说明不能超过1000个字符",
+        "详细说明至少需要50个字符",
+        "description must be a string"
+      ],
+      "timestamp": "2025-11-07T16:01:04.191Z",
+      "path": "/instruments/1/apply",
+      "error": "Bad Request"
+    },
+    "requestData": {
+      "startTime": "2025-11-08T16:01:04.187Z",
+      "endTime": "2025-11-08T18:01:04.187Z",
+      "purpose": "测试使用仪器"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.203Z",
+    "method": "POST",
+    "url": "/instruments/1/repair",
+    "error": "HTTP 400: {\"code\":400,\"message\":[\"仪器ID格式不正确\",\"faultType must be one of the following values: 0, 1, 2, 3\",\"故障描述至少需要20个字符\",\"urgency must be one of the following values: 0, 1, 2, 3\"],\"timestamp\":\"2025-11-07T16:01:04.202Z\",\"path\":\"/instruments/1/repair\",\"error\":\"Bad Request\"}",
+    "statusCode": 400,
+    "response": {
+      "code": 400,
+      "message": [
+        "仪器ID格式不正确",
+        "faultType must be one of the following values: 0, 1, 2, 3",
+        "故障描述至少需要20个字符",
+        "urgency must be one of the following values: 0, 1, 2, 3"
+      ],
+      "timestamp": "2025-11-07T16:01:04.202Z",
+      "path": "/instruments/1/repair",
+      "error": "Bad Request"
+    },
+    "requestData": {
+      "description": "测试故障报告",
+      "priority": "MEDIUM"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.218Z",
+    "method": "POST",
+    "url": "/news",
+    "error": "HTTP 500: {\"code\":500,\"message\":\"用户信息不完整，无法创建新闻\",\"timestamp\":\"2025-11-07T16:01:04.216Z\",\"path\":\"/news\",\"error\":\"Error: 用户信息不完整，无法创建新闻\\n    at NewsService.create (/home/engine/project/src/news/news.service.ts:19:13)\\n    at NewsController.create (/home/engine/project/src/news/news.controller.ts:43:29)\\n    at /home/engine/project/node_modules/.pnpm/@nestjs+core@11.1.8_@nestjs+common@11.1.8_class-transformer@0.5.1_class-validator@0.14._a3ff1a5d48f77259e9f27c70f81ffd22/node_modules/@nestjs/core/router/router-execution-context.js:38:29\\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\"}",
+    "statusCode": 500,
+    "response": {
+      "code": 500,
+      "message": "用户信息不完整，无法创建新闻",
+      "timestamp": "2025-11-07T16:01:04.216Z",
+      "path": "/news",
+      "error": "Error: 用户信息不完整，无法创建新闻\n    at NewsService.create (/home/engine/project/src/news/news.service.ts:19:13)\n    at NewsController.create (/home/engine/project/src/news/news.controller.ts:43:29)\n    at /home/engine/project/node_modules/.pnpm/@nestjs+core@11.1.8_@nestjs+common@11.1.8_class-transformer@0.5.1_class-validator@0.14._a3ff1a5d48f77259e9f27c70f81ffd22/node_modules/@nestjs/core/router/router-execution-context.js:38:29\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)"
+    },
+    "requestData": {
+      "title": "测试新闻_1762531264210",
+      "content": "这是一条测试新闻内容",
+      "category": "ANNOUNCEMENT",
+      "coverImage": "https://example.com/image.jpg"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.235Z",
+    "method": "POST",
+    "url": "/notifications",
+    "error": "HTTP 400: {\"code\":400,\"message\":[\"用户ID格式不正确\"],\"timestamp\":\"2025-11-07T16:01:04.235Z\",\"path\":\"/notifications\",\"error\":\"Bad Request\"}",
+    "statusCode": 400,
+    "response": {
+      "code": 400,
+      "message": [
+        "用户ID格式不正确"
+      ],
+      "timestamp": "2025-11-07T16:01:04.235Z",
+      "path": "/notifications",
+      "error": "Bad Request"
+    },
+    "requestData": {
+      "userId": "3",
+      "type": "APPOINTMENT_REVIEW",
+      "title": "测试通知",
+      "content": "这是一条测试通知"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.273Z",
+    "method": "POST",
+    "url": "/favorites/1",
+    "error": "HTTP 500: {\"code\":500,\"message\":\"Field 'userId' doesn't have a default value\",\"timestamp\":\"2025-11-07T16:01:04.269Z\",\"path\":\"/favorites/1\",\"error\":\"QueryFailedError: Field 'userId' doesn't have a default value\\n    at Query.onResult (/home/engine/project/node_modules/.pnpm/typeorm@0.3.27_mysql2@3.15.3_reflect-metadata@0.2.2_sqlite3@5.1.7_ts-node@10.9.2_@types+node@22.19.0_typescript@5.9.3_/node_modules/typeorm/driver/src/driver/mysql/MysqlQueryRunner.ts:248:33)\\n    at Query.execute (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/commands/command.js:36:14)\\n    at PoolConnection.handlePacket (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/base/connection.js:477:34)\\n    at PacketParser.onPacket (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/base/connection.js:93:12)\\n    at PacketParser.executeStart (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/packet_parser.js:75:16)\\n    at Socket.<anonymous> (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/base/connection.js:100:25)\\n    at Socket.emit (node:events:524:28)\\n    at addChunk (node:internal/streams/readable:561:12)\\n    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)\\n    at Readable.push (node:internal/streams/readable:392:5)\"}",
+    "statusCode": 500,
+    "response": {
+      "code": 500,
+      "message": "Field 'userId' doesn't have a default value",
+      "timestamp": "2025-11-07T16:01:04.269Z",
+      "path": "/favorites/1",
+      "error": "QueryFailedError: Field 'userId' doesn't have a default value\n    at Query.onResult (/home/engine/project/node_modules/.pnpm/typeorm@0.3.27_mysql2@3.15.3_reflect-metadata@0.2.2_sqlite3@5.1.7_ts-node@10.9.2_@types+node@22.19.0_typescript@5.9.3_/node_modules/typeorm/driver/src/driver/mysql/MysqlQueryRunner.ts:248:33)\n    at Query.execute (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/commands/command.js:36:14)\n    at PoolConnection.handlePacket (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/base/connection.js:477:34)\n    at PacketParser.onPacket (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/base/connection.js:93:12)\n    at PacketParser.executeStart (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/packet_parser.js:75:16)\n    at Socket.<anonymous> (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/base/connection.js:100:25)\n    at Socket.emit (node:events:524:28)\n    at addChunk (node:internal/streams/readable:561:12)\n    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)\n    at Readable.push (node:internal/streams/readable:392:5)"
+    },
+    "requestData": null
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.288Z",
+    "method": "DELETE",
+    "url": "/favorites/1",
+    "error": "HTTP 404: {\"code\":404,\"message\":\"未收藏该实验室\",\"timestamp\":\"2025-11-07T16:01:04.286Z\",\"path\":\"/favorites/1\",\"error\":\"Not Found\"}",
+    "statusCode": 404,
+    "response": {
+      "code": 404,
+      "message": "未收藏该实验室",
+      "timestamp": "2025-11-07T16:01:04.286Z",
+      "path": "/favorites/1",
+      "error": "Not Found"
+    },
+    "requestData": null
+  },
+  {
+    "timestamp": "2025-11-07T16:01:04.293Z",
+    "method": "POST",
+    "url": "/evaluations",
+    "error": "HTTP 400: {\"code\":400,\"message\":[\"评分最多为5分\",\"评分至少为1分\",\"overallRating must be an integer number\",\"评分最多为5分\",\"评分至少为1分\",\"equipmentRating must be an integer number\",\"评分最多为5分\",\"评分至少为1分\",\"environmentRating must be an integer number\",\"评分最多为5分\",\"评分至少为1分\",\"serviceRating must be an integer number\"],\"timestamp\":\"2025-11-07T16:01:04.292Z\",\"path\":\"/evaluations\",\"error\":\"Bad Request\"}",
+    "statusCode": 400,
+    "response": {
+      "code": 400,
+      "message": [
+        "评分最多为5分",
+        "评分至少为1分",
+        "overallRating must be an integer number",
+        "评分最多为5分",
+        "评分至少为1分",
+        "equipmentRating must be an integer number",
+        "评分最多为5分",
+        "评分至少为1分",
+        "environmentRating must be an integer number",
+        "评分最多为5分",
+        "评分至少为1分",
+        "serviceRating must be an integer number"
+      ],
+      "timestamp": "2025-11-07T16:01:04.292Z",
+      "path": "/evaluations",
+      "error": "Bad Request"
+    },
+    "requestData": {
+      "labId": 1,
+      "rating": 5,
+      "comment": "实验室设施很好",
+      "environmentScore": 5,
+      "equipmentScore": 5,
+      "serviceScore": 4
+    }
+  }
+]

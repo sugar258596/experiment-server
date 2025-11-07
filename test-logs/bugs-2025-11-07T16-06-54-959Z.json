@@ -1,0 +1,119 @@
+[
+  {
+    "timestamp": "2025-11-07T16:06:54.638Z",
+    "method": "POST",
+    "url": "/auth/login",
+    "error": "HTTP 401: {\"code\":401,\"message\":\"用户名或密码错误\",\"timestamp\":\"2025-11-07T16:06:54.637Z\",\"path\":\"/auth/login\",\"error\":\"Unauthorized\"}",
+    "statusCode": 401,
+    "response": {
+      "code": 401,
+      "message": "用户名或密码错误",
+      "timestamp": "2025-11-07T16:06:54.637Z",
+      "path": "/auth/login",
+      "error": "Unauthorized"
+    },
+    "requestData": {
+      "username": "nonexistent",
+      "password": "wrongpassword"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:06:54.761Z",
+    "method": "POST",
+    "url": "/appointments",
+    "error": "HTTP 500: {\"code\":500,\"message\":\"Incorrect date value: '2025-11-08T16:06:54.729Z' for column 'appointmentDate' at row 1\",\"timestamp\":\"2025-11-07T16:06:54.756Z\",\"path\":\"/appointments\",\"error\":\"QueryFailedError: Incorrect date value: '2025-11-08T16:06:54.729Z' for column 'appointmentDate' at row 1\\n    at Query.onResult (/home/engine/project/node_modules/.pnpm/typeorm@0.3.27_mysql2@3.15.3_reflect-metadata@0.2.2_sqlite3@5.1.7_ts-node@10.9.2_@types+node@22.19.0_typescript@5.9.3_/node_modules/typeorm/driver/src/driver/mysql/MysqlQueryRunner.ts:248:33)\\n    at Query.execute (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/commands/command.js:36:14)\\n    at PoolConnection.handlePacket (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/base/connection.js:477:34)\\n    at PacketParser.onPacket (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/base/connection.js:93:12)\\n    at PacketParser.executeStart (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/packet_parser.js:75:16)\\n    at Socket.<anonymous> (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/base/connection.js:100:25)\\n    at Socket.emit (node:events:524:28)\\n    at addChunk (node:internal/streams/readable:561:12)\\n    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)\\n    at Readable.push (node:internal/streams/readable:392:5)\"}",
+    "statusCode": 500,
+    "response": {
+      "code": 500,
+      "message": "Incorrect date value: '2025-11-08T16:06:54.729Z' for column 'appointmentDate' at row 1",
+      "timestamp": "2025-11-07T16:06:54.756Z",
+      "path": "/appointments",
+      "error": "QueryFailedError: Incorrect date value: '2025-11-08T16:06:54.729Z' for column 'appointmentDate' at row 1\n    at Query.onResult (/home/engine/project/node_modules/.pnpm/typeorm@0.3.27_mysql2@3.15.3_reflect-metadata@0.2.2_sqlite3@5.1.7_ts-node@10.9.2_@types+node@22.19.0_typescript@5.9.3_/node_modules/typeorm/driver/src/driver/mysql/MysqlQueryRunner.ts:248:33)\n    at Query.execute (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/commands/command.js:36:14)\n    at PoolConnection.handlePacket (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/base/connection.js:477:34)\n    at PacketParser.onPacket (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/base/connection.js:93:12)\n    at PacketParser.executeStart (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/packet_parser.js:75:16)\n    at Socket.<anonymous> (/home/engine/project/node_modules/.pnpm/mysql2@3.15.3/node_modules/mysql2/lib/base/connection.js:100:25)\n    at Socket.emit (node:events:524:28)\n    at addChunk (node:internal/streams/readable:561:12)\n    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)\n    at Readable.push (node:internal/streams/readable:392:5)"
+    },
+    "requestData": {
+      "labId": 3,
+      "appointmentDate": "2025-11-08T16:06:54.729Z",
+      "timeSlot": 0,
+      "purpose": "进行实验测试",
+      "description": "这是一个详细的实验说明，需要使用实验室进行相关的测试工作",
+      "participantCount": 10
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:06:54.807Z",
+    "method": "POST",
+    "url": "/instruments/3/apply",
+    "error": "HTTP 400: {\"code\":400,\"message\":[\"详细说明至少需要50个字符\"],\"timestamp\":\"2025-11-07T16:06:54.807Z\",\"path\":\"/instruments/3/apply\",\"error\":\"Bad Request\"}",
+    "statusCode": 400,
+    "response": {
+      "code": 400,
+      "message": [
+        "详细说明至少需要50个字符"
+      ],
+      "timestamp": "2025-11-07T16:06:54.807Z",
+      "path": "/instruments/3/apply",
+      "error": "Bad Request"
+    },
+    "requestData": {
+      "startTime": "2025-11-08T16:06:54.803Z",
+      "endTime": "2025-11-08T18:06:54.803Z",
+      "purpose": "测试使用仪器",
+      "description": "这是一个详细的使用说明，需要使用该仪器进行相关的科研测试工作，预计使用时长为2小时"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:06:54.818Z",
+    "method": "POST",
+    "url": "/instruments/3/repair",
+    "error": "HTTP 400: {\"code\":400,\"message\":[\"仪器ID格式不正确\",\"故障描述不能超过1000个字符\",\"故障描述至少需要20个字符\",\"description must be a string\"],\"timestamp\":\"2025-11-07T16:06:54.817Z\",\"path\":\"/instruments/3/repair\",\"error\":\"Bad Request\"}",
+    "statusCode": 400,
+    "response": {
+      "code": 400,
+      "message": [
+        "仪器ID格式不正确",
+        "故障描述不能超过1000个字符",
+        "故障描述至少需要20个字符",
+        "description must be a string"
+      ],
+      "timestamp": "2025-11-07T16:06:54.817Z",
+      "path": "/instruments/3/repair",
+      "error": "Bad Request"
+    },
+    "requestData": {
+      "instrumentId": 3,
+      "faultType": 0,
+      "faultDescription": "测试故障报告，仪器在使用过程中发现一些问题需要进行维修和检查",
+      "urgency": 1
+    }
+  },
+  {
+    "timestamp": "2025-11-07T16:06:54.900Z",
+    "method": "PATCH",
+    "url": "/notifications/2/read",
+    "error": "HTTP 404: {\"code\":404,\"message\":\"通知不存在\",\"timestamp\":\"2025-11-07T16:06:54.894Z\",\"path\":\"/notifications/2/read\",\"error\":\"Not Found\"}",
+    "statusCode": 404,
+    "response": {
+      "code": 404,
+      "message": "通知不存在",
+      "timestamp": "2025-11-07T16:06:54.894Z",
+      "path": "/notifications/2/read",
+      "error": "Not Found"
+    },
+    "requestData": null
+  },
+  {
+    "timestamp": "2025-11-07T16:06:54.910Z",
+    "method": "DELETE",
+    "url": "/notifications/2",
+    "error": "HTTP 404: {\"code\":404,\"message\":\"通知不存在\",\"timestamp\":\"2025-11-07T16:06:54.910Z\",\"path\":\"/notifications/2\",\"error\":\"Not Found\"}",
+    "statusCode": 404,
+    "response": {
+      "code": 404,
+      "message": "通知不存在",
+      "timestamp": "2025-11-07T16:06:54.910Z",
+      "path": "/notifications/2",
+      "error": "Not Found"
+    },
+    "requestData": null
+  }
+]

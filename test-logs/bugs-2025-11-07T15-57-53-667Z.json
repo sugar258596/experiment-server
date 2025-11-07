@@ -1,0 +1,262 @@
+[
+  {
+    "timestamp": "2025-11-07T15:57:53.592Z",
+    "method": "POST",
+    "url": "/auth/login",
+    "error": "HTTP 401: {\"code\":401,\"message\":\"用户名或密码错误\",\"timestamp\":\"2025-11-07T15:57:53.591Z\",\"path\":\"/auth/login\",\"error\":\"Unauthorized\"}",
+    "statusCode": 401,
+    "response": {
+      "code": 401,
+      "message": "用户名或密码错误",
+      "timestamp": "2025-11-07T15:57:53.591Z",
+      "path": "/auth/login",
+      "error": "Unauthorized"
+    },
+    "requestData": {
+      "username": "nonexistent",
+      "password": "wrongpassword"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T15:57:53.598Z",
+    "method": "GET",
+    "url": "/user/profile",
+    "error": "HTTP 401: {\"code\":401,\"message\":\"请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token\",\"timestamp\":\"2025-11-07T15:57:53.595Z\",\"path\":\"/user/profile\",\"error\":\"Unauthorized\"}",
+    "statusCode": 401,
+    "response": {
+      "code": 401,
+      "message": "请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token",
+      "timestamp": "2025-11-07T15:57:53.595Z",
+      "path": "/user/profile",
+      "error": "Unauthorized"
+    },
+    "requestData": null
+  },
+  {
+    "timestamp": "2025-11-07T15:57:53.601Z",
+    "method": "POST",
+    "url": "/user",
+    "error": "HTTP 401: {\"code\":401,\"message\":\"请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token\",\"timestamp\":\"2025-11-07T15:57:53.600Z\",\"path\":\"/user\",\"error\":\"Unauthorized\"}",
+    "statusCode": 401,
+    "response": {
+      "code": 401,
+      "message": "请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token",
+      "timestamp": "2025-11-07T15:57:53.600Z",
+      "path": "/user",
+      "error": "Unauthorized"
+    },
+    "requestData": {
+      "username": "admin_test_1762531073598",
+      "password": "Admin123456",
+      "email": "admin_1762531073598@example.com",
+      "role": "ADMIN"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T15:57:53.604Z",
+    "method": "GET",
+    "url": "/user",
+    "error": "HTTP 401: {\"code\":401,\"message\":\"请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token\",\"timestamp\":\"2025-11-07T15:57:53.603Z\",\"path\":\"/user\",\"error\":\"Unauthorized\"}",
+    "statusCode": 401,
+    "response": {
+      "code": 401,
+      "message": "请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token",
+      "timestamp": "2025-11-07T15:57:53.603Z",
+      "path": "/user",
+      "error": "Unauthorized"
+    },
+    "requestData": null
+  },
+  {
+    "timestamp": "2025-11-07T15:57:53.607Z",
+    "method": "POST",
+    "url": "/labs",
+    "error": "HTTP 401: {\"code\":401,\"message\":\"请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token\",\"timestamp\":\"2025-11-07T15:57:53.606Z\",\"path\":\"/labs\",\"error\":\"Unauthorized\"}",
+    "statusCode": 401,
+    "response": {
+      "code": 401,
+      "message": "请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token",
+      "timestamp": "2025-11-07T15:57:53.606Z",
+      "path": "/labs",
+      "error": "Unauthorized"
+    },
+    "requestData": {
+      "name": "测试实验室_1762531073604",
+      "location": "实验楼A座101",
+      "capacity": 30,
+      "description": "这是一个测试实验室",
+      "equipment": "电脑30台，投影仪1台",
+      "openTime": "08:00-22:00",
+      "status": "AVAILABLE"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T15:57:53.625Z",
+    "method": "POST",
+    "url": "/instruments",
+    "error": "HTTP 401: {\"code\":401,\"message\":\"请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token\",\"timestamp\":\"2025-11-07T15:57:53.624Z\",\"path\":\"/instruments\",\"error\":\"Unauthorized\"}",
+    "statusCode": 401,
+    "response": {
+      "code": 401,
+      "message": "请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token",
+      "timestamp": "2025-11-07T15:57:53.624Z",
+      "path": "/instruments",
+      "error": "Unauthorized"
+    },
+    "requestData": {
+      "name": "测试仪器_1762531073622",
+      "model": "TEST-MODEL-001",
+      "manufacturer": "测试厂商",
+      "purchaseDate": "2025-11-07",
+      "price": 50000,
+      "status": "AVAILABLE",
+      "specifications": "测试规格参数",
+      "labId": 1
+    }
+  },
+  {
+    "timestamp": "2025-11-07T15:57:53.637Z",
+    "method": "GET",
+    "url": "/instruments/applications",
+    "error": "HTTP 401: {\"code\":401,\"message\":\"请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token\",\"timestamp\":\"2025-11-07T15:57:53.636Z\",\"path\":\"/instruments/applications\",\"error\":\"Unauthorized\"}",
+    "statusCode": 401,
+    "response": {
+      "code": 401,
+      "message": "请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token",
+      "timestamp": "2025-11-07T15:57:53.636Z",
+      "path": "/instruments/applications",
+      "error": "Unauthorized"
+    },
+    "requestData": null
+  },
+  {
+    "timestamp": "2025-11-07T15:57:53.640Z",
+    "method": "GET",
+    "url": "/instruments/repairs",
+    "error": "HTTP 401: {\"code\":401,\"message\":\"请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token\",\"timestamp\":\"2025-11-07T15:57:53.639Z\",\"path\":\"/instruments/repairs\",\"error\":\"Unauthorized\"}",
+    "statusCode": 401,
+    "response": {
+      "code": 401,
+      "message": "请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token",
+      "timestamp": "2025-11-07T15:57:53.639Z",
+      "path": "/instruments/repairs",
+      "error": "Unauthorized"
+    },
+    "requestData": null
+  },
+  {
+    "timestamp": "2025-11-07T15:57:53.643Z",
+    "method": "POST",
+    "url": "/news",
+    "error": "HTTP 401: {\"code\":401,\"message\":\"请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token\",\"timestamp\":\"2025-11-07T15:57:53.642Z\",\"path\":\"/news\",\"error\":\"Unauthorized\"}",
+    "statusCode": 401,
+    "response": {
+      "code": 401,
+      "message": "请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token",
+      "timestamp": "2025-11-07T15:57:53.642Z",
+      "path": "/news",
+      "error": "Unauthorized"
+    },
+    "requestData": {
+      "title": "测试新闻_1762531073640",
+      "content": "这是一条测试新闻内容",
+      "category": "ANNOUNCEMENT",
+      "coverImage": "https://example.com/image.jpg"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T15:57:53.655Z",
+    "method": "GET",
+    "url": "/news/pending",
+    "error": "HTTP 401: {\"code\":401,\"message\":\"请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token\",\"timestamp\":\"2025-11-07T15:57:53.654Z\",\"path\":\"/news/pending\",\"error\":\"Unauthorized\"}",
+    "statusCode": 401,
+    "response": {
+      "code": 401,
+      "message": "请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token",
+      "timestamp": "2025-11-07T15:57:53.654Z",
+      "path": "/news/pending",
+      "error": "Unauthorized"
+    },
+    "requestData": null
+  },
+  {
+    "timestamp": "2025-11-07T15:57:53.658Z",
+    "method": "POST",
+    "url": "/notifications",
+    "error": "HTTP 401: {\"code\":401,\"message\":\"请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token\",\"timestamp\":\"2025-11-07T15:57:53.657Z\",\"path\":\"/notifications\",\"error\":\"Unauthorized\"}",
+    "statusCode": 401,
+    "response": {
+      "code": 401,
+      "message": "请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token",
+      "timestamp": "2025-11-07T15:57:53.657Z",
+      "path": "/notifications",
+      "error": "Unauthorized"
+    },
+    "requestData": {
+      "userId": 1,
+      "type": "SYSTEM",
+      "title": "测试通知",
+      "content": "这是一条测试通知"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T15:57:53.660Z",
+    "method": "GET",
+    "url": "/notifications",
+    "error": "HTTP 401: {\"code\":401,\"message\":\"请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token\",\"timestamp\":\"2025-11-07T15:57:53.659Z\",\"path\":\"/notifications\",\"error\":\"Unauthorized\"}",
+    "statusCode": 401,
+    "response": {
+      "code": 401,
+      "message": "请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token",
+      "timestamp": "2025-11-07T15:57:53.659Z",
+      "path": "/notifications",
+      "error": "Unauthorized"
+    },
+    "requestData": null
+  },
+  {
+    "timestamp": "2025-11-07T15:57:53.662Z",
+    "method": "GET",
+    "url": "/notifications?isRead=false",
+    "error": "HTTP 401: {\"code\":401,\"message\":\"请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token\",\"timestamp\":\"2025-11-07T15:57:53.661Z\",\"path\":\"/notifications?isRead=false\",\"error\":\"Unauthorized\"}",
+    "statusCode": 401,
+    "response": {
+      "code": 401,
+      "message": "请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token",
+      "timestamp": "2025-11-07T15:57:53.661Z",
+      "path": "/notifications?isRead=false",
+      "error": "Unauthorized"
+    },
+    "requestData": null
+  },
+  {
+    "timestamp": "2025-11-07T15:57:53.664Z",
+    "method": "GET",
+    "url": "/notifications/unread-count",
+    "error": "HTTP 401: {\"code\":401,\"message\":\"请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token\",\"timestamp\":\"2025-11-07T15:57:53.663Z\",\"path\":\"/notifications/unread-count\",\"error\":\"Unauthorized\"}",
+    "statusCode": 401,
+    "response": {
+      "code": 401,
+      "message": "请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token",
+      "timestamp": "2025-11-07T15:57:53.663Z",
+      "path": "/notifications/unread-count",
+      "error": "Unauthorized"
+    },
+    "requestData": null
+  },
+  {
+    "timestamp": "2025-11-07T15:57:53.667Z",
+    "method": "PATCH",
+    "url": "/notifications/read-all",
+    "error": "HTTP 401: {\"code\":401,\"message\":\"请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token\",\"timestamp\":\"2025-11-07T15:57:53.666Z\",\"path\":\"/notifications/read-all\",\"error\":\"Unauthorized\"}",
+    "statusCode": 401,
+    "response": {
+      "code": 401,
+      "message": "请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token",
+      "timestamp": "2025-11-07T15:57:53.666Z",
+      "path": "/notifications/read-all",
+      "error": "Unauthorized"
+    },
+    "requestData": null
+  }
+]

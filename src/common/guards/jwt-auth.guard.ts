@@ -31,7 +31,15 @@ export class JwtAuthGuard implements CanActivate {
       if (token) {
         try {
           const payload = await this.jwtService.verifyAsync(token);
-          request['user'] = payload;
+          // 标准化user对象：将sub转换为id
+          const user = {
+            id: payload.sub,
+            username: payload.username,
+            email: payload.email || '',
+            role: payload.role,
+            status: payload.status !== undefined ? payload.status : 1,
+          };
+          request['user'] = user;
         } catch (error) {
           // 公开路由中token无效时不抛出错误,只是不设置user
         }
@@ -46,7 +54,15 @@ export class JwtAuthGuard implements CanActivate {
 
     try {
       const payload = await this.jwtService.verifyAsync(token);
-      request['user'] = payload;
+      // 标准化user对象：将sub转换为id
+      const user = {
+        id: payload.sub,
+        username: payload.username,
+        email: payload.email || '',
+        role: payload.role,
+        status: payload.status !== undefined ? payload.status : 1,
+      };
+      request['user'] = user;
     } catch (error) {
       JwtErrorHelper.handleJwtError(error);
     }

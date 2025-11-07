@@ -1,9 +1,10 @@
 import {
   IsString,
-  IsUUID,
+  IsInt,
   IsEnum,
   IsOptional,
   MaxLength,
+  Min,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { NotificationType } from '../entities/notification.entity';
@@ -14,9 +15,10 @@ import { NotificationType } from '../entities/notification.entity';
 export class CreateNotificationDto {
   @ApiProperty({
     description: '用户ID',
-    example: 'user-001',
+    example: 1,
   })
-  @IsUUID('4', { message: '用户ID格式不正确' })
+  @IsInt({ message: '用户ID必须为整数' })
+  @Min(1, { message: '用户ID必须为正整数' })
   userId: number;
 
   @ApiProperty({

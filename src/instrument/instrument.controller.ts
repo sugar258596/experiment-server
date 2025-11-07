@@ -26,7 +26,7 @@ import { JwtAuthGuard } from 'src/common/guards';
 import { Public } from 'src/common/decorators';
 
 import type { AuthenticatedRequest } from 'src/common/interfaces/request.interface';
-import { ApplicationStatus, RepairStatus } from 'src/common/enums/status.enum';
+import { RepairStatus } from 'src/common/enums/status.enum';
 
 @ApiTags('仪器管理')
 @Controller('instruments')
@@ -57,6 +57,33 @@ export class InstrumentController {
   })
   findAll(@Query('keyword') keyword?: string, @Query('labId') labId?: string) {
     return this.instrumentService.findAll(keyword, labId);
+  }
+
+  @Get('applications')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: '获取使用申请列表',
+    description: '查询仪器使用申请',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '查询成功',
+  })
+  getApplications() {
+    return this.instrumentService.getApplications();
+  }
+
+  @Get('repairs')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '获取维修记录', description: '查询仪器维修记录' })
+  @ApiResponse({
+    status: 200,
+    description: '查询成功',
+  })
+  getRepairs() {
+    return this.instrumentService.getRepairs();
   }
 
   @Get(':id')
@@ -93,21 +120,6 @@ export class InstrumentController {
     @Req() req: AuthenticatedRequest,
   ) {
     return this.instrumentService.apply(id, req.user, applyDto);
-  }
-
-  @Get('applications')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({
-    summary: '获取使用申请列表',
-    description: '查询仪器使用申请',
-  })
-  @ApiResponse({
-    status: 200,
-    description: '查询成功',
-  })
-  getApplications() {
-    return this.instrumentService.getApplications();
   }
 
   @Post('applications/:id/review')
@@ -164,18 +176,6 @@ export class InstrumentController {
     @Req() req: AuthenticatedRequest,
   ) {
     return this.instrumentService.report(id, req.user, reportDto);
-  }
-
-  @Get('repairs')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: '获取维修记录', description: '查询仪器维修记录' })
-  @ApiResponse({
-    status: 200,
-    description: '查询成功',
-  })
-  getRepairs() {
-    return this.instrumentService.getRepairs();
   }
 
   @Post('repairs/:id/update')
