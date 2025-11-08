@@ -1,10 +1,4 @@
-import {
-  IsString,
-  IsEnum,
-  IsUUID,
-  MinLength,
-  MaxLength,
-} from 'class-validator';
+import { IsString, IsEnum, MinLength, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { FaultType, UrgencyLevel } from '../../common/enums/status.enum';
 
@@ -12,13 +6,6 @@ import { FaultType, UrgencyLevel } from '../../common/enums/status.enum';
  * 仪器故障报告DTO
  */
 export class ReportInstrumentDto {
-  @ApiProperty({
-    description: '仪器ID',
-    example: 'instrument-001',
-  })
-  @IsUUID('4', { message: '仪器ID格式不正确' })
-  instrumentId: string;
-
   @ApiProperty({
     description: '故障类型',
     enum: FaultType,

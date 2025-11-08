@@ -25,10 +25,10 @@ export class ApplyInstrumentDto {
     description: '详细说明',
     example:
       '需要使用示波器测量正弦波的幅度和频率,并分析波形的失真情况。实验预计耗时2小时。',
-    minLength: 50,
+    minLength: 20,
   })
   @IsString()
-  @MinLength(50, { message: '详细说明至少需要50个字符' })
+  @MinLength(20, { message: '详细说明至少需要20个字符' })
   @MaxLength(1000, { message: '详细说明不能超过1000个字符' })
   description: string;
 

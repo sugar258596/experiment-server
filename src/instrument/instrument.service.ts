@@ -4,7 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { instanceToPlain } from 'class-transformer';
 import { Instrument } from './entities/instrument.entity';
 import { InstrumentApplication } from './entities/instrument-application.entity';
@@ -22,6 +22,7 @@ import { UserPayload } from '../common/interfaces/request.interface';
 import { Lab } from '../lab/entities/lab.entity';
 import { generateFileUrl, deleteFile } from '../config/upload.config';
 import { QueryInstrumentDto } from './dto/query-instrument.dto';
+import { QueryMyApplicationDto } from './dto/query-my-application.dto';
 
 @Injectable()
 export class InstrumentService {
@@ -259,6 +260,25 @@ export class InstrumentService {
       );
     }
 
+    // 检查该用户是否已对该仪器有未完成的申请（待审核或已通过）
+    const existingApplication = await this.applicationRepository.findOne({
+      where: {
+        applicantId: user.id,
+        instrument: { id: instrumentId },
+        status: In([ApplicationStatus.PENDING, ApplicationStatus.APPROVED]),
+      },
+    });
+
+    if (existingApplication) {
+      const statusLabels = {
+        [ApplicationStatus.PENDING]: '待审核',
+        [ApplicationStatus.APPROVED]: '已通过',
+      };
+      throw new BadRequestException(
+        `您已对该仪器提交过申请（状态：${statusLabels[existingApplication.status]}），不能重复申请`,
+      );
+    }
+
     if (applyDto.startTime >= applyDto.endTime) {
       throw new BadRequestException('结束时间必须大于开始时间');
     }
@@ -271,15 +291,16 @@ export class InstrumentService {
       startTime: applyDto.startTime,
       endTime: applyDto.endTime,
     });
-
-    return await this.applicationRepository.save(application);
+    await this.applicationRepository.save(application);
+    return {
+      message: '申请成功',
+    };
   }
 
   async reviewApplication(
     applicationId: number,
     reviewer: UserPayload,
-    approved: boolean,
-    reason?: string,
+    reviewDto: { status: ApplicationStatus; reason?: string },
   ) {
     const application = await this.applicationRepository.findOne({
       where: { id: applicationId },
@@ -290,19 +311,26 @@ export class InstrumentService {
       throw new NotFoundException('申请记录不存在');
     }
 
-    application.status = approved
-      ? ApplicationStatus.APPROVED
-      : ApplicationStatus.REJECTED;
+    // 验证状态只能是已通过或已拒绝
+    if (
+      reviewDto.status !== ApplicationStatus.APPROVED &&
+      reviewDto.status !== ApplicationStatus.REJECTED
+    ) {
+      throw new BadRequestException('审核状态只能是已通过(1)或已拒绝(2)');
+    }
+
+    application.status = reviewDto.status;
     application.reviewerId = reviewer.id;
     application.reviewTime = new Date();
 
-    if (!approved && reason) {
-      application.rejectionReason = reason;
+    // 保存审核意见
+    if (reviewDto.reason) {
+      application.rejectionReason = reviewDto.reason;
     }
     await this.applicationRepository.save(application);
 
     // 如果审核通过，将仪器状态设置为借出
-    if (approved) {
+    if (reviewDto.status === ApplicationStatus.APPROVED) {
       const instrument = application.instrument;
       instrument.status = InstrumentStatus.BORROWED;
       await this.instrumentRepository.save(instrument);
@@ -357,22 +385,206 @@ export class InstrumentService {
     return await this.repairRepository.save(repair);
   }
 
-  async getApplications(status?: ApplicationStatus) {
+  async getApplications(queryDto: {
+    keyword?: string;
+    page?: number;
+    pageSize?: number;
+    instrumentId?: number;
+    applicantId?: number;
+    status?: ApplicationStatus;
+  }) {
+    const {
+      keyword,
+      page = 1,
+      pageSize = 10,
+      instrumentId,
+      applicantId,
+      status,
+    } = queryDto;
+
     const queryBuilder = this.applicationRepository
       .createQueryBuilder('application')
       .leftJoinAndSelect('application.instrument', 'instrument')
+      .leftJoinAndSelect('instrument.lab', 'lab')
       .leftJoinAndSelect('application.applicant', 'applicant')
-      .leftJoinAndSelect('application.reviewer', 'reviewer')
-      .orderBy('application.createdAt', 'DESC');
+      .leftJoinAndSelect('application.reviewer', 'reviewer');
 
-    if (status) {
-      queryBuilder.where('application.status = :status', { status });
+    // 关键词搜索（搜索仪器名称、申请目的、申请描述）
+    if (keyword) {
+      queryBuilder.andWhere(
+        '(instrument.name LIKE :keyword OR application.purpose LIKE :keyword OR application.description LIKE :keyword)',
+        { keyword: `%${keyword}%` },
+      );
     }
 
-    const applications = await queryBuilder.getMany();
+    // 按仪器ID筛选
+    if (instrumentId) {
+      queryBuilder.andWhere('application.instrument.id = :instrumentId', {
+        instrumentId,
+      });
+    }
 
-    // 使用 instanceToPlain 序列化数据，自动排除 @Exclude() 标记的字段（如密码）
-    return instanceToPlain(applications);
+    // 按申请人ID筛选
+    if (applicantId) {
+      queryBuilder.andWhere('application.applicantId = :applicantId', {
+        applicantId,
+      });
+    }
+
+    // 按状态筛选
+    if (status !== undefined) {
+      queryBuilder.andWhere('application.status = :status', { status });
+    }
+
+    // 按创建时间倒序排列
+    queryBuilder.orderBy('application.createdAt', 'DESC');
+
+    // 分页
+    const skip = (page - 1) * pageSize;
+    queryBuilder.skip(skip).take(pageSize);
+
+    // 获取数据和总数
+    const [applications, total] = await queryBuilder.getManyAndCount();
+
+    // 格式化返回数据
+    const formattedData = applications.map((app) => ({
+      id: app.id,
+      purpose: app.purpose,
+      description: app.description,
+      startTime: app.startTime,
+      endTime: app.endTime,
+      status: app.status,
+      rejectionReason: app.rejectionReason,
+      reviewTime: app.reviewTime,
+      createdAt: app.createdAt,
+      updatedAt: app.updatedAt,
+      // 简化申请人信息
+      applicant: app.applicant
+        ? {
+            id: app.applicant.id,
+            username: app.applicant.username,
+            role: app.applicant.role,
+          }
+        : null,
+      // 简化审核人信息
+      reviewer: app.reviewer
+        ? {
+            id: app.reviewer.id,
+            username: app.reviewer.username,
+            role: app.reviewer.role,
+          }
+        : null,
+      // 简化仪器信息并包含实验室
+      instrument: app.instrument
+        ? {
+            id: app.instrument.id,
+            name: app.instrument.name,
+            serialNumber: app.instrument.serialNumber,
+            lab: app.instrument.lab
+              ? {
+                  id: app.instrument.lab.id,
+                  name: app.instrument.lab.name,
+                  location: app.instrument.lab.location,
+                }
+              : null,
+          }
+        : null,
+    }));
+
+    return {
+      data: formattedData,
+      total,
+      page,
+      pageSize,
+    };
+  }
+
+  async getMyApplications(userId: number, queryDto: QueryMyApplicationDto) {
+    const { keyword, page = 1, pageSize = 10, status } = queryDto;
+
+    const queryBuilder = this.applicationRepository
+      .createQueryBuilder('application')
+      .leftJoinAndSelect('application.instrument', 'instrument')
+      .leftJoinAndSelect('instrument.lab', 'lab')
+      .leftJoinAndSelect('application.applicant', 'applicant')
+      .leftJoinAndSelect('application.reviewer', 'reviewer')
+      .where('application.applicantId = :userId', { userId });
+
+    // 关键词搜索（搜索仪器名称、申请目的、申请描述）
+    if (keyword) {
+      queryBuilder.andWhere(
+        '(instrument.name LIKE :keyword OR application.purpose LIKE :keyword OR application.description LIKE :keyword)',
+        { keyword: `%${keyword}%` },
+      );
+    }
+
+    // 按状态筛选
+    if (status !== undefined) {
+      queryBuilder.andWhere('application.status = :status', { status });
+    }
+
+    // 按创建时间倒序排列
+    queryBuilder.orderBy('application.createdAt', 'DESC');
+
+    // 分页
+    const skip = (page - 1) * pageSize;
+    queryBuilder.skip(skip).take(pageSize);
+
+    // 获取数据和总数
+    const [applications, total] = await queryBuilder.getManyAndCount();
+
+    // 格式化返回数据
+    const formattedData = applications.map((app) => ({
+      id: app.id,
+      purpose: app.purpose,
+      description: app.description,
+      startTime: app.startTime,
+      endTime: app.endTime,
+      status: app.status,
+      rejectionReason: app.rejectionReason,
+      reviewTime: app.reviewTime,
+      createdAt: app.createdAt,
+      updatedAt: app.updatedAt,
+      // 简化申请人信息
+      applicant: app.applicant
+        ? {
+            id: app.applicant.id,
+            username: app.applicant.username,
+            role: app.applicant.role,
+          }
+        : null,
+      // 简化审核人信息
+      reviewer: app.reviewer
+        ? {
+            id: app.reviewer.id,
+            username: app.reviewer.username,
+            role: app.reviewer.role,
+          }
+        : null,
+      // 简化仪器信息并包含实验室
+      instrument: app.instrument
+        ? {
+            id: app.instrument.id,
+            name: app.instrument.name,
+            serialNumber: app.instrument.serialNumber,
+            model: app.instrument.model,
+          }
+        : null,
+      lab: app.instrument.lab
+        ? {
+            id: app.instrument.lab.id,
+            name: app.instrument.lab.name,
+            location: app.instrument.lab.location,
+          }
+        : null,
+    }));
+
+    return {
+      data: formattedData,
+      total,
+      page,
+      pageSize,
+    };
   }
 
   async getRepairs(status?: RepairStatus) {

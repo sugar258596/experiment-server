@@ -25,6 +25,9 @@ import { UpdateInstrumentDto } from './dto/update-instrument.dto';
 import { ApplyInstrumentDto } from './dto/apply-instrument.dto';
 import { ReportInstrumentDto } from './dto/report-instrument.dto';
 import { QueryInstrumentDto } from './dto/query-instrument.dto';
+import { QueryApplicationDto } from './dto/query-application.dto';
+import { QueryMyApplicationDto } from './dto/query-my-application.dto';
+import { ReviewApplicationDto } from './dto/review-application.dto';
 import { JwtAuthGuard, RolesGuard } from 'src/common/guards';
 import { Public, Roles } from 'src/common/decorators';
 import { MultipleImageUpload } from 'src/common/decorators/upload.decorator';
@@ -84,24 +87,36 @@ export class InstrumentController {
     return this.instrumentService.findAll(query);
   }
 
+  @Get('applications/my')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: '获取我的申请列表',
+    description:
+      '查询当前登录用户的仪器使用申请，支持关键词搜索、状态筛选和分页',
+  })
+  getMyApplications(
+    @Query() query: QueryMyApplicationDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.instrumentService.getMyApplications(req.user.id, query);
+  }
+
   @Get('applications')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.TEACHER, Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()
   @ApiOperation({
     summary: '获取使用申请列表',
-    description: '查询仪器使用申请(教师及以上权限)',
-  })
-  @ApiResponse({
-    status: 200,
-    description: '查询成功',
+    description:
+      '查询仪器使用申请(教师及以上权限)，支持关键词搜索、仪器ID筛选、申请人ID筛选、状态筛选和分页',
   })
   @ApiResponse({
     status: 403,
     description: '权限不足',
   })
-  getApplications() {
-    return this.instrumentService.getApplications();
+  getApplications(@Query() query: QueryApplicationDto) {
+    return this.instrumentService.getApplications(query);
   }
 
   @Get('repairs')
@@ -195,7 +210,7 @@ export class InstrumentController {
     return this.instrumentService.apply(id, req.user, applyDto);
   }
 
-  @Post('applications//review/:id')
+  @Post('applications/review/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.TEACHER, Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()
@@ -203,32 +218,22 @@ export class InstrumentController {
     summary: '审核使用申请',
     description: '审核仪器使用申请(仅教师和管理员可操作)',
   })
-  @ApiParam({ name: 'id', description: '申请ID', example: 'app-001' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        approved: { type: 'boolean', description: '是否通过' },
-        reason: { type: 'string', description: '审核意见' },
-      },
-    },
-  })
+  @ApiParam({ name: 'id', description: '申请ID', example: 1 })
+  @ApiBody({ type: ReviewApplicationDto })
   @ApiResponse({
     status: 200,
     description: '审核完成',
   })
+  @ApiResponse({
+    status: 400,
+    description: '无效的审核状态或申请不存在',
+  })
   reviewApplication(
     @Param('id', ParseIntPipe) id: number,
-    @Body('approved') approved: boolean,
+    @Body() reviewDto: ReviewApplicationDto,
     @Req() req: AuthenticatedRequest,
-    @Body('reason') reason?: string,
   ) {
-    return this.instrumentService.reviewApplication(
-      id,
-      req.user,
-      approved,
-      reason,
-    );
+    return this.instrumentService.reviewApplication(id, req.user, reviewDto);
   }
 
   @Post('repair/:id')
