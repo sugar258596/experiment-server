@@ -15,9 +15,12 @@ export class LabService {
     private labRepository: Repository<Lab>,
   ) {}
 
-  async create(createLabDto: CreateLabDto): Promise<Lab> {
+  async create(createLabDto: CreateLabDto) {
     const lab = this.labRepository.create(createLabDto);
-    return await this.labRepository.save(lab);
+    await this.labRepository.save(lab);
+    return {
+      message: '创建成功',
+    };
   }
 
   async findAll(searchDto: SearchLabDto) {

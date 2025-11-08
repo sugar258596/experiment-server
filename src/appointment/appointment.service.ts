@@ -218,7 +218,7 @@ export class AppointmentService {
       participantCount: appointment.participantCount,
       status: appointment.status,
       createdAt: appointment.createdAt,
-      reviewer: appointment.reviewer.username,
+      reviewer: appointment.reviewer?.username,
       reviewTime: appointment.reviewTime,
     };
     return appointmentsWithLab;
