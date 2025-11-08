@@ -9,6 +9,7 @@ import {
   UseGuards,
   Req,
   ParseIntPipe,
+  UploadedFiles,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -19,12 +20,14 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { NewsService } from './news.service';
-import { CreateNewsDto } from './dto/create-news.dto';
 import { SearchNewsDto } from './dto/search-news.dto';
+import { CreateNewsFormDto } from './dto/create-news-form.dto';
 import { JwtAuthGuard, RolesGuard } from 'src/common/guards';
 import { Public, Roles } from 'src/common/decorators';
 import type { AuthenticatedRequest } from 'src/common/interfaces/request.interface';
 import { Role } from 'src/common/enums/role.enum';
+import { MultiFieldFileUpload } from 'src/common/decorators/upload.decorator';
+import { createImageUploadConfig } from 'src/config/upload.config';
 
 @ApiTags('新闻公告')
 @Controller('news')
@@ -35,11 +38,18 @@ export class NewsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.TEACHER, Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()
+  @MultiFieldFileUpload(
+    [
+      { name: 'coverImage', maxCount: 1 },
+      { name: 'images', maxCount: 10 },
+    ],
+    createImageUploadConfig('news'),
+  )
   @ApiOperation({
     summary: '发布新闻',
-    description: '发布新的实验室新闻公告(教师及以上权限)',
+    description:
+      '发布新的实验室新闻公告(教师及以上权限)，支持上传封面图片和最多10张新闻图片',
   })
-  @ApiBody({ type: CreateNewsDto })
   @ApiResponse({
     status: 201,
     description: '发布成功',
@@ -48,8 +58,16 @@ export class NewsController {
     status: 403,
     description: '权限不足',
   })
-  create(@Body() createDto: CreateNewsDto, @Req() req: AuthenticatedRequest) {
-    return this.newsService.create(createDto, req.user);
+  create(
+    @Body() createFormDto: CreateNewsFormDto,
+    @UploadedFiles()
+    files: {
+      coverImage?: Express.Multer.File[];
+      images?: Express.Multer.File[];
+    },
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.newsService.createWithFiles(createFormDto, files, req.user);
   }
 
   @Get()

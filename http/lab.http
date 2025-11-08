@@ -12,7 +12,7 @@ GET {{baseUrl}}/labs?name=计算机&location=教学楼
 Authorization: Bearer {{token}}
 
 ### 3. 获取热门实验室
-GET {{baseUrl}}/labs/popular?pagSize=6
+GET {{baseUrl}}/labs/popular?pageSize=6
 Authorization: Bearer {{token}}
 
 ### 4. 获取实验室详情(替换 :id 为实际ID)

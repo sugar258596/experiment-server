@@ -1,17 +1,8 @@
 import { IsOptional, IsString } from 'class-validator';
+import { PaginationDto } from 'src/common/Dto';
 
-export class SearchNewsDto {
-  @IsOptional()
-  @IsString()
-  keyword?: string;
-
+export class SearchNewsDto extends PaginationDto {
   @IsOptional()
   @IsString()
   tag?: string;
-
-  @IsOptional()
-  page?: number;
-
-  @IsOptional()
-  limit?: number;
 }

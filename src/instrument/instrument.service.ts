@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { instanceToPlain } from 'class-transformer';
 import { Instrument } from './entities/instrument.entity';
 import { InstrumentApplication } from './entities/instrument-application.entity';
 import { InstrumentRepair } from './entities/instrument-repair.entity';
@@ -83,7 +84,8 @@ export class InstrumentService {
     user: UserPayload,
     applyDto: ApplyInstrumentDto,
   ) {
-    const instrument = await this.findOne(instrumentId);
+    // 验证仪器是否存在
+    await this.findOne(instrumentId);
 
     if (applyDto.startTime >= applyDto.endTime) {
       throw new BadRequestException('结束时间必须大于开始时间');
@@ -185,7 +187,10 @@ export class InstrumentService {
       queryBuilder.where('application.status = :status', { status });
     }
 
-    return await queryBuilder.getMany();
+    const applications = await queryBuilder.getMany();
+
+    // 使用 instanceToPlain 序列化数据，自动排除 @Exclude() 标记的字段（如密码）
+    return instanceToPlain(applications);
   }
 
   async getRepairs(status?: RepairStatus) {
@@ -200,6 +205,9 @@ export class InstrumentService {
       queryBuilder.where('repair.status = :status', { status });
     }
 
-    return await queryBuilder.getMany();
+    const repairs = await queryBuilder.getMany();
+
+    // 使用 instanceToPlain 序列化数据，自动排除 @Exclude() 标记的字段（如密码）
+    return instanceToPlain(repairs);
   }
 }

@@ -9,6 +9,7 @@ import {
   Query,
   UseGuards,
   ParseIntPipe,
+  UploadedFiles,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -19,13 +20,14 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { LabService } from './lab.service';
-import { CreateLabDto } from './dto/create-lab.dto';
-import { UpdateLabDto } from './dto/update-lab.dto';
 import { SearchLabDto } from './dto/search-lab.dto';
+import { CreateLabFormDto } from './dto/create-lab-form.dto';
+import { UpdateLabFormDto } from './dto/update-lab-form.dto';
 import { JwtAuthGuard, RolesGuard } from 'src/common/guards';
 import { Public, Roles } from 'src/common/decorators';
 import { Role } from 'src/common/enums/role.enum';
 import { PaginationDto } from 'src/common/Dto';
+import { MultipleImageUpload } from 'src/common/decorators/upload.decorator';
 
 @ApiTags('实验室管理')
 @Controller('labs')
@@ -36,21 +38,24 @@ export class LabController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.TEACHER, Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()
+  @MultipleImageUpload('images', 10, 'labs')
   @ApiOperation({
     summary: '创建实验室',
-    description: '创建新的实验室(教师及以上权限)',
+    description: '创建新的实验室(教师及以上权限)，支持上传最多10张图片',
   })
-  @ApiBody({ type: CreateLabDto })
-  @ApiResponse({
-    status: 201,
-    description: '创建成功',
+  @ApiBody({
+    type: CreateLabFormDto,
+    description: '创建实验室表单数据（multipart/form-data）',
   })
   @ApiResponse({
     status: 403,
     description: '权限不足',
   })
-  create(@Body() createLabDto: CreateLabDto) {
-    return this.labService.create(createLabDto);
+  create(
+    @Body() createLabFormDto: CreateLabFormDto,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+  ) {
+    return this.labService.createWithFiles(createLabFormDto, files);
   }
 
   @Get()
@@ -115,21 +120,58 @@ export class LabController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.TEACHER, Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()
+  @MultipleImageUpload('images', 10, 'labs')
   @ApiOperation({
     summary: '更新实验室信息',
-    description: '根据ID更新实验室信息(教师及以上权限)',
+    description:
+      '根据ID更新实验室信息(教师及以上权限)。images字段：上传文件则删除旧图片并使用新图片；传入JSON字符串则保持原有图片',
   })
-  @ApiParam({ name: 'id', description: '实验室ID', example: 'lab-001' })
-  @ApiBody({ type: UpdateLabDto })
+  @ApiParam({ name: 'id', description: '实验室ID', example: 1 })
+  @ApiBody({
+    type: UpdateLabFormDto,
+    description: '更新实验室表单数据（multipart/form-data）',
+  })
   @ApiResponse({
     status: 200,
     description: '更新成功',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: '更新成功',
+        },
+        data: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'number',
+              example: 1,
+            },
+            name: {
+              type: 'string',
+              example: '计算机基础实验室',
+            },
+            images: {
+              type: 'array',
+              items: {
+                type: 'string',
+              },
+              example: [
+                'http://localhost:3000/static/uploads/labs/1234567890.jpg',
+              ],
+            },
+          },
+        },
+      },
+    },
   })
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateLabDto: UpdateLabDto,
+    @Body() updateLabFormDto: UpdateLabFormDto,
+    @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
-    return this.labService.update(id, updateLabDto);
+    return this.labService.updateWithFiles(id, updateLabFormDto, files);
   }
 
   @Delete(':id')

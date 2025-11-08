@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { instanceToPlain } from 'class-transformer';
 import { Appointment } from './entities/appointment.entity';
 import { AppointmentStatus, TimeSlot } from '../common/enums/status.enum';
 import { Role } from '../common/enums/role.enum';
@@ -115,8 +116,11 @@ export class AppointmentService {
 
     const [appointments, total] = await queryBuilder.getManyAndCount();
 
+    // 使用 instanceToPlain 序列化数据，自动排除 @Exclude() 标记的字段（如密码）
+    const serializedAppointments = instanceToPlain(appointments);
+
     return {
-      data: appointments,
+      data: serializedAppointments,
       total,
       page,
       limit,
@@ -164,31 +168,9 @@ export class AppointmentService {
     if (!appointment) {
       throw new NotFoundException(`预约记录ID ${id} 不存在`);
     }
-    const appointmentsWithLab = {
-      id: appointment.id,
-      lab: {
-        id: appointment.lab.id,
-        name: appointment.lab.name,
-        location: appointment.lab.location,
-        capacity: appointment.lab.capacity,
-        description: appointment.lab.description,
-        department: appointment.lab.department,
-        rating: appointment.lab.rating,
-      },
-      user: {
-        id: appointment.user.id,
-        name: appointment.user.username,
-      },
-      timeSlot: appointment.timeSlot,
-      appointmentDate: appointment.appointmentDate,
-      purpose: appointment.purpose,
-      description: appointment.description,
-      participantCount: appointment.participantCount,
-      status: appointment.status,
-      createdAt: appointment.createdAt,
-      reviewTime: appointment.reviewTime,
-    };
-    return appointment;
+
+    // 使用 instanceToPlain 序列化数据，自动排除 @Exclude() 标记的字段（如密码）
+    return instanceToPlain(appointment);
   }
   async finddetails(id: number) {
     const appointment = await this.findOne(id);
@@ -310,10 +292,13 @@ export class AppointmentService {
   }
 
   async getPendingAppointments() {
-    return await this.appointmentRepository.find({
+    const pendingAppointments = await this.appointmentRepository.find({
       where: { status: AppointmentStatus.PENDING },
       relations: ['lab', 'user'],
       order: { createdAt: 'ASC' },
     });
+
+    // 使用 instanceToPlain 序列化数据，自动排除 @Exclude() 标记的字段（如密码）
+    return instanceToPlain(pendingAppointments);
   }
 }

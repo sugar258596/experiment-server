@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { Appointment } from '../../appointment/entities/appointment.entity';
 import { Notification } from '../../notification/entities/notification.entity';
 import { Favorites } from '../../favorites/entities/favorites.entity';
@@ -25,6 +26,7 @@ export class User {
   username: string;
 
   @Column({ comment: '用户密码(bcrypt加密)' })
+  @Exclude() // 防止密码在API响应中泄露
   password: string;
 
   @Column({

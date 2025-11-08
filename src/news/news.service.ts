@@ -5,12 +5,15 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { instanceToPlain } from 'class-transformer';
 import { News } from './entities/news.entity';
 import { NewsStatus } from '../common/enums/status.enum';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { SearchNewsDto } from './dto/search-news.dto';
+import { CreateNewsFormDto } from './dto/create-news-form.dto';
 import { UserPayload } from '../common/interfaces/request.interface';
 import { Role } from '../common/enums/role.enum';
+import { generateFileUrl } from 'src/config/upload.config';
 
 @Injectable()
 export class NewsService {
@@ -33,9 +36,65 @@ export class NewsService {
     return await this.newsRepository.save(news);
   }
 
+  /**
+   * 创建新闻(支持文件上传)
+   */
+  async createWithFiles(
+    createFormDto: CreateNewsFormDto,
+    files: {
+      coverImage?: Express.Multer.File[];
+      images?: Express.Multer.File[];
+    },
+    user: UserPayload,
+  ) {
+    if (!user || !user.id) {
+      throw new Error('用户信息不完整,无法创建新闻');
+    }
+
+    // 处理封面图片
+    let coverImageUrl: string | undefined;
+    if (files.coverImage && files.coverImage.length > 0) {
+      coverImageUrl = generateFileUrl('news', files.coverImage[0].filename);
+    }
+
+    // 处理新闻图片
+    const imageUrls: string[] = [];
+    if (files.images && files.images.length > 0) {
+      files.images.forEach((file) => {
+        const imageUrl = generateFileUrl('news', file.filename);
+        imageUrls.push(imageUrl);
+      });
+    }
+
+    // 创建新闻数据
+    const newsData: CreateNewsDto = {
+      ...createFormDto,
+      coverImage: coverImageUrl,
+      images: imageUrls,
+    };
+
+    const news = this.newsRepository.create({
+      ...newsData,
+      authorId: user.id,
+      status: NewsStatus.APPROVED, // 设为已发布状态便于测试
+    });
+
+    const savedNews = await this.newsRepository.save(news);
+
+    return {
+      message: '创建成功',
+      data: {
+        id: savedNews.id,
+        title: savedNews.title,
+        coverImage: savedNews.coverImage,
+        images: savedNews.images,
+      },
+    };
+  }
+
   async findAll(searchDto: SearchNewsDto) {
-    const { keyword, tag, page = 1, limit = 10 } = searchDto;
-    const skip = (page - 1) * limit;
+    const { keyword, tag, page = 1, pageSize = 10 } = searchDto;
+    const skip = (page - 1) * pageSize;
 
     const queryBuilder = this.newsRepository
       .createQueryBuilder('news')
@@ -55,15 +114,16 @@ export class NewsService {
       queryBuilder.andWhere(':tag = ANY(news.tags)', { tag });
     }
 
-    queryBuilder.skip(skip).take(limit).orderBy('news.createdAt', 'DESC');
+    queryBuilder.skip(skip).take(pageSize).orderBy('news.createdAt', 'DESC');
 
     const [news, total] = await queryBuilder.getManyAndCount();
 
+    // 使用 instanceToPlain 序列化数据，自动排除 @Exclude() 标记的字段（如密码）
+    const serializedNews = instanceToPlain(news);
+
     return {
-      data: news,
+      data: serializedNews,
       total,
-      page,
-      limit,
     };
   }
 
@@ -77,7 +137,8 @@ export class NewsService {
       throw new NotFoundException(`动态ID ${id} 不存在`);
     }
 
-    return news;
+    // 使用 instanceToPlain 序列化数据，自动排除 @Exclude() 标记的字段（如密码）
+    return instanceToPlain(news);
   }
 
   async like(id: number) {
@@ -87,11 +148,14 @@ export class NewsService {
   }
 
   async getPendingNews() {
-    return await this.newsRepository.find({
+    const pendingNews = await this.newsRepository.find({
       where: { status: NewsStatus.PENDING },
       relations: ['author'],
       order: { createdAt: 'ASC' },
     });
+
+    // 使用 instanceToPlain 序列化数据，自动排除 @Exclude() 标记的字段（如密码）
+    return instanceToPlain(pendingNews);
   }
 
   async review(id: number, approved: boolean, currentUser?: UserPayload) {

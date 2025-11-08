@@ -21,7 +21,7 @@ export class PaginationDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  page?: number = 1;
+  page?: number;
 
   @ApiPropertyOptional({
     description: '每页数量',
@@ -34,5 +34,5 @@ export class PaginationDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  pagSize?: number = 10;
+  pageSize?: number;
 }

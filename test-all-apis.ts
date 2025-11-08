@@ -291,7 +291,7 @@ class APITester {
     await this.request('GET', '/labs?keyword=测试', null, false);
 
     // 4. 获取热门实验室
-    await this.request('GET', '/labs/popular?pagSize=6', null, false);
+    await this.request('GET', '/labs/popular?pageSize=6', null, false);
 
     // 5. 获取实验室详情
     if (this.testLabId) {
