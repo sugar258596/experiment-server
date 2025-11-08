@@ -33,10 +33,13 @@ export class AppointmentService {
       throw new NotFoundException('实验室不存在');
     }
 
+    // 转换日期格式为 MySQL DATE 类型兼容的格式 (YYYY-MM-DD)
+    const appointmentDate = this.formatDateForMySQL(createDto.appointmentDate);
+
     // 检查时间冲突
     const hasConflict = await this.checkTimeConflict(
       createDto.labId,
-      createDto.appointmentDate,
+      appointmentDate,
       createDto.timeSlot,
     );
 
@@ -48,7 +51,7 @@ export class AppointmentService {
       lab: { id: createDto.labId },
       user: { id: user.id },
       userId: user.id,
-      appointmentDate: createDto.appointmentDate,
+      appointmentDate: appointmentDate,
       timeSlot: createDto.timeSlot,
       purpose: createDto.purpose,
       description: createDto.description,
@@ -187,10 +190,10 @@ export class AppointmentService {
 
   private async checkTimeConflict(
     id: number,
-    date: string,
+    date: string | Date,
     timeSlot: TimeSlot,
   ): Promise<boolean> {
-    const appointmentDate = new Date(date);
+    const appointmentDate = this.formatDateForMySQL(date);
     const existingAppointment = await this.appointmentRepository.findOne({
       where: {
         lab: { id },
@@ -201,6 +204,27 @@ export class AppointmentService {
     });
 
     return !!existingAppointment;
+  }
+
+  /**
+   * 格式化日期为 MySQL DATE 类型兼容的格式 (YYYY-MM-DD)
+   * 解决 MySQL 不支持 ISO 8601 格式（如：2024-01-15T00:00:00.000Z）的问题
+   */
+  private formatDateForMySQL(dateInput: string | Date): Date {
+    // 如果是 Date 对象，直接使用
+    if (dateInput instanceof Date) {
+      return dateInput;
+    }
+
+    // 如果是字符串，解析并格式化
+    const date = new Date(dateInput);
+
+    // 验证日期是否有效
+    if (isNaN(date.getTime())) {
+      throw new BadRequestException('日期格式无效，请提供有效的日期');
+    }
+
+    return date;
   }
 
   async getPendingAppointments() {

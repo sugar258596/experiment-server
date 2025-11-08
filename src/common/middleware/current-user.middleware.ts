@@ -26,7 +26,7 @@ export class CurrentUserMiddleware implements NestMiddleware {
       // 转换 JWT payload 为标准的 UserPayload 格式
       // 检查是否已经是UserPayload格式（有id字段）
       const hasIdField = 'id' in jwtPayload;
-      
+
       if (!hasIdField && jwtPayload.sub) {
         const userPayload: UserPayload = {
           id: jwtPayload.sub,

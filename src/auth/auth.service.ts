@@ -24,12 +24,21 @@ export class AuthService {
     const { username, password, email, phone, role } = registerDto;
 
     // 检查用户名是否已存在
-    const existingUser = await this.userRepository.findOne({
+    const existingUserByUsername = await this.userRepository.findOne({
       where: { username },
     });
 
-    if (existingUser) {
+    if (existingUserByUsername) {
       throw new ConflictException('用户名已存在');
+    }
+
+    // 检查邮箱是否已存在
+    const existingUserByEmail = await this.userRepository.findOne({
+      where: { email },
+    });
+
+    if (existingUserByEmail) {
+      throw new ConflictException('邮箱已存在');
     }
 
     // 加密密码

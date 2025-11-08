@@ -1,11 +1,4 @@
-import {
-  IsString,
-  IsDateString,
-  IsEnum,
-  IsInt,
-  Min,
-  MaxLength,
-} from 'class-validator';
+import { IsString, IsEnum, IsInt, Min, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { TimeSlot } from 'src/common/enums/status.enum';
 

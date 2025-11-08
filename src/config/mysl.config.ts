@@ -20,7 +20,7 @@ export const getDatabaseConfigAsync = (
   return {
     type: 'mysql', //数据库类型
     username: configService.get('DB_USERNAME'), //账号
-    password: configService.get('DB_PASSWORD'), //密码（修复拼写错误）
+    password: configService.get('DB_PASSWORD'), //密码
     host: configService.get('DB_HOST'), //host
     port: configService.get('DB_PORT'), // post
     database: configService.get('DB_DATABASE'), //库名
