@@ -51,6 +51,16 @@ export class News {
   @JoinColumn({ name: 'authorId' })
   author: User;
 
+  @Column({ type: 'int', nullable: true, comment: '审核人ID' })
+  reviewerId: number;
+
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'reviewerId' })
+  reviewer: User;
+
+  @Column({ type: 'timestamp', nullable: true, comment: '审核时间' })
+  reviewTime: Date;
+
   @CreateDateColumn({ comment: '创建时间' })
   createdAt: Date;
 

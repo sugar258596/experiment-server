@@ -23,8 +23,9 @@ import { LabService } from './lab.service';
 import { CreateLabDto } from './dto/create-lab.dto';
 import { UpdateLabDto } from './dto/update-lab.dto';
 import { SearchLabDto } from './dto/search-lab.dto';
-import { JwtAuthGuard } from 'src/common/guards';
-import { Public } from 'src/common/decorators';
+import { JwtAuthGuard, RolesGuard } from 'src/common/guards';
+import { Public, Roles } from 'src/common/decorators';
+import { Role } from 'src/common/enums/role.enum';
 
 @ApiTags('实验室管理')
 @Controller('labs')
@@ -32,13 +33,21 @@ export class LabController {
   constructor(private readonly labService: LabService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.TEACHER, Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '创建实验室', description: '创建新的实验室' })
+  @ApiOperation({
+    summary: '创建实验室',
+    description: '创建新的实验室（教师及以上权限）',
+  })
   @ApiBody({ type: CreateLabDto })
   @ApiResponse({
     status: 201,
     description: '创建成功',
+  })
+  @ApiResponse({
+    status: 403,
+    description: '权限不足',
   })
   create(@Body() createLabDto: CreateLabDto) {
     return this.labService.create(createLabDto);
@@ -94,11 +103,12 @@ export class LabController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.TEACHER, Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()
   @ApiOperation({
     summary: '更新实验室信息',
-    description: '根据ID更新实验室信息',
+    description: '根据ID更新实验室信息（教师及以上权限）',
   })
   @ApiParam({ name: 'id', description: '实验室ID', example: 'lab-001' })
   @ApiBody({ type: UpdateLabDto })
@@ -114,13 +124,21 @@ export class LabController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '删除实验室', description: '根据ID删除实验室' })
+  @ApiOperation({
+    summary: '删除实验室',
+    description: '根据ID删除实验室（仅管理员可操作）',
+  })
   @ApiParam({ name: 'id', description: '实验室ID', example: 'lab-001' })
   @ApiResponse({
     status: 200,
     description: '删除成功',
+  })
+  @ApiResponse({
+    status: 403,
+    description: '权限不足',
   })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.labService.remove(id);

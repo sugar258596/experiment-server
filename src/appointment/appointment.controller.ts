@@ -22,9 +22,10 @@ import { AppointmentService } from './appointment.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { ReviewAppointmentDto } from './dto/review-appointment.dto';
 import { SearchAppointmentDto } from './dto/search-appointment.dto';
-import { JwtAuthGuard } from 'src/common/guards';
-import { Public } from 'src/common/decorators';
+import { JwtAuthGuard, RolesGuard } from 'src/common/guards';
+import { Public, Roles } from 'src/common/decorators';
 import type { AuthenticatedRequest } from 'src/common/interfaces/request.interface';
+import { Role } from 'src/common/enums/role.enum';
 
 @ApiTags('实验室预约')
 @Controller('appointments')
@@ -74,7 +75,8 @@ export class AppointmentController {
   }
 
   @Get('pending')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.TEACHER, Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()
   @ApiOperation({
     summary: '获取待审核预约',
@@ -83,6 +85,10 @@ export class AppointmentController {
   @ApiResponse({
     status: 200,
     description: '查询成功',
+  })
+  @ApiResponse({
+    status: 403,
+    description: '权限不足',
   })
   getPendingAppointments() {
     return this.appointmentService.getPendingAppointments();
@@ -104,7 +110,8 @@ export class AppointmentController {
   }
 
   @Patch(':id/review')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.TEACHER, Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()
   @ApiOperation({
     summary: '审核预约',
@@ -115,6 +122,10 @@ export class AppointmentController {
   @ApiResponse({
     status: 200,
     description: '审核完成',
+  })
+  @ApiResponse({
+    status: 403,
+    description: '权限不足',
   })
   review(
     @Param('id', ParseIntPipe) id: number,

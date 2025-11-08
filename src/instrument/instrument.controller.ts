@@ -22,11 +22,12 @@ import { InstrumentService } from './instrument.service';
 import { CreateInstrumentDto } from './dto/create-instrument.dto';
 import { ApplyInstrumentDto } from './dto/apply-instrument.dto';
 import { ReportInstrumentDto } from './dto/report-instrument.dto';
-import { JwtAuthGuard } from 'src/common/guards';
-import { Public } from 'src/common/decorators';
+import { JwtAuthGuard, RolesGuard } from 'src/common/guards';
+import { Public, Roles } from 'src/common/decorators';
 
 import type { AuthenticatedRequest } from 'src/common/interfaces/request.interface';
 import { RepairStatus } from 'src/common/enums/status.enum';
+import { Role } from 'src/common/enums/role.enum';
 
 @ApiTags('仪器管理')
 @Controller('instruments')
@@ -34,13 +35,21 @@ export class InstrumentController {
   constructor(private readonly instrumentService: InstrumentService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.TEACHER, Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '创建仪器', description: '添加新的仪器设备' })
+  @ApiOperation({
+    summary: '创建仪器',
+    description: '添加新的仪器设备（教师及以上权限）',
+  })
   @ApiBody({ type: CreateInstrumentDto })
   @ApiResponse({
     status: 201,
     description: '创建成功',
+  })
+  @ApiResponse({
+    status: 403,
+    description: '权限不足',
   })
   create(@Body() createInstrumentDto: CreateInstrumentDto) {
     return this.instrumentService.create(createInstrumentDto);
@@ -60,27 +69,40 @@ export class InstrumentController {
   }
 
   @Get('applications')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.TEACHER, Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()
   @ApiOperation({
     summary: '获取使用申请列表',
-    description: '查询仪器使用申请',
+    description: '查询仪器使用申请（教师及以上权限）',
   })
   @ApiResponse({
     status: 200,
     description: '查询成功',
+  })
+  @ApiResponse({
+    status: 403,
+    description: '权限不足',
   })
   getApplications() {
     return this.instrumentService.getApplications();
   }
 
   @Get('repairs')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '获取维修记录', description: '查询仪器维修记录' })
+  @ApiOperation({
+    summary: '获取维修记录',
+    description: '查询仪器维修记录（仅管理员可查看）',
+  })
   @ApiResponse({
     status: 200,
     description: '查询成功',
+  })
+  @ApiResponse({
+    status: 403,
+    description: '权限不足',
   })
   getRepairs() {
     return this.instrumentService.getRepairs();
@@ -123,11 +145,12 @@ export class InstrumentController {
   }
 
   @Post('applications/:id/review')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.TEACHER, Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()
   @ApiOperation({
     summary: '审核使用申请',
-    description: '审核仪器使用申请（仅管理员和教师可操作）',
+    description: '审核仪器使用申请（仅教师和管理员可操作）',
   })
   @ApiParam({ name: 'id', description: '申请ID', example: 'app-001' })
   @ApiBody({
@@ -179,7 +202,8 @@ export class InstrumentController {
   }
 
   @Post('repairs/:id/update')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()
   @ApiOperation({
     summary: '更新维修状态',
@@ -202,6 +226,10 @@ export class InstrumentController {
   @ApiResponse({
     status: 200,
     description: '更新成功',
+  })
+  @ApiResponse({
+    status: 403,
+    description: '权限不足',
   })
   updateRepairStatus(
     @Param('id', ParseIntPipe) id: number,

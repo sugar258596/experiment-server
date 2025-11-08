@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { News } from './entities/news.entity';
@@ -6,6 +10,7 @@ import { NewsStatus } from '../common/enums/status.enum';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { SearchNewsDto } from './dto/search-news.dto';
 import { UserPayload } from '../common/interfaces/request.interface';
+import { Role } from '../common/enums/role.enum';
 
 @Injectable()
 export class NewsService {
@@ -89,9 +94,24 @@ export class NewsService {
     });
   }
 
-  async review(id: number, approved: boolean) {
+  async review(id: number, approved: boolean, currentUser?: UserPayload) {
+    // 如果提供了 currentUser，则进行权限检查
+    if (currentUser && !this.isAdminOrSuperAdmin(currentUser.role)) {
+      throw new ForbiddenException('需要管理员权限才能审核新闻');
+    }
+
     const news = await this.findOne(id);
     news.status = approved ? NewsStatus.APPROVED : NewsStatus.REJECTED;
+
+    if (currentUser) {
+      news.reviewerId = currentUser.id;
+      news.reviewTime = new Date();
+    }
+
     return await this.newsRepository.save(news);
+  }
+
+  private isAdminOrSuperAdmin(role: Role): boolean {
+    return role === Role.ADMIN || role === Role.SUPER_ADMIN;
   }
 }
