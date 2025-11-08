@@ -40,7 +40,7 @@ export class InstrumentController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: '创建仪器',
-    description: '添加新的仪器设备（教师及以上权限）',
+    description: '添加新的仪器设备(教师及以上权限)',
   })
   @ApiBody({ type: CreateInstrumentDto })
   @ApiResponse({
@@ -74,7 +74,7 @@ export class InstrumentController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: '获取使用申请列表',
-    description: '查询仪器使用申请（教师及以上权限）',
+    description: '查询仪器使用申请(教师及以上权限)',
   })
   @ApiResponse({
     status: 200,
@@ -94,7 +94,7 @@ export class InstrumentController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: '获取维修记录',
-    description: '查询仪器维修记录（仅管理员可查看）',
+    description: '查询仪器维修记录(仅管理员可查看)',
   })
   @ApiResponse({
     status: 200,
@@ -150,7 +150,7 @@ export class InstrumentController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: '审核使用申请',
-    description: '审核仪器使用申请（仅教师和管理员可操作）',
+    description: '审核仪器使用申请(仅教师和管理员可操作)',
   })
   @ApiParam({ name: 'id', description: '申请ID', example: 'app-001' })
   @ApiBody({
@@ -207,7 +207,7 @@ export class InstrumentController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: '更新维修状态',
-    description: '更新仪器维修状态（仅管理员可操作）',
+    description: '更新仪器维修状态(仅管理员可操作)',
   })
   @ApiParam({ name: 'id', description: '维修记录ID', example: 'repair-001' })
   @ApiBody({

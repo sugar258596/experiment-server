@@ -37,7 +37,7 @@ export class NewsController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: '发布新闻',
-    description: '发布新的实验室新闻公告（教师及以上权限）',
+    description: '发布新的实验室新闻公告(教师及以上权限)',
   })
   @ApiBody({ type: CreateNewsDto })
   @ApiResponse({
@@ -69,7 +69,7 @@ export class NewsController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: '获取待审核新闻',
-    description: '查询待审核的新闻（仅管理员可查看）',
+    description: '查询待审核的新闻(仅管理员可查看)',
   })
   @ApiResponse({
     status: 200,
@@ -120,7 +120,7 @@ export class NewsController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: '审核新闻',
-    description: '审核新闻发布申请（仅管理员可操作）',
+    description: '审核新闻发布申请(仅管理员可操作)',
   })
   @ApiParam({ name: 'id', description: '新闻ID', example: 'news-001' })
   @ApiBody({

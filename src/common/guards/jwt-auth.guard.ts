@@ -31,7 +31,7 @@ export class JwtAuthGuard implements CanActivate {
       if (token) {
         try {
           const payload = await this.jwtService.verifyAsync(token);
-          // 标准化user对象：将sub转换为id
+          // 标准化user对象:将sub转换为id
           const user = {
             id: payload.sub,
             username: payload.username,
@@ -54,7 +54,7 @@ export class JwtAuthGuard implements CanActivate {
 
     try {
       const payload = await this.jwtService.verifyAsync(token);
-      // 标准化user对象：将sub转换为id
+      // 标准化user对象:将sub转换为id
       const user = {
         id: payload.sub,
         username: payload.username,

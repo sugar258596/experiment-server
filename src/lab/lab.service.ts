@@ -6,6 +6,7 @@ import { LabStatus } from '../common/enums/status.enum';
 import { CreateLabDto } from './dto/create-lab.dto';
 import { UpdateLabDto } from './dto/update-lab.dto';
 import { SearchLabDto } from './dto/search-lab.dto';
+import { PaginationDto } from 'src/common/Dto';
 
 @Injectable()
 export class LabService {
@@ -28,9 +29,9 @@ export class LabService {
       status,
       equipmentType,
       page = 1,
-      paagSize = 10,
+      pagSize = 10,
     } = searchDto;
-    const skip = (page - 1) * paagSize;
+    const skip = (page - 1) * pagSize;
 
     const queryBuilder = this.labRepository.createQueryBuilder('lab');
 
@@ -65,7 +66,7 @@ export class LabService {
       });
     }
 
-    queryBuilder.skip(skip).take(paagSize).orderBy('lab.createdAt', 'DESC');
+    queryBuilder.skip(skip).take(pagSize).orderBy('lab.createdAt', 'DESC');
 
     const [labs, total] = await queryBuilder.getManyAndCount();
 
@@ -99,11 +100,46 @@ export class LabService {
     await this.labRepository.remove(lab);
   }
 
-  async getPopularLabs(limit: number = 6) {
+  async getPopularLabs(searchDto: PaginationDto) {
+    const { page = 1, pagSize = 10 } = searchDto;
+    const skip = (page - 1) * pagSize;
     return await this.labRepository.find({
-      take: limit,
+      skip,
+      take: pagSize,
       order: { rating: 'DESC' },
       where: { status: LabStatus.ACTIVE },
     });
+  }
+  async getOptions(searchDto: PaginationDto) {
+    const { page = 1, pagSize = 10, keyword } = searchDto;
+    const skip = (page - 1) * pagSize;
+
+    const queryBuilder = this.labRepository
+      .createQueryBuilder('lab')
+      .select(['lab.id', 'lab.name']);
+
+    // 只查询正常状态的实验室
+    queryBuilder.andWhere('lab.status = :status', {
+      status: LabStatus.ACTIVE,
+    });
+
+    // 支持通过关键字搜索实验室名称、位置、所属院系
+    if (keyword) {
+      queryBuilder.andWhere(
+        '(lab.name LIKE :keyword OR lab.location LIKE :keyword OR lab.department LIKE :keyword)',
+        {
+          keyword: `%${keyword}%`,
+        },
+      );
+    }
+
+    queryBuilder.skip(skip).take(pagSize).orderBy('lab.name', 'ASC');
+
+    const [labs, total] = await queryBuilder.getManyAndCount();
+
+    return {
+      data: labs,
+      total,
+    };
   }
 }

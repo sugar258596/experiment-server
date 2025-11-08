@@ -22,7 +22,7 @@ export class Lab {
   @Column({ comment: '实验室位置' })
   location: string;
 
-  @Column({ type: 'int', comment: '实验室容量（可容纳人数）' })
+  @Column({ type: 'int', comment: '实验室容量(可容纳人数)' })
   capacity: number;
 
   @Column({ type: 'text', nullable: true, comment: '实验室描述' })
@@ -32,10 +32,9 @@ export class Lab {
   images: string[];
 
   @Column({
-    type: 'enum',
-    enum: LabStatus,
+    type: 'int',
     default: LabStatus.ACTIVE,
-    comment: '实验室状态：0-正常,1-维护中,2-停用',
+    comment: '实验室状态:0-正常,1-维护中,2-停用',
   })
   status: LabStatus;
 
@@ -53,7 +52,7 @@ export class Lab {
     precision: 3,
     scale: 2,
     default: 0,
-    comment: '实验室评分（0-5分,保留两位小数）',
+    comment: '实验室评分(0-5分,保留两位小数)',
   })
   rating: number;
 

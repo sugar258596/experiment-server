@@ -31,10 +31,9 @@ export class News {
   tags: string[];
 
   @Column({
-    type: 'enum',
-    enum: NewsStatus,
+    type: 'int',
     default: NewsStatus.PENDING,
-    comment: '新闻状态：PENDING-待审核,APPROVED-已发布,REJECTED-已拒绝',
+    comment: '新闻状态:0-待审核,1-已发布,2-已拒绝',
   })
   status: NewsStatus;
 

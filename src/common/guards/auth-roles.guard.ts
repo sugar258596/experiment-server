@@ -91,7 +91,7 @@ export class AuthRolesGuard implements CanActivate {
 
     if (!user || !user.role) {
       throw new ForbiddenException(
-        '权限验证失败：无法获取用户角色信息,请重新登录',
+        '权限验证失败:无法获取用户角色信息,请重新登录',
       );
     }
 
@@ -127,7 +127,7 @@ export class AuthRolesGuard implements CanActivate {
       .map((role) => RoleLabels[role] || role)
       .join('或');
 
-    let message = `权限不足：当前角色为【${userRoleLabel}】,此操作需要【${requiredRoleLabels}】权限`;
+    let message = `权限不足:当前角色为【${userRoleLabel}】,此操作需要【${requiredRoleLabels}】权限`;
 
     // 根据不同角色给出不同的提示
     if (requiredRoles.some((role) => AdminRoles.includes(role))) {

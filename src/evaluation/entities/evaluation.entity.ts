@@ -29,16 +29,16 @@ export class Evaluation {
   @Column({ comment: '实验室ID' })
   labId: number;
 
-  @Column({ type: 'int', comment: '总体评分（1-5分）' })
+  @Column({ type: 'int', comment: '总体评分(1-5分)' })
   overallRating: number;
 
-  @Column({ type: 'int', comment: '设备评分（1-5分）' })
+  @Column({ type: 'int', comment: '设备评分(1-5分)' })
   equipmentRating: number;
 
-  @Column({ type: 'int', comment: '环境评分（1-5分）' })
+  @Column({ type: 'int', comment: '环境评分(1-5分)' })
   environmentRating: number;
 
-  @Column({ type: 'int', comment: '服务评分（1-5分）' })
+  @Column({ type: 'int', comment: '服务评分(1-5分)' })
   serviceRating: number;
 
   @Column({ type: 'text', nullable: true, comment: '评价文字内容' })

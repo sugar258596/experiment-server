@@ -80,7 +80,7 @@ export class AppointmentController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: '获取待审核预约',
-    description: '查询待审核的预约（仅教师和管理员可查看）',
+    description: '查询待审核的预约(仅教师和管理员可查看)',
   })
   @ApiResponse({
     status: 200,
@@ -115,7 +115,7 @@ export class AppointmentController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: '审核预约',
-    description: '审核实验室预约申请（仅教师和管理员可操作）',
+    description: '审核实验室预约申请(仅教师和管理员可操作)',
   })
   @ApiParam({ name: 'id', description: '预约ID', example: 'appointment-001' })
   @ApiBody({ type: ReviewAppointmentDto })

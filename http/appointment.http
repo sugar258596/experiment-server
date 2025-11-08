@@ -21,7 +21,7 @@ Content-Type: application/json
 GET {{baseUrl}}/appointments
 Authorization: Bearer {{token}}
 
-### 3. 获取预约列表（带搜索条件）
+### 3. 获取预约列表(带搜索条件)
 GET {{baseUrl}}/appointments?status=PENDING&date=2024-12-25
 Authorization: Bearer {{token}}
 
@@ -29,15 +29,15 @@ Authorization: Bearer {{token}}
 GET {{baseUrl}}/appointments/my
 Authorization: Bearer {{token}}
 
-### 5. 获取待审核预约（仅教师和管理员可查看）
+### 5. 获取待审核预约(仅教师和管理员可查看)
 GET {{baseUrl}}/appointments/pending
 Authorization: Bearer {{token}}
 
-### 6. 获取预约详情（替换 :id 为实际ID）
+### 6. 获取预约详情(替换 :id 为实际ID)
 GET {{baseUrl}}/appointments/1
 Authorization: Bearer {{token}}
 
-### 7. 审核预约（替换 :id 为实际预约ID）
+### 7. 审核预约(替换 :id 为实际预约ID)
 PATCH {{baseUrl}}/appointments/1/review
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -47,6 +47,6 @@ Content-Type: application/json
   "reason": "时间安排合理，同意预约"
 }
 
-### 8. 取消预约（替换 :id 为实际预约ID）
+### 8. 取消预约(替换 :id 为实际预约ID)
 PATCH {{baseUrl}}/appointments/1/cancel
 Authorization: Bearer {{token}}

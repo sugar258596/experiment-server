@@ -16,7 +16,6 @@ import {
   ApiResponse,
   ApiBearerAuth,
   ApiParam,
-  ApiQuery,
   ApiBody,
 } from '@nestjs/swagger';
 import { LabService } from './lab.service';
@@ -26,6 +25,7 @@ import { SearchLabDto } from './dto/search-lab.dto';
 import { JwtAuthGuard, RolesGuard } from 'src/common/guards';
 import { Public, Roles } from 'src/common/decorators';
 import { Role } from 'src/common/enums/role.enum';
+import { PaginationDto } from 'src/common/Dto';
 
 @ApiTags('实验室管理')
 @Controller('labs')
@@ -38,7 +38,7 @@ export class LabController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: '创建实验室',
-    description: '创建新的实验室（教师及以上权限）',
+    description: '创建新的实验室(教师及以上权限)',
   })
   @ApiBody({ type: CreateLabDto })
   @ApiResponse({
@@ -73,18 +73,27 @@ export class LabController {
     summary: '获取热门实验室',
     description: '查询热门实验室列表',
   })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-    description: '返回数量限制',
-    example: 6,
-  })
   @ApiResponse({
     status: 200,
     description: '查询成功',
   })
-  getPopularLabs(@Query('limit') limit?: number) {
-    return this.labService.getPopularLabs(limit ? +limit : 6);
+  getPopularLabs(@Query() searchDto: PaginationDto) {
+    return this.labService.getPopularLabs(searchDto);
+  }
+
+  @Get('options')
+  @Public()
+  @ApiOperation({
+    summary: '获取实验室下拉列表',
+    description:
+      '获取用于下拉选择的实验室简要信息(仅返回 id 和 name)，支持通过关键字搜索实验室名称、位置、所属院系',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '查询成功，返回实验室 id 和 name 列表',
+  })
+  getOptions(@Query() searchDto: PaginationDto) {
+    return this.labService.getOptions(searchDto);
   }
 
   @Get(':id')
@@ -108,7 +117,7 @@ export class LabController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: '更新实验室信息',
-    description: '根据ID更新实验室信息（教师及以上权限）',
+    description: '根据ID更新实验室信息(教师及以上权限)',
   })
   @ApiParam({ name: 'id', description: '实验室ID', example: 'lab-001' })
   @ApiBody({ type: UpdateLabDto })
@@ -129,7 +138,7 @@ export class LabController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: '删除实验室',
-    description: '根据ID删除实验室（仅管理员可操作）',
+    description: '根据ID删除实验室(仅管理员可操作)',
   })
   @ApiParam({ name: 'id', description: '实验室ID', example: 'lab-001' })
   @ApiResponse({

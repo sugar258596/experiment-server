@@ -10,7 +10,7 @@ export class PermissionHelper {
   }
 
   /**
-   * 检查用户是否有足够权限（权限级别）
+   * 检查用户是否有足够权限(权限级别)
    */
   static hasPermission(Role: Role, requiredRole: Role): boolean {
     const userPriority = RolePriority[Role];
@@ -36,7 +36,7 @@ export class PermissionHelper {
   }
 
   /**
-   * 检查用户是否可以操作目标用户（权限级别必须高于目标用户）
+   * 检查用户是否可以操作目标用户(权限级别必须高于目标用户)
    */
   static canManageUser(currentUserRole: Role, targetUserRole: Role): boolean {
     const currentPriority = RolePriority[currentUserRole];
@@ -45,7 +45,7 @@ export class PermissionHelper {
   }
 
   /**
-   * 检查用户是否可以修改目标用户（权限级别必须高于或等于目标用户,但不能是同一个用户）
+   * 检查用户是否可以修改目标用户(权限级别必须高于或等于目标用户,但不能是同一个用户)
    */
   static canModifyUser(
     currentUserRole: Role,

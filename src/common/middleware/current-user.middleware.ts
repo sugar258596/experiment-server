@@ -19,12 +19,12 @@ interface RequestWithUser extends Request {
 @Injectable()
 export class CurrentUserMiddleware implements NestMiddleware {
   use(req: RequestWithUser, res: Response, next: NextFunction) {
-    // 如果请求中已经有用户信息（通过 JwtAuthGuard 设置）,则标准化为 UserPayload 格式
+    // 如果请求中已经有用户信息(通过 JwtAuthGuard 设置),则标准化为 UserPayload 格式
     if (req.user) {
       const jwtPayload = req.user as JwtPayload;
 
       // 转换 JWT payload 为标准的 UserPayload 格式
-      // 检查是否已经是UserPayload格式（有id字段）
+      // 检查是否已经是UserPayload格式(有id字段)
       const hasIdField = 'id' in jwtPayload;
 
       if (!hasIdField && jwtPayload.sub) {

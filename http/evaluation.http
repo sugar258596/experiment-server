@@ -17,10 +17,10 @@ Content-Type: application/json
   "comment": "实验室设备先进，环境舒适，管理员服务周到"
 }
 
-### 2. 获取实验室评价列表（替换 :labId 为实际实验室ID）
+### 2. 获取实验室评价列表(替换 :labId 为实际实验室ID)
 GET {{baseUrl}}/evaluations/lab/1
 Authorization: Bearer {{token}}
 
-### 3. 获取实验室评价统计（替换 :labId 为实际实验室ID）
+### 3. 获取实验室评价统计(替换 :labId 为实际实验室ID)
 GET {{baseUrl}}/evaluations/lab/1/statistics
 Authorization: Bearer {{token}}

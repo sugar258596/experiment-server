@@ -65,12 +65,12 @@ import { MiddlewareModule } from './common/middleware/middleware.module';
       }),
     },
     {
-      // 全局日志拦截器（先记录请求）
+      // 全局日志拦截器(先记录请求)
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
     },
     {
-      // 全局响应拦截器（后格式化响应）
+      // 全局响应拦截器(后格式化响应)
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor,
     },

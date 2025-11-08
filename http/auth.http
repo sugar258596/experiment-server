@@ -29,7 +29,7 @@ Content-Type: application/json
   "password": "{{password}}"
 }
 
-### 3. 管理员注册（需要手动修改）
+### 3. 管理员注册(需要手动修改)
 # POST {{baseUrl}}/auth/register
 # Content-Type: application/json
 #
@@ -43,7 +43,7 @@ Content-Type: application/json
 #   "role": "ADMIN"
 # }
 
-### 4. 教师注册（需要手动修改）
+### 4. 教师注册(需要手动修改)
 # POST {{baseUrl}}/auth/register
 # Content-Type: application/json
 #

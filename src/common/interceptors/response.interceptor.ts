@@ -40,7 +40,7 @@ export class ResponseInterceptor<T>
 
         // 3. 处理包含 data 字段的对象响应
         if (this.hasDataField(response)) {
-          // 3.1 data 是对象（非数组）
+          // 3.1 data 是对象(非数组)
           if (
             typeof response.data === 'object' &&
             !Array.isArray(response.data)
@@ -89,7 +89,7 @@ export class ResponseInterceptor<T>
           };
         }
 
-        // 5. 默认处理：将响应作为 data 包装
+        // 5. 默认处理:将响应作为 data 包装
         return {
           code: 200,
           data: response,

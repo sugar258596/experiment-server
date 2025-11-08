@@ -8,7 +8,7 @@
 
 ## 🔐 认证方式
 
-所有接口都需要携带 **JWT Token** 进行认证：
+所有接口都需要携带 **JWT Token** 进行认证:
 
 ```http
 Authorization: Bearer <your-jwt-token>
@@ -21,12 +21,14 @@ Authorization: Bearer <your-jwt-token>
 ### 1. 获取详细用户信息
 
 #### 接口信息
+
 - **路径**: `GET /user/profile`
 - **认证**: 需要 JWT Token
 - **权限**: 所有登录用户
 - **返回**: 完整的用户信息
 
 #### 请求示例
+
 ```bash
 curl -X GET http://localhost:3000/user/profile \
   -H "Authorization: Bearer <your-jwt-token>" \
@@ -34,6 +36,7 @@ curl -X GET http://localhost:3000/user/profile \
 ```
 
 #### 响应示例 (200 OK)
+
 ```json
 {
   "id": 1,
@@ -56,29 +59,32 @@ curl -X GET http://localhost:3000/user/profile \
 ```
 
 #### 响应字段说明
-| 字段名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| `id` | number | 是 | 用户ID |
-| `username` | string | 是 | 用户名 |
-| `nickname` | string | 否 | 用户昵称 |
-| `avatar` | string | 否 | 用户头像URL |
-| `email` | string | 否 | 用户邮箱 |
-| `phone` | string | 否 | 用户手机号 |
-| `department` | string | 否 | 所属院系/部门 |
-| `role` | string | 是 | 用户角色 |
-| `status` | string | 是 | 用户状态 |
-| `teachingTags` | string[] | 否 | 教学标签数组 |
-| `auditTimeSlots` | object | 否 | 审核时间段配置 |
-| `createdAt` | string | 是 | 创建时间 (ISO 8601) |
-| `updatedAt` | string | 是 | 更新时间 (ISO 8601) |
+
+| 字段名           | 类型     | 必填 | 说明                |
+| ---------------- | -------- | ---- | ------------------- |
+| `id`             | number   | 是   | 用户ID              |
+| `username`       | string   | 是   | 用户名              |
+| `nickname`       | string   | 否   | 用户昵称            |
+| `avatar`         | string   | 否   | 用户头像URL         |
+| `email`          | string   | 否   | 用户邮箱            |
+| `phone`          | string   | 否   | 用户手机号          |
+| `department`     | string   | 否   | 所属院系/部门       |
+| `role`           | string   | 是   | 用户角色            |
+| `status`         | string   | 是   | 用户状态            |
+| `teachingTags`   | string[] | 否   | 教学标签数组        |
+| `auditTimeSlots` | object   | 否   | 审核时间段配置      |
+| `createdAt`      | string   | 是   | 创建时间 (ISO 8601) |
+| `updatedAt`      | string   | 是   | 更新时间 (ISO 8601) |
 
 #### 角色值说明
+
 - `student` - 学生
 - `teacher` - 教师
 - `admin` - 管理员
 - `super_admin` - 超级管理员
 
 #### 状态值说明
+
 - `ACTIVE` - 正常
 - `INACTIVE` - 禁用
 - `BANNED` - 封禁
@@ -88,12 +94,14 @@ curl -X GET http://localhost:3000/user/profile \
 ### 2. 获取简化用户信息
 
 #### 接口信息
+
 - **路径**: `GET /user/me`
 - **认证**: 需要 JWT Token
 - **权限**: 所有登录用户
 - **返回**: 简化的用户信息
 
 #### 请求示例
+
 ```bash
 curl -X GET http://localhost:3000/user/me \
   -H "Authorization: Bearer <your-jwt-token>" \
@@ -101,6 +109,7 @@ curl -X GET http://localhost:3000/user/me \
 ```
 
 #### 响应示例 (200 OK)
+
 ```json
 {
   "id": 1,
@@ -112,19 +121,21 @@ curl -X GET http://localhost:3000/user/me \
 ```
 
 #### 响应字段说明
-| 字段名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| `id` | number | 是 | 用户ID |
-| `username` | string | 是 | 用户名 |
-| `nickname` | string | 否 | 用户昵称 |
-| `role` | string | 是 | 用户角色 |
-| `status` | string | 是 | 用户状态 |
+
+| 字段名     | 类型   | 必填 | 说明     |
+| ---------- | ------ | ---- | -------- |
+| `id`       | number | 是   | 用户ID   |
+| `username` | string | 是   | 用户名   |
+| `nickname` | string | 否   | 用户昵称 |
+| `role`     | string | 是   | 用户角色 |
+| `status`   | string | 是   | 用户状态 |
 
 ---
 
 ## ❌ 错误响应
 
 ### 401 Unauthorized - 未授权访问
+
 ```json
 {
   "statusCode": 401,
@@ -136,11 +147,13 @@ curl -X GET http://localhost:3000/user/me \
 **原因**: 未提供或提供了无效的 JWT Token
 
 **解决方案**:
+
 1. 确保在请求头中携带了有效的 `Authorization: Bearer <token>`
 2. 检查 Token 是否已过期
 3. 重新登录获取新的 Token
 
 ### 404 Not Found - 用户不存在
+
 ```json
 {
   "statusCode": 404,
@@ -152,6 +165,7 @@ curl -X GET http://localhost:3000/user/me \
 **原因**: Token 中包含的用户ID在数据库中不存在
 
 **解决方案**:
+
 1. 检查 Token 的有效性
 2. 联系管理员检查用户账户状态
 
@@ -160,13 +174,15 @@ curl -X GET http://localhost:3000/user/me \
 ## 💡 使用建议
 
 ### 什么时候使用 `/user/profile`？
-- 需要显示完整的用户信息（如个人资料页面）
-- 需要获取用户的额外信息（邮箱、电话、部门等）
+
+- 需要显示完整的用户信息(如个人资料页面)
+- 需要获取用户的额外信息(邮箱、电话、部门等)
 - 需要访问用户的教学标签和审核时间段配置
 - 需要显示用户的创建和更新时间
 
 ### 什么时候使用 `/user/me`？
-- 只需要显示基本的用户信息（如导航栏用户名）
+
+- 只需要显示基本的用户信息(如导航栏用户名)
 - 性能敏感的场景，需要减少数据传输量
 - 快速检查用户身份和状态
 - 作为用户认证状态的前端检查
@@ -176,14 +192,15 @@ curl -X GET http://localhost:3000/user/me \
 ## 🔍 前端使用示例
 
 ### JavaScript (React/Vue/Angular)
+
 ```javascript
 // 获取完整用户信息
 const getUserProfile = async () => {
   try {
     const response = await fetch('/user/profile', {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
     });
     const user = await response.json();
     console.log('用户信息:', user);
@@ -197,8 +214,8 @@ const getCurrentUser = async () => {
   try {
     const response = await fetch('/user/me', {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
     });
     const user = await response.json();
     // 更新前端状态
@@ -210,13 +227,14 @@ const getCurrentUser = async () => {
 ```
 
 ### Vue.js
+
 ```vue
 <script>
 export default {
   data() {
     return {
-      user: null
-    }
+      user: null,
+    };
   },
   async created() {
     await this.loadUserProfile();
@@ -226,16 +244,16 @@ export default {
       try {
         const response = await this.$http.get('/user/me', {
           headers: {
-            'Authorization': `Bearer ${this.$store.getters.token}`
-          }
+            Authorization: `Bearer ${this.$store.getters.token}`,
+          },
         });
         this.user = response.data;
       } catch (error) {
         console.error('加载用户信息失败:', error);
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <template>
@@ -252,10 +270,10 @@ export default {
 
 ## 📊 性能对比
 
-| 接口 | 响应大小 | 数据库查询 | 适用场景 |
-|------|----------|------------|----------|
-| `/user/profile` | ~2KB | 完整用户信息查询 | 详细资料页面 |
-| `/user/me` | ~500B | 完整用户信息查询后过滤 | 导航栏、快速检查 |
+| 接口            | 响应大小 | 数据库查询             | 适用场景         |
+| --------------- | -------- | ---------------------- | ---------------- |
+| `/user/profile` | ~2KB     | 完整用户信息查询       | 详细资料页面     |
+| `/user/me`      | ~500B    | 完整用户信息查询后过滤 | 导航栏、快速检查 |
 
 ---
 
@@ -263,7 +281,7 @@ export default {
 
 1. **Token 保护**
    - 不要在前端代码中硬编码 Token
-   - 使用安全的方式存储 Token（如 httpOnly Cookie 或安全的 localStorage）
+   - 使用安全的方式存储 Token(如 httpOnly Cookie 或安全的 localStorage)
    - 在用户退出登录时清除 Token
 
 2. **敏感信息**
@@ -281,15 +299,19 @@ export default {
 ## 🐛 常见问题
 
 ### Q: 为什么返回的用户信息不完整？
+
 A: 检查用户账户是否完整填写了所有字段，某些字段可能为 null 或 undefined。
 
 ### Q: 如何更新用户信息？
-A: 使用 `PATCH /user/:id` 接口更新用户信息（需要相应权限）。
+
+A: 使用 `PATCH /user/:id` 接口更新用户信息(需要相应权限)。
 
 ### Q: Token 过期了怎么办？
+
 A: Token 过期后需要重新登录，系统会返回 401 错误。
 
 ### Q: 可以批量获取多个用户信息吗？
+
 A: 不可以，每个接口只能获取当前登录用户的信息。获取其他用户信息需要使用 `GET /user/:id` 接口。
 
 ---
@@ -304,7 +326,7 @@ A: 不可以，每个接口只能获取当前登录用户的信息。获取其�
 
 ## 🎯 总结
 
-系统提供了两个获取当前用户信息的接口：
+系统提供了两个获取当前用户信息的接口:
 
 1. **`/user/profile`** - 获取完整用户信息，适用于需要详细用户资料的场景
 2. **`/user/me`** - 获取简化用户信息，适用于快速显示和状态检查

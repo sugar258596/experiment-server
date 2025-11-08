@@ -11,7 +11,7 @@ Authorization: Bearer {{token}}
 GET {{baseUrl}}/user
 Authorization: Bearer {{token}}
 
-### 3. 获取用户详情（替换 :id 为实际ID）
+### 3. 获取用户详情(替换 :id 为实际ID)
 GET {{baseUrl}}/user/1
 Authorization: Bearer {{token}}
 
@@ -30,7 +30,7 @@ Content-Type: application/json
   "role": "STUDENT"
 }
 
-### 5. 更新用户信息（替换 :id 为实际ID）
+### 5. 更新用户信息(替换 :id 为实际ID)
 PATCH {{baseUrl}}/user/1
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -42,6 +42,6 @@ Content-Type: application/json
   "department": "更新后的院系"
 }
 
-### 6. 删除用户（替换 :id 为实际ID）
+### 6. 删除用户(替换 :id 为实际ID)
 DELETE {{baseUrl}}/user/1
 Authorization: Bearer {{token}}

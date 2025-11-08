@@ -290,7 +290,7 @@ export class AppointmentService {
 
   /**
    * 格式化日期为 MySQL DATE 类型兼容的格式 (YYYY-MM-DD)
-   * 解决 MySQL 不支持 ISO 8601 格式（如：2024-01-15T00:00:00.000Z）的问题
+   * 解决 MySQL 不支持 ISO 8601 格式(如:2024-01-15T00:00:00.000Z)的问题
    */
   private formatDateForMySQL(dateInput: string | Date): Date {
     // 如果是 Date 对象，直接使用

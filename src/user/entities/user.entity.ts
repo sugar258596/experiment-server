@@ -24,7 +24,7 @@ export class User {
   @Column({ unique: true, nullable: false, comment: '用户名，唯一标识' })
   username: string;
 
-  @Column({ comment: '用户密码（bcrypt加密）' })
+  @Column({ comment: '用户密码(bcrypt加密)' })
   password: string;
 
   @Column({
@@ -32,15 +32,14 @@ export class User {
     length: 50,
     default: Role.STUDENT,
     comment:
-      '用户角色：student-学生,teacher-教师,admin-管理员,super_admin-超级管理员',
+      '用户角色:student-学生,teacher-教师,admin-管理员,super_admin-超级管理员',
   })
   role: Role;
 
   @Column({
-    type: 'enum',
-    enum: Status,
+    type: 'int',
     default: Status.ACTIVE,
-    comment: '用户状态：ACTIVE-正常,INACTIVE-禁用,BANNED-封禁',
+    comment: '用户状态:0-正常,1-禁用,2-封禁',
   })
   status: Status;
 
@@ -65,7 +64,7 @@ export class User {
   @Column({
     type: 'json',
     nullable: true,
-    comment: '审核时间段配置（JSON格式）',
+    comment: '审核时间段配置(JSON格式)',
   })
   auditTimeSlots: any;
 

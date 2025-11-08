@@ -20,7 +20,7 @@ export class InstrumentRepair {
   @PrimaryGeneratedColumn({ comment: '维修单唯一标识' })
   id: number;
 
-  @Column({ unique: true, comment: '维修单号（唯一）' })
+  @Column({ unique: true, comment: '维修单号(唯一)' })
   repairNumber: string;
 
   @ManyToOne(() => Instrument, (instrument) => instrument.repairs)
@@ -35,10 +35,8 @@ export class InstrumentRepair {
   reporter: User;
 
   @Column({
-    type: 'enum',
-    enum: FaultType,
-    comment:
-      '故障类型：HARDWARE-硬件故障,SOFTWARE-软件故障,OPERATION_ERROR-操作错误,OTHER-其他',
+    type: 'int',
+    comment: '故障类型:0-硬件故障,1-软件故障,2-操作错误,3-其他',
   })
   faultType: FaultType;
 
@@ -49,18 +47,16 @@ export class InstrumentRepair {
   images: string[];
 
   @Column({
-    type: 'enum',
-    enum: UrgencyLevel,
+    type: 'int',
     default: UrgencyLevel.MEDIUM,
-    comment: '紧急程度：LOW-低,MEDIUM-中,HIGH-高,URGENT-紧急',
+    comment: '紧急程度:0-低,1-中,2-高,3-紧急',
   })
   urgency: UrgencyLevel;
 
   @Column({
-    type: 'enum',
-    enum: RepairStatus,
+    type: 'int',
     default: RepairStatus.PENDING,
-    comment: '维修状态：PENDING-待处理,IN_PROGRESS-维修中,COMPLETED-已完成',
+    comment: '维修状态:0-待处理,1-维修中,3-已完成',
   })
   status: RepairStatus;
 

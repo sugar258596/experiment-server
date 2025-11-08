@@ -60,16 +60,16 @@ export class OwnershipGuard implements CanActivate {
     }
 
     if (!resourceOwnerId) {
-      throw new ForbiddenException('无法验证资源所有权：缺少必要的参数');
+      throw new ForbiddenException('无法验证资源所有权:缺少必要的参数');
     }
 
-    // 对于用户资源（如用户头像）,直接比较用户ID
+    // 对于用户资源(如用户头像),直接比较用户ID
     if (ownershipConfig.paramKey === 'userId' || request.params.userId) {
       const hasPermission =
         user.id === resourceOwnerId || PermissionHelper.isAdmin(user.role);
       if (!hasPermission) {
         throw new ForbiddenException(
-          '权限不足：您只能操作自己的资源。如需操作其他用户的资源,请联系管理员',
+          '权限不足:您只能操作自己的资源。如需操作其他用户的资源,请联系管理员',
         );
       }
       return true;
@@ -87,7 +87,7 @@ export class OwnershipGuard implements CanActivate {
     if (!hasPermission) {
       const userRoleLabel = RoleLabels[user.role] || user.role;
       throw new ForbiddenException(
-        `权限不足：当前角色【${userRoleLabel}】无权操作此资源。您只能操作属于自己的资源`,
+        `权限不足:当前角色【${userRoleLabel}】无权操作此资源。您只能操作属于自己的资源`,
       );
     }
 

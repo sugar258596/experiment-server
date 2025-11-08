@@ -13,7 +13,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
  */
 export class CheckExistenceDto {
   @ApiPropertyOptional({
-    description: '用户名（字母和数字组合,4-20位）',
+    description: '用户名(字母和数字组合,4-20位)',
     example: 'student001',
     maxLength: 20,
   })

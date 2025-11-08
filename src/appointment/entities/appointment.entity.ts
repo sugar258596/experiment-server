@@ -31,8 +31,8 @@ export class Appointment {
   appointmentDate: Date;
 
   @Column({
-    type: 'enum',
-    enum: TimeSlot,
+    type: 'int',
+    default: TimeSlot.MORNING,
     comment: '时间段:0-上午,1-下午,2-晚上',
   })
   timeSlot: TimeSlot;
@@ -47,8 +47,7 @@ export class Appointment {
   participantCount: number;
 
   @Column({
-    type: 'enum',
-    enum: AppointmentStatus,
+    type: 'int',
     default: AppointmentStatus.PENDING,
     comment: '预约状态:0-待审核,1-已通过,2-已拒绝,3-已取消,4-已完成',
   })

@@ -219,7 +219,7 @@ class APITester {
       }
     }
 
-    // 2. 创建用户（需要管理员权限，可能失败）
+    // 2. 创建用户(需要管理员权限，可能失败)
     await this.request(
       'POST',
       '/user',
@@ -284,14 +284,14 @@ class APITester {
       }
     }
 
-    // 2. 获取所有实验室（公开接口）
+    // 2. 获取所有实验室(公开接口)
     await this.request('GET', '/labs', null, false);
 
     // 3. 搜索实验室
     await this.request('GET', '/labs?keyword=测试', null, false);
 
     // 4. 获取热门实验室
-    await this.request('GET', '/labs/popular?paagSize=6', null, false);
+    await this.request('GET', '/labs/popular?pagSize=6', null, false);
 
     // 5. 获取实验室详情
     if (this.testLabId) {
@@ -317,7 +317,7 @@ class APITester {
 
     // 确保有实验室ID
     if (!this.testLabId) {
-      console.log('⚠ 跳过预约测试：没有可用的实验室ID');
+      console.log('⚠ 跳过预约测试:没有可用的实验室ID');
       return;
     }
 
@@ -349,7 +349,7 @@ class APITester {
       }
     }
 
-    // 2. 获取所有预约（公开）
+    // 2. 获取所有预约(公开)
     await this.request('GET', '/appointments', null, false);
 
     // 3. 获取我的预约
@@ -368,7 +368,7 @@ class APITester {
       );
     }
 
-    // 6. 审核预约（需要教师/管理员权限，可能失败）
+    // 6. 审核预约(需要教师/管理员权限，可能失败)
     if (this.testAppointmentId) {
       await this.request(
         'PATCH',
@@ -422,7 +422,7 @@ class APITester {
       }
     }
 
-    // 2. 获取所有仪器（公开）
+    // 2. 获取所有仪器(公开)
     await this.request('GET', '/instruments', null, false);
 
     // 3. 搜索仪器
@@ -513,7 +513,7 @@ class APITester {
       }
     }
 
-    // 2. 获取所有新闻（公开）
+    // 2. 获取所有新闻(公开)
     await this.request('GET', '/news', null, false);
 
     // 3. 搜索新闻
@@ -532,7 +532,7 @@ class APITester {
       await this.request('POST', `/news/${this.testNewsId}/like`, null, true);
     }
 
-    // 7. 审核新闻（需要管理员权限）
+    // 7. 审核新闻(需要管理员权限)
     if (this.testNewsId) {
       await this.request(
         'PATCH',
@@ -546,7 +546,7 @@ class APITester {
   async testNotificationAPIs() {
     console.log('\n========== 测试通知接口 ==========\n');
 
-    // 1. 创建通知（系统内部使用）
+    // 1. 创建通知(系统内部使用)
     const createNotificationData = {
       userId: this.testUserId || 1,
       type: 'APPOINTMENT_REVIEW',
@@ -606,7 +606,7 @@ class APITester {
     console.log('\n========== 测试收藏接口 ==========\n');
 
     if (!this.testLabId) {
-      console.log('⚠ 跳过收藏测试：没有可用的实验室ID');
+      console.log('⚠ 跳过收藏测试:没有可用的实验室ID');
       return;
     }
 
@@ -627,7 +627,7 @@ class APITester {
     console.log('\n========== 测试评价接口 ==========\n');
 
     if (!this.testLabId) {
-      console.log('⚠ 跳过评价测试：没有可用的实验室ID');
+      console.log('⚠ 跳过评价测试:没有可用的实验室ID');
       return;
     }
 

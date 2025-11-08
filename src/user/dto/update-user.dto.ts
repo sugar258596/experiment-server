@@ -21,7 +21,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   teachingTags?: string[];
 
   @ApiPropertyOptional({
-    description: '审核时间段配置（JSON格式）',
+    description: '审核时间段配置(JSON格式)',
     example: {
       morning: ['09:00', '10:00'],
       afternoon: ['14:00', '15:00'],

@@ -3,7 +3,7 @@
 @baseUrl = http://localhost:3000
 @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoidGVzdHVzZXIiLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTY0MjYyNzQwN30.example
 
-### 1. 创建通知（系统内部使用）
+### 1. 创建通知(系统内部使用)
 POST {{baseUrl}}/notifications
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -18,7 +18,7 @@ Content-Type: application/json
 GET {{baseUrl}}/notifications
 Authorization: Bearer {{token}}
 
-### 3. 获取我的通知（带已读状态筛选）
+### 3. 获取我的通知(带已读状态筛选)
 GET {{baseUrl}}/notifications?isRead=false
 Authorization: Bearer {{token}}
 
@@ -26,7 +26,7 @@ Authorization: Bearer {{token}}
 GET {{baseUrl}}/notifications/unread-count
 Authorization: Bearer {{token}}
 
-### 5. 标记通知为已读（替换 :id 为实际通知ID）
+### 5. 标记通知为已读(替换 :id 为实际通知ID)
 PATCH {{baseUrl}}/notifications/1/read
 Authorization: Bearer {{token}}
 
@@ -34,6 +34,6 @@ Authorization: Bearer {{token}}
 PATCH {{baseUrl}}/notifications/read-all
 Authorization: Bearer {{token}}
 
-### 7. 删除通知（替换 :id 为实际通知ID）
+### 7. 删除通知(替换 :id 为实际通知ID)
 DELETE {{baseUrl}}/notifications/1
 Authorization: Bearer {{token}}

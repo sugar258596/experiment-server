@@ -28,7 +28,7 @@ export class CreateUserDto {
   username: string;
 
   @ApiProperty({
-    description: '用户密码（bcrypt加密）',
+    description: '用户密码(bcrypt加密)',
     example: 'Password123',
     minLength: 8,
     maxLength: 20,

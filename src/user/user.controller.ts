@@ -47,7 +47,7 @@ export class UserController {
   @Roles(Role.ADMIN, Role.SUPER_ADMIN)
   @ApiOperation({
     summary: '创建用户',
-    description: '创建新的用户账号（仅管理员可操作）',
+    description: '创建新的用户账号(仅管理员可操作)',
   })
   @ApiBody({ type: CreateUserDto })
   @ApiResponse({
@@ -77,11 +77,11 @@ export class UserController {
       properties: {
         username: {
           type: 'boolean',
-          description: '用户名是否存在：true-存在,false-不存在',
+          description: '用户名是否存在:true-存在,false-不存在',
         },
         email: {
           type: 'boolean',
-          description: '邮箱是否存在：true-存在,false-不存在',
+          description: '邮箱是否存在:true-存在,false-不存在',
         },
       },
     },
@@ -117,11 +117,11 @@ export class UserController {
         role: {
           type: 'string',
           description:
-            '用户角色：student-学生,teacher-教师,admin-管理员,super_admin-超级管理员',
+            '用户角色:student-学生,teacher-教师,admin-管理员,super_admin-超级管理员',
         },
         status: {
           type: 'string',
-          description: '用户状态：ACTIVE-正常,INACTIVE-禁用,BANNED-封禁',
+          description: '用户状态:ACTIVE-正常,INACTIVE-禁用,BANNED-封禁',
         },
         teachingTags: {
           type: 'array',
@@ -160,7 +160,7 @@ export class UserController {
   @Roles(Role.ADMIN, Role.SUPER_ADMIN)
   @ApiOperation({
     summary: '获取所有用户',
-    description: '查询所有用户列表（仅管理员可查看）',
+    description: '查询所有用户列表(仅管理员可查看)',
   })
   @ApiResponse({
     status: 200,
@@ -208,7 +208,7 @@ export class UserController {
   @Roles(Role.ADMIN, Role.SUPER_ADMIN)
   @ApiOperation({
     summary: '删除用户',
-    description: '根据ID删除用户（仅管理员可操作）',
+    description: '根据ID删除用户(仅管理员可操作)',
   })
   @ApiParam({ name: 'id', description: '用户ID', example: '1' })
   @ApiResponse({

@@ -35,7 +35,7 @@ export class NotificationController {
   @Post()
   @ApiOperation({
     summary: '创建通知',
-    description: '创建新的通知（系统内部使用）',
+    description: '创建新的通知(系统内部使用)',
   })
   @ApiBody({ type: CreateNotificationDto })
   @ApiResponse({
@@ -54,7 +54,7 @@ export class NotificationController {
   @ApiQuery({
     name: 'isRead',
     required: false,
-    description: '是否已读（true=已读,false=未读）',
+    description: '是否已读(true=已读,false=未读)',
     type: 'boolean',
   })
   @ApiResponse({

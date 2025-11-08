@@ -46,7 +46,7 @@ export class CreateNotificationDto {
   content: string;
 
   @ApiProperty({
-    description: '相关记录ID（可选）',
+    description: '相关记录ID(可选)',
     example: 'appointment-001',
     required: false,
   })

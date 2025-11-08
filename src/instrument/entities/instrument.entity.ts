@@ -31,11 +31,9 @@ export class Instrument {
   description: string;
 
   @Column({
-    type: 'enum',
-    enum: InstrumentStatus,
+    type: 'int',
     default: InstrumentStatus.ACTIVE,
-    comment:
-      '设备状态：ACTIVE-正常,INACTIVE-停用,MAINTENANCE-维护中,FAULT-故障',
+    comment: '设备状态:0-正常,1-停用,2-维护中,3-故障',
   })
   status: InstrumentStatus;
 

@@ -21,7 +21,7 @@ export class CreateEvaluationDto {
   labId: number;
 
   @ApiProperty({
-    description: '总体评分（1-5分）',
+    description: '总体评分(1-5分)',
     example: 5,
     minimum: 1,
     maximum: 5,
@@ -32,7 +32,7 @@ export class CreateEvaluationDto {
   overallRating: number;
 
   @ApiProperty({
-    description: '设备评分（1-5分）',
+    description: '设备评分(1-5分)',
     example: 4,
     minimum: 1,
     maximum: 5,
@@ -43,7 +43,7 @@ export class CreateEvaluationDto {
   equipmentRating: number;
 
   @ApiProperty({
-    description: '环境评分（1-5分）',
+    description: '环境评分(1-5分)',
     example: 5,
     minimum: 1,
     maximum: 5,
@@ -54,7 +54,7 @@ export class CreateEvaluationDto {
   environmentRating: number;
 
   @ApiProperty({
-    description: '服务评分（1-5分）',
+    description: '服务评分(1-5分)',
     example: 4,
     minimum: 1,
     maximum: 5,

@@ -36,7 +36,7 @@ export class UserService {
       throw new ConflictException('用户名已存在');
     }
 
-    // 检查邮箱是否已存在（仅当邮箱不为空时检查）
+    // 检查邮箱是否已存在(仅当邮箱不为空时检查)
     if (email) {
       const existingUserByEmail = await this.userRepository.findOne({
         where: { email },

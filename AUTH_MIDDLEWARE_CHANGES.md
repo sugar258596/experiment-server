@@ -9,6 +9,7 @@
 ### 1. 新增中间件模块
 
 #### 文件结构
+
 ```
 src/common/middleware/
 ├── current-user.middleware.ts    # 核心中间件实现
@@ -19,6 +20,7 @@ src/common/middleware/
 ```
 
 #### 核心功能
+
 - **CurrentUserMiddleware**: 将 JWT payload 转换为标准的 `UserPayload` 格式
 - **类型安全**: 使用 TypeScript 接口确保类型一致性
 - **错误处理**: 优雅处理各种边界情况
@@ -26,6 +28,7 @@ src/common/middleware/
 ### 2. JWT Token 增强
 
 #### 修改文件: `src/auth/auth.service.ts`
+
 ```typescript
 private generateToken(user: User): string {
   const payload = {
@@ -42,15 +45,17 @@ private generateToken(user: User): string {
 ### 3. 应用模块配置
 
 #### 修改文件: `src/app.module.ts`
+
 - 实现 `NestModule` 接口
 - 配置中间件应用到所有需要认证的路由
 - 添加 `MiddlewareModule` 到导入列表
 
 ### 4. 中间件应用范围
 
-中间件应用于以下路由：
+中间件应用于以下路由:
+
 - `/user/*` - 用户管理
-- `/appointments/*` - 预约管理  
+- `/appointments/*` - 预约管理
 - `/instruments/*` - 仪器管理
 - `/news/*` - 新闻管理
 - `/notifications/*` - 通知管理
@@ -61,6 +66,7 @@ private generateToken(user: User): string {
 ## 数据流转换
 
 ### 输入 (JWT Payload)
+
 ```typescript
 {
   sub: number,        // 用户ID
@@ -72,6 +78,7 @@ private generateToken(user: User): string {
 ```
 
 ### 输出 (UserPayload)
+
 ```typescript
 {
   id: number,        // 用户ID (从 sub 转换)
@@ -85,11 +92,11 @@ private generateToken(user: User): string {
 ## 使用示例
 
 ### 在控制器中使用
+
 ```typescript
 @Controller('user')
 @UseGuards(JwtAuthGuard)
 export class UserController {
-  
   @Get('profile')
   getProfile(@Req() req: AuthenticatedRequest) {
     // req.user 现在包含标准的 UserPayload 格式
@@ -101,7 +108,8 @@ export class UserController {
 
 ## 测试覆盖
 
-中间件包含完整的单元测试：
+中间件包含完整的单元测试:
+
 - ✅ 正常的 JWT payload 转换
 - ✅ 缺少可选字段的处理
 - ✅ 无用户信息时的处理
@@ -110,16 +118,19 @@ export class UserController {
 ## 技术特性
 
 ### 类型安全
+
 - 使用 TypeScript 接口定义
 - 类型断言确保枚举类型正确
 - 可选字段的默认值处理
 
 ### 性能优化
+
 - 中间件仅在需要认证的路由执行
 - 轻量级转换逻辑
 - 避免不必要的数据库查询
 
 ### 错误处理
+
 - 优雅处理缺失字段
 - 保持原有数据在转换失败时不变
 - 不影响请求的正常处理
@@ -145,7 +156,7 @@ export class UserController {
 
 ## 总结
 
-本次实现成功地为系统添加了统一的用户信息提取中间件，确保：
+本次实现成功地为系统添加了统一的用户信息提取中间件，确保:
 
 1. **一致性**: 所有认证请求获得相同格式的用户信息
 2. **类型安全**: 完整的 TypeScript 类型支持

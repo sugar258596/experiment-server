@@ -37,7 +37,7 @@ export function SingleFileUpload(
   );
 }
 
-// 多文件上传装饰器（相同字段名）
+// 多文件上传装饰器(相同字段名)
 export function MultipleFileUpload(
   fieldName: string = 'files',
   maxCount: number = 10,
@@ -129,7 +129,7 @@ export function AvatarUpload(
   return SingleFileUpload(fieldName, config);
 }
 
-// 通用文件上传装饰器（支持自定义路径）
+// 通用文件上传装饰器(支持自定义路径)
 export function GeneralFileUpload(
   fieldName: string = 'file',
   subPath: string = 'files',

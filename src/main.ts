@@ -49,7 +49,7 @@ async function bootstrap() {
     },
   });
 
-  // 启用CORS（如果需要）
+  // 启用CORS(如果需要)
   app.enableCors({
     origin: true,
     credentials: true,

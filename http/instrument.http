@@ -7,11 +7,11 @@
 GET {{baseUrl}}/instruments
 Authorization: Bearer {{token}}
 
-### 2. 获取仪器列表（带搜索条件）
+### 2. 获取仪器列表(带搜索条件)
 GET {{baseUrl}}/instruments?keyword=显微镜&labId=1
 Authorization: Bearer {{token}}
 
-### 3. 获取仪器详情（替换 :id 为实际ID）
+### 3. 获取仪器详情(替换 :id 为实际ID)
 GET {{baseUrl}}/instruments/1
 Authorization: Bearer {{token}}
 
@@ -30,7 +30,7 @@ Content-Type: application/json
   "description": "用于观察细胞和组织切片"
 }
 
-### 5. 申请使用仪器（替换 :id 为实际ID）
+### 5. 申请使用仪器(替换 :id 为实际ID)
 POST {{baseUrl}}/instruments/1/apply
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -46,11 +46,11 @@ Content-Type: application/json
 GET {{baseUrl}}/instruments/applications
 Authorization: Bearer {{token}}
 
-### 7. 获取使用申请列表（带状态筛选）
+### 7. 获取使用申请列表(带状态筛选)
 GET {{baseUrl}}/instruments/applications?status=PENDING
 Authorization: Bearer {{token}}
 
-### 8. 审核使用申请（替换 :id 为实际申请ID）
+### 8. 审核使用申请(替换 :id 为实际申请ID)
 POST {{baseUrl}}/instruments/applications/1/review
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -60,7 +60,7 @@ Content-Type: application/json
   "reason": "申请符合使用规范"
 }
 
-### 9. 报告仪器故障（替换 :id 为实际仪器ID）
+### 9. 报告仪器故障(替换 :id 为实际仪器ID)
 POST {{baseUrl}}/instruments/1/repair
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -74,11 +74,11 @@ Content-Type: application/json
 GET {{baseUrl}}/instruments/repairs
 Authorization: Bearer {{token}}
 
-### 11. 获取维修记录（带状态筛选）
+### 11. 获取维修记录(带状态筛选)
 GET {{baseUrl}}/instruments/repairs?status=PENDING
 Authorization: Bearer {{token}}
 
-### 12. 更新维修状态（替换 :id 为实际维修记录ID）
+### 12. 更新维修状态(替换 :id 为实际维修记录ID)
 POST {{baseUrl}}/instruments/repairs/1/update
 Authorization: Bearer {{token}}
 Content-Type: application/json
