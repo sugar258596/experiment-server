@@ -9,7 +9,7 @@ import { ErrorMessages } from '../constants/error-messages';
 
 /**
  * 请求限流守卫
- * 简单的内存存储实现，生产环境应使用 Redis
+ * 简单的内存存储实现,生产环境应使用 Redis
  */
 @Injectable()
 export class ThrottleGuard implements CanActivate {

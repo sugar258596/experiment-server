@@ -69,7 +69,7 @@ export class OwnershipGuard implements CanActivate {
         user.id === resourceOwnerId || PermissionHelper.isAdmin(user.role);
       if (!hasPermission) {
         throw new ForbiddenException(
-          '权限不足：您只能操作自己的资源。如需操作其他用户的资源，请联系管理员',
+          '权限不足：您只能操作自己的资源。如需操作其他用户的资源,请联系管理员',
         );
       }
       return true;

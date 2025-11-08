@@ -19,7 +19,7 @@ interface RequestWithUser extends Request {
 @Injectable()
 export class CurrentUserMiddleware implements NestMiddleware {
   use(req: RequestWithUser, res: Response, next: NextFunction) {
-    // 如果请求中已经有用户信息（通过 JwtAuthGuard 设置），则标准化为 UserPayload 格式
+    // 如果请求中已经有用户信息（通过 JwtAuthGuard 设置）,则标准化为 UserPayload 格式
     if (req.user) {
       const jwtPayload = req.user as JwtPayload;
 
@@ -31,7 +31,7 @@ export class CurrentUserMiddleware implements NestMiddleware {
         const userPayload: UserPayload = {
           id: jwtPayload.sub,
           username: jwtPayload.username,
-          email: jwtPayload.email || '', // JWT 中可能没有 email，使用空字符串
+          email: jwtPayload.email || '', // JWT 中可能没有 email,使用空字符串
           role: jwtPayload.role as Role, // 类型断言为 Role 枚举
           status: jwtPayload.status !== undefined ? jwtPayload.status : 1, // 默认状态为激活
         };

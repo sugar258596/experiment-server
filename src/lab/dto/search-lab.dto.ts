@@ -39,5 +39,5 @@ export class SearchLabDto {
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  limit?: number;
+  paagSize?: number;
 }

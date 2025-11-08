@@ -5,7 +5,7 @@ export enum Role {
   TEACHER = 'teacher', // 老师
 }
 
-// 角色优先级，用于判断是否有权限操作其他用户的数据
+// 角色优先级,用于判断是否有权限操作其他用户的数据
 export const RolePriority = {
   [Role.SUPER_ADMIN]: 4,
   [Role.ADMIN]: 3,

@@ -39,7 +39,7 @@ export class CreateNotificationDto {
 
   @ApiProperty({
     description: '通知内容',
-    example: '您的实验室预约已通过审核，请按时到场',
+    example: '您的实验室预约已通过审核,请按时到场',
   })
   @IsString()
   @MaxLength(500, { message: '通知内容不能超过500个字符' })

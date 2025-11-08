@@ -48,7 +48,7 @@ export class AuthRolesGuard implements CanActivate {
           const payload = await this.jwtService.verifyAsync(token);
           request.user = payload;
         } catch {
-          // 公开路由中token无效时不抛出错误，只是不设置user
+          // 公开路由中token无效时不抛出错误,只是不设置user
         }
       }
       return true;
@@ -57,7 +57,7 @@ export class AuthRolesGuard implements CanActivate {
     // 受保护的路由:必须有有效token
     if (!token) {
       throw new UnauthorizedException(
-        '请先登录。访问此接口需要身份验证，请在请求头中提供有效的 Authorization token',
+        '请先登录。访问此接口需要身份验证,请在请求头中提供有效的 Authorization token',
       );
     }
 
@@ -91,7 +91,7 @@ export class AuthRolesGuard implements CanActivate {
 
     if (!user || !user.role) {
       throw new ForbiddenException(
-        '权限验证失败：无法获取用户角色信息，请重新登录',
+        '权限验证失败：无法获取用户角色信息,请重新登录',
       );
     }
 
@@ -111,7 +111,7 @@ export class AuthRolesGuard implements CanActivate {
         return true;
       }
 
-      // 权限不足，抛出友好的错误提示
+      // 权限不足,抛出友好的错误提示
       this.throwFriendlyForbiddenException(user.role, requiredRoles);
     }
 
@@ -127,11 +127,11 @@ export class AuthRolesGuard implements CanActivate {
       .map((role) => RoleLabels[role] || role)
       .join('或');
 
-    let message = `权限不足：当前角色为【${userRoleLabel}】，此操作需要【${requiredRoleLabels}】权限`;
+    let message = `权限不足：当前角色为【${userRoleLabel}】,此操作需要【${requiredRoleLabels}】权限`;
 
     // 根据不同角色给出不同的提示
     if (requiredRoles.some((role) => AdminRoles.includes(role))) {
-      message += '。如需访问此功能，请联系系统管理员';
+      message += '。如需访问此功能,请联系系统管理员';
     }
 
     throw new ForbiddenException(message);

@@ -4,12 +4,12 @@
 
 ### 功能说明
 
-`CurrentUserMiddleware` 是一个用于提取和标准化当前用户信息的中间件。它在 JWT 认证守卫之后执行，负责将 JWT payload 转换为标准的 `UserPayload` 格式。
+`CurrentUserMiddleware` 是一个用于提取和标准化当前用户信息的中间件。它在 JWT 认证守卫之后执行,负责将 JWT payload 转换为标准的 `UserPayload` 格式。
 
 ### 工作流程
 
 1. **JWT 认证**: `JwtAuthGuard` 验证 JWT token 并将 payload 设置到 `request.user`
-2. **中间件处理**: `CurrentUserMiddleware` 检测到 `request.user` 存在后，将其转换为标准格式
+2. **中间件处理**: `CurrentUserMiddleware` 检测到 `request.user` 存在后,将其转换为标准格式
 3. **标准化输出**: 最终 `request.user` 包含完整的 `UserPayload` 信息
 
 ### 转换规则
@@ -54,7 +54,6 @@
 @Controller('user')
 @UseGuards(JwtAuthGuard)
 export class UserController {
-  
   @Get('profile')
   getProfile(@Req() req: AuthenticatedRequest) {
     // req.user 现在包含标准的 UserPayload 格式
@@ -69,11 +68,12 @@ export class UserController {
 1. **执行顺序**: 中间件必须在 `JwtAuthGuard` 之后执行
 2. **类型安全**: 中间件确保返回的 `user` 对象符合 `UserPayload` 接口
 3. **默认值处理**: 为可选字段提供合理的默认值
-4. **错误处理**: 如果转换失败，保持原有的 JWT payload 不变
+4. **错误处理**: 如果转换失败,保持原有的 JWT payload 不变
 
 ### 测试
 
-中间件包含完整的单元测试，覆盖以下场景：
+中间件包含完整的单元测试,覆盖以下场景：
+
 - 正常的 JWT payload 转换
 - 缺少可选字段的处理
 - 无用户信息时的处理

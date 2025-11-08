@@ -57,7 +57,7 @@ export class LabController {
   @Public()
   @ApiOperation({
     summary: '获取实验室列表',
-    description: '查询所有实验室，支持搜索和筛选',
+    description: '查询所有实验室,支持搜索和筛选',
   })
   @ApiResponse({
     status: 200,

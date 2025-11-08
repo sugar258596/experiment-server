@@ -35,7 +35,7 @@ export class Instrument {
     enum: InstrumentStatus,
     default: InstrumentStatus.ACTIVE,
     comment:
-      '设备状态：ACTIVE-正常，INACTIVE-停用，MAINTENANCE-维护中，FAULT-故障',
+      '设备状态：ACTIVE-正常,INACTIVE-停用,MAINTENANCE-维护中,FAULT-故障',
   })
   status: InstrumentStatus;
 

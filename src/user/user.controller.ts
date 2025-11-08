@@ -22,8 +22,10 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard, RolesGuard } from '../common/guards';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CheckExistenceDto } from './dto/check-existence.dto';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
+import { Public } from '../common/decorators';
 
 interface RequestWithUser extends Request {
   user: {
@@ -60,12 +62,40 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @Get('userinfo')
+  @Post('check-existence')
+  @Public()
+  @ApiOperation({
+    summary: '检查用户名或邮箱是否存在',
+    description: '检查用户名或邮箱是否已被注册,用于注册时验证',
+  })
+  @ApiBody({ type: CheckExistenceDto })
+  @ApiResponse({
+    status: 200,
+    description: '检查成功',
+    schema: {
+      type: 'object',
+      properties: {
+        username: {
+          type: 'boolean',
+          description: '用户名是否存在：true-存在,false-不存在',
+        },
+        email: {
+          type: 'boolean',
+          description: '邮箱是否存在：true-存在,false-不存在',
+        },
+      },
+    },
+  })
+  checkExistence(@Body() checkExistenceDto: CheckExistenceDto) {
+    return this.userService.checkExistence(checkExistenceDto);
+  }
+
+  @Get('info')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: '获取当前用户信息',
-    description: '获取当前登录用户的详细信息，包括个人资料、角色、状态等',
+    description: '获取当前登录用户的详细信息,包括个人资料、角色、状态等',
   })
   @ApiResponse({
     status: 200,
@@ -87,11 +117,11 @@ export class UserController {
         role: {
           type: 'string',
           description:
-            '用户角色：student-学生，teacher-教师，admin-管理员，super_admin-超级管理员',
+            '用户角色：student-学生,teacher-教师,admin-管理员,super_admin-超级管理员',
         },
         status: {
           type: 'string',
-          description: '用户状态：ACTIVE-正常，INACTIVE-禁用，BANNED-封禁',
+          description: '用户状态：ACTIVE-正常,INACTIVE-禁用,BANNED-封禁',
         },
         teachingTags: {
           type: 'array',

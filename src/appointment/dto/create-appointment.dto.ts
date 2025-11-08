@@ -39,7 +39,7 @@ export class CreateAppointmentDto {
 
   @ApiProperty({
     description: '详细说明',
-    example: '需要使用实验室进行二叉树遍历实验，预计50人参与',
+    example: '需要使用实验室进行二叉树遍历实验,预计50人参与',
   })
   @IsString()
   @MaxLength(1000, { message: '详细说明不能超过1000个字符' })

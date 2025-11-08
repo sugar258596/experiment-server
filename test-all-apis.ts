@@ -28,7 +28,7 @@ class APITester {
   private bugs: BugReport[] = [];
   private token = '';
   private baseURL = 'http://localhost:3000';
-  
+
   private testUserId = 0;
   private testLabId = 0;
   private testInstrumentId = 0;
@@ -62,12 +62,12 @@ class APITester {
       error,
     };
     this.logs.push(logEntry);
-    
+
     const statusColor = status >= 200 && status < 300 ? '\x1b[32m' : '\x1b[31m';
     console.log(
       `${statusColor}[${method}] ${url} - ${status} (${duration}ms)\x1b[0m`,
     );
-    
+
     if (error) {
       console.error(`  Error: ${error}`);
     }
@@ -132,9 +132,8 @@ class APITester {
     } catch (error) {
       const duration = Date.now() - startTime;
       const axiosError = error as AxiosError;
-      const errorMessage =
-        axiosError.message || 'Unknown error';
-      
+      const errorMessage = axiosError.message || 'Unknown error';
+
       this.log(method, url, 0, duration, undefined, errorMessage);
       this.reportBug(
         method,
@@ -144,7 +143,7 @@ class APITester {
         axiosError.response?.data,
         data,
       );
-      
+
       return null;
     }
   }
@@ -168,7 +167,7 @@ class APITester {
       '/auth/register',
       registerData,
     );
-    
+
     if (registerRes && registerRes.status === 201) {
       console.log('✓ 注册成功');
     }
@@ -180,10 +179,13 @@ class APITester {
     };
 
     const loginRes = await this.request('POST', '/auth/login', loginData);
-    
+
     if (loginRes && (loginRes.status === 200 || loginRes.status === 201)) {
       const responseData = loginRes.data;
-      if (responseData.data && (responseData.data.access_token || responseData.data.token)) {
+      if (
+        responseData.data &&
+        (responseData.data.access_token || responseData.data.token)
+      ) {
         this.token = responseData.data.access_token || responseData.data.token;
         console.log('✓ 登录成功，获取到Token');
       } else {
@@ -273,7 +275,7 @@ class APITester {
       createLabData,
       true,
     );
-    
+
     if (createLabRes && createLabRes.status === 201) {
       const labData = createLabRes.data.data;
       if (labData && labData.id) {
@@ -289,7 +291,7 @@ class APITester {
     await this.request('GET', '/labs?keyword=测试', null, false);
 
     // 4. 获取热门实验室
-    await this.request('GET', '/labs/popular?limit=6', null, false);
+    await this.request('GET', '/labs/popular?paagSize=6', null, false);
 
     // 5. 获取实验室详情
     if (this.testLabId) {
@@ -322,7 +324,7 @@ class APITester {
     // 1. 创建预约
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    
+
     const createAppointmentData = {
       labId: this.testLabId,
       appointmentDate: tomorrow.toISOString(),
@@ -338,7 +340,7 @@ class APITester {
       createAppointmentData,
       true,
     );
-    
+
     if (createRes && createRes.status === 201) {
       const appointmentData = createRes.data.data;
       if (appointmentData && appointmentData.id) {
@@ -411,7 +413,7 @@ class APITester {
       createInstrumentData,
       true,
     );
-    
+
     if (createRes && createRes.status === 201) {
       const instrumentData = createRes.data.data;
       if (instrumentData && instrumentData.id) {
@@ -450,15 +452,18 @@ class APITester {
     if (this.testInstrumentId) {
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
-      
+
       await this.request(
         'POST',
         `/instruments/${this.testInstrumentId}/apply`,
         {
           startTime: tomorrow.toISOString(),
-          endTime: new Date(tomorrow.getTime() + 2 * 60 * 60 * 1000).toISOString(),
+          endTime: new Date(
+            tomorrow.getTime() + 2 * 60 * 60 * 1000,
+          ).toISOString(),
           purpose: '测试使用仪器',
-          description: '这是一个详细的使用说明，需要使用该仪器进行相关的科研测试工作，预计使用时长为2小时',
+          description:
+            '这是一个详细的使用说明，需要使用该仪器进行相关的科研测试工作，预计使用时长为2小时',
         },
         true,
       );
@@ -475,7 +480,8 @@ class APITester {
         {
           instrumentId: this.testInstrumentId,
           faultType: 0, // 0: 机械故障, 1: 电路故障, 2: 软件故障, 3: 其他
-          faultDescription: '测试故障报告，仪器在使用过程中发现一些问题需要进行维修和检查',
+          faultDescription:
+            '测试故障报告，仪器在使用过程中发现一些问题需要进行维修和检查',
           urgency: 1, // 0: 低, 1: 中, 2: 高, 3: 紧急
         },
         true,
@@ -498,7 +504,7 @@ class APITester {
     };
 
     const createRes = await this.request('POST', '/news', createNewsData, true);
-    
+
     if (createRes && createRes.status === 201) {
       const newsData = createRes.data.data;
       if (newsData && newsData.id) {
@@ -554,7 +560,7 @@ class APITester {
       createNotificationData,
       true,
     );
-    
+
     if (createRes && createRes.status === 201) {
       const notificationData = createRes.data.data;
       if (notificationData && notificationData.id) {
@@ -611,12 +617,7 @@ class APITester {
     await this.request('GET', '/favorites', null, true);
 
     // 3. 检查是否收藏
-    await this.request(
-      'GET',
-      `/favorites/${this.testLabId}/check`,
-      null,
-      true,
-    );
+    await this.request('GET', `/favorites/${this.testLabId}/check`, null, true);
 
     // 4. 取消收藏
     await this.request('DELETE', `/favorites/${this.testLabId}`, null, true);
@@ -646,7 +647,12 @@ class APITester {
     );
 
     // 2. 获取实验室评价
-    await this.request('GET', `/evaluations/lab/${this.testLabId}`, null, false);
+    await this.request(
+      'GET',
+      `/evaluations/lab/${this.testLabId}`,
+      null,
+      false,
+    );
 
     // 3. 获取评价统计
     await this.request(
@@ -699,8 +705,10 @@ class APITester {
     if (this.bugs.length > 0) {
       const bugsFile = path.join(logsDir, `bugs-${timestamp}.json`);
       fs.writeFileSync(bugsFile, JSON.stringify(this.bugs, null, 2));
-      console.log(`\x1b[31m✗ 发现 ${this.bugs.length} 个问题，详情: ${bugsFile}\x1b[0m`);
-      
+      console.log(
+        `\x1b[31m✗ 发现 ${this.bugs.length} 个问题，详情: ${bugsFile}\x1b[0m`,
+      );
+
       console.log('\n问题汇总:');
       this.bugs.forEach((bug, index) => {
         console.log(`\n${index + 1}. [${bug.method}] ${bug.url}`);

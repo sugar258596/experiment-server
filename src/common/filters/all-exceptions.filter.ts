@@ -19,7 +19,7 @@ interface RequestWithUser extends Request {
 
 /**
  * 全局异常过滤器
- * 统一处理所有异常，返回标准格式的错误响应
+ * 统一处理所有异常,返回标准格式的错误响应
  */
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {

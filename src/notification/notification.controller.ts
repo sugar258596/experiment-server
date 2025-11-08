@@ -54,7 +54,7 @@ export class NotificationController {
   @ApiQuery({
     name: 'isRead',
     required: false,
-    description: '是否已读（true=已读，false=未读）',
+    description: '是否已读（true=已读,false=未读）',
     type: 'boolean',
   })
   @ApiResponse({
@@ -81,7 +81,7 @@ export class NotificationController {
     return this.notificationService.getUnreadCount(req.user.id);
   }
 
-  @Patch(':id/read')
+  @Patch('read/:id')
   @ApiOperation({
     summary: '标记为已读',
     description: '将指定通知标记为已读',

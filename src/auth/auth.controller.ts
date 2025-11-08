@@ -20,7 +20,7 @@ export class AuthController {
   })
   @ApiResponse({
     status: 400,
-    description: '注册失败，用户名已存在或参数错误',
+    description: '注册失败,用户名已存在或参数错误',
   })
   register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
@@ -35,7 +35,7 @@ export class AuthController {
   })
   @ApiResponse({
     status: 401,
-    description: '登录失败，用户名或密码错误',
+    description: '登录失败,用户名或密码错误',
   })
   login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);

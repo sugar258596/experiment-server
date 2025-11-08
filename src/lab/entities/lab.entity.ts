@@ -35,7 +35,7 @@ export class Lab {
     type: 'enum',
     enum: LabStatus,
     default: LabStatus.ACTIVE,
-    comment: '实验室状态：ACTIVE-正常，MAINTENANCE-维护中，INACTIVE-停用',
+    comment: '实验室状态：0-正常,1-维护中,2-停用',
   })
   status: LabStatus;
 
@@ -53,7 +53,7 @@ export class Lab {
     precision: 3,
     scale: 2,
     default: 0,
-    comment: '实验室评分（0-5分，保留两位小数）',
+    comment: '实验室评分（0-5分,保留两位小数）',
   })
   rating: number;
 

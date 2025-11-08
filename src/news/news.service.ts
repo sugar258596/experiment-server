@@ -21,7 +21,7 @@ export class NewsService {
 
   async create(createDto: CreateNewsDto, user: UserPayload) {
     if (!user || !user.id) {
-      throw new Error('用户信息不完整，无法创建新闻');
+      throw new Error('用户信息不完整,无法创建新闻');
     }
 
     const news = this.newsRepository.create({
@@ -95,7 +95,7 @@ export class NewsService {
   }
 
   async review(id: number, approved: boolean, currentUser?: UserPayload) {
-    // 如果提供了 currentUser，则进行权限检查
+    // 如果提供了 currentUser,则进行权限检查
     if (currentUser && !this.isAdminOrSuperAdmin(currentUser.role)) {
       throw new ForbiddenException('需要管理员权限才能审核新闻');
     }

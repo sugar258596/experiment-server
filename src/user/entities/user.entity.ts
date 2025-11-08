@@ -32,7 +32,7 @@ export class User {
     length: 50,
     default: Role.STUDENT,
     comment:
-      '用户角色：student-学生，teacher-教师，admin-管理员，super_admin-超级管理员',
+      '用户角色：student-学生,teacher-教师,admin-管理员,super_admin-超级管理员',
   })
   role: Role;
 
@@ -40,7 +40,7 @@ export class User {
     type: 'enum',
     enum: Status,
     default: Status.ACTIVE,
-    comment: '用户状态：ACTIVE-正常，INACTIVE-禁用，BANNED-封禁',
+    comment: '用户状态：ACTIVE-正常,INACTIVE-禁用,BANNED-封禁',
   })
   status: Status;
 

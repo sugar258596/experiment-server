@@ -7,7 +7,8 @@
       "Bash(test -f package-lock.json)",
       "Bash(wmic process where \"ProcessId=7432\" delete)",
       "Bash(xargs kill -9)",
-      "Bash(awk '{print $2}')"
+      "Bash(awk '{print $2}')",
+      "Bash(wmic:*)"
     ],
     "deny": [],
     "ask": []

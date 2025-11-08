@@ -21,7 +21,7 @@ export class CreateNewsDto {
 
   @ApiProperty({
     description: '新闻内容',
-    example: '根据学校安排，实验室开放时间调整为...',
+    example: '根据学校安排,实验室开放时间调整为...',
   })
   @IsString()
   @MaxLength(5000, { message: '内容不能超过5000个字符' })

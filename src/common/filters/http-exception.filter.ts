@@ -14,7 +14,7 @@ interface ApiResponse<T> {
 }
 
 /**
- * HTTP异常过滤器（向后兼容，建议使用 AllExceptionsFilter）
+ * HTTP异常过滤器（向后兼容,建议使用 AllExceptionsFilter）
  * @deprecated 请使用 AllExceptionsFilter
  */
 @Catch()

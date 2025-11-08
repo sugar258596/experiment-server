@@ -57,8 +57,10 @@ export class AppointmentService {
       description: createDto.description,
       participantCount: createDto.participantCount,
     });
-
-    return await this.appointmentRepository.save(appointment);
+    await this.appointmentRepository.save(appointment);
+    return {
+      message: '预约成功',
+    };
   }
 
   async findAll(searchDto: SearchAppointmentDto) {
@@ -122,11 +124,35 @@ export class AppointmentService {
   }
 
   async findMyAppointments(userId: number) {
-    return await this.appointmentRepository.find({
+    const appointments = await this.appointmentRepository.find({
       where: { user: { id: userId } },
-      relations: ['lab'],
+      relations: ['lab', 'user'],
       order: { createdAt: 'DESC' },
     });
+
+    const appointmentsWithLab = appointments.map((item) => {
+      return {
+        id: item.id,
+        lab: {
+          id: item.lab.id,
+          name: item.lab.name,
+        },
+        user: {
+          id: item.user.id,
+          name: item.user.username,
+        },
+        timeSlot: item.timeSlot,
+        appointmentDate: item.appointmentDate,
+        purpose: item.purpose,
+        description: item.description,
+        participantCount: item.participantCount,
+        status: item.status,
+        createdAt: item.createdAt,
+        rejectionReason: item.rejectionReason,
+      };
+    });
+
+    return appointmentsWithLab;
   }
 
   async findOne(id: number) {
@@ -138,8 +164,64 @@ export class AppointmentService {
     if (!appointment) {
       throw new NotFoundException(`预约记录ID ${id} 不存在`);
     }
-
+    const appointmentsWithLab = {
+      id: appointment.id,
+      lab: {
+        id: appointment.lab.id,
+        name: appointment.lab.name,
+        location: appointment.lab.location,
+        capacity: appointment.lab.capacity,
+        description: appointment.lab.description,
+        department: appointment.lab.department,
+        rating: appointment.lab.rating,
+      },
+      user: {
+        id: appointment.user.id,
+        name: appointment.user.username,
+      },
+      timeSlot: appointment.timeSlot,
+      appointmentDate: appointment.appointmentDate,
+      purpose: appointment.purpose,
+      description: appointment.description,
+      participantCount: appointment.participantCount,
+      status: appointment.status,
+      createdAt: appointment.createdAt,
+      reviewTime: appointment.reviewTime,
+    };
     return appointment;
+  }
+  async finddetails(id: number) {
+    const appointment = await this.findOne(id);
+
+    if (!appointment) {
+      throw new NotFoundException(`预约记录ID ${id} 不存在`);
+    }
+    const appointmentsWithLab = {
+      id: appointment.id,
+      lab: {
+        id: appointment.lab.id,
+        name: appointment.lab.name,
+        location: appointment.lab.location,
+        capacity: appointment.lab.capacity,
+        description: appointment.lab.description,
+        department: appointment.lab.department,
+        rating: appointment.lab.rating,
+      },
+      user: {
+        id: appointment.user.id,
+        name: appointment.user.username,
+      },
+      timeSlot: appointment.timeSlot,
+      appointmentDate: appointment.appointmentDate,
+      purpose: appointment.purpose,
+      description: appointment.description,
+      participantCount: appointment.participantCount,
+      status: appointment.status,
+      createdAt: appointment.createdAt,
+      reviewer: appointment.reviewer.username,
+      reviewTime: appointment.reviewTime,
+    };
+    return appointmentsWithLab;
   }
 
   async review(

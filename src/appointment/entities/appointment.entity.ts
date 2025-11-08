@@ -33,7 +33,7 @@ export class Appointment {
   @Column({
     type: 'enum',
     enum: TimeSlot,
-    comment: '时间段：MORNING-上午，AFTERNOON-下午，EVENING-晚上',
+    comment: '时间段:0-上午,1-下午,2-晚上',
   })
   timeSlot: TimeSlot;
 
@@ -50,8 +50,7 @@ export class Appointment {
     type: 'enum',
     enum: AppointmentStatus,
     default: AppointmentStatus.PENDING,
-    comment:
-      '预约状态：PENDING-待审核，APPROVED-已通过，REJECTED-已拒绝，CANCELLED-已取消，COMPLETED-已完成',
+    comment: '预约状态:0-待审核,1-已通过,2-已拒绝,3-已取消,4-已完成',
   })
   status: AppointmentStatus;
 

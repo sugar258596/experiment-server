@@ -6,7 +6,7 @@ export const getDatabaseConfigAsync = (
 ): TypeOrmModuleOptions => {
   const env = process.env.NODE_ENV || 'development';
 
-  // 如果环境变量USE_SQLITE为true，使用SQLite
+  // 如果环境变量USE_SQLITE为true,使用SQLite
   if (process.env.USE_SQLITE === 'true') {
     return {
       type: 'sqlite',

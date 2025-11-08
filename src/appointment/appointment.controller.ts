@@ -106,10 +106,10 @@ export class AppointmentController {
     description: '查询成功',
   })
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.appointmentService.findOne(id);
+    return this.appointmentService.finddetails(id);
   }
 
-  @Patch(':id/review')
+  @Patch('review/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.TEACHER, Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()
@@ -135,7 +135,7 @@ export class AppointmentController {
     return this.appointmentService.review(id, req.user, reviewDto);
   }
 
-  @Patch(':id/cancel')
+  @Patch('cancel/:id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({

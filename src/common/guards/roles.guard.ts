@@ -25,7 +25,7 @@ export class RolesGuard implements CanActivate {
     const { user } = context.switchToHttp().getRequest();
 
     if (!user || !user.role) {
-      throw new ForbiddenException('您没有权限访问此资源，请先登录');
+      throw new ForbiddenException('您没有权限访问此资源,请先登录');
     }
 
     // 检查用户是否有所需的角色
@@ -44,7 +44,7 @@ export class RolesGuard implements CanActivate {
         return true;
       }
 
-      // 权限不足，抛出友好的错误提示
+      // 权限不足,抛出友好的错误提示
       const roleNames = {
         [Role.SUPER_ADMIN]: '超级管理员',
         [Role.ADMIN]: '管理员',
@@ -58,7 +58,7 @@ export class RolesGuard implements CanActivate {
       const userRoleName = roleNames[user.role] || user.role;
 
       throw new ForbiddenException(
-        `权限不足，需要 ${requiredRoleNames} 权限，您当前是 ${userRoleName}`,
+        `权限不足,需要 ${requiredRoleNames} 权限,您当前是 ${userRoleName}`,
       );
     }
 

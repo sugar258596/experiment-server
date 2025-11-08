@@ -4,7 +4,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 
 /**
  * 更新用户DTO
- * 继承CreateUserDto，所有字段都变为可选
+ * 继承CreateUserDto,所有字段都变为可选
  */
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiPropertyOptional({

@@ -1,15 +1,15 @@
 /**
  * 统一错误消息常量
- * 所有错误提示使用中文，便于用户理解
+ * 所有错误提示使用中文,便于用户理解
  */
 
 export const ErrorMessages = {
   // 认证相关
   AUTH: {
-    UNAUTHORIZED: '未授权，请先登录',
-    TOKEN_EXPIRED: '登录已过期，请重新登录',
+    UNAUTHORIZED: '未授权,请先登录',
+    TOKEN_EXPIRED: '登录已过期,请重新登录',
     TOKEN_INVALID: '无效的登录凭证',
-    PERMISSION_DENIED: '权限不足，无法执行此操作',
+    PERMISSION_DENIED: '权限不足,无法执行此操作',
     LOGIN_FAILED: '用户名或密码错误',
     PASSWORD_INCORRECT: '密码错误',
     ACCOUNT_DISABLED: '账号已被禁用',
@@ -89,10 +89,10 @@ export const ErrorMessages = {
 
   // 系统相关
   SYSTEM: {
-    INTERNAL_ERROR: '系统内部错误，请稍后重试',
+    INTERNAL_ERROR: '系统内部错误,请稍后重试',
     DATABASE_ERROR: '数据库操作失败',
     SERVICE_UNAVAILABLE: '服务暂时不可用',
-    RATE_LIMIT: '请求过于频繁，请稍后再试',
+    RATE_LIMIT: '请求过于频繁,请稍后再试',
   },
 
   // 通用
@@ -134,7 +134,7 @@ export const SuccessMessages = {
 
   // 评论相关
   COMMENT: {
-    CREATED: '评论成功，等待审核',
+    CREATED: '评论成功,等待审核',
     DELETED: '评论删除成功',
     STATUS_UPDATED: '评论状态更新成功',
     APPROVED: '评论已通过审核',

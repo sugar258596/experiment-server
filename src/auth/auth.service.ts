@@ -32,13 +32,15 @@ export class AuthService {
       throw new ConflictException('用户名已存在');
     }
 
-    // 检查邮箱是否已存在
-    const existingUserByEmail = await this.userRepository.findOne({
-      where: { email },
-    });
+    // 检查邮箱是否已存在（仅当邮箱不为空时检查）
+    if (email) {
+      const existingUserByEmail = await this.userRepository.findOne({
+        where: { email },
+      });
 
-    if (existingUserByEmail) {
-      throw new ConflictException('邮箱已存在');
+      if (existingUserByEmail) {
+        throw new ConflictException('邮箱已存在');
+      }
     }
 
     // 加密密码
@@ -56,8 +58,11 @@ export class AuthService {
 
     await this.userRepository.save(user);
 
+    // 生成token
+    const token = this.generateToken(user);
+
     return {
-      message: '注册成功',
+      token,
     };
   }
 

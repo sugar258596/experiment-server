@@ -34,7 +34,7 @@ export class News {
     type: 'enum',
     enum: NewsStatus,
     default: NewsStatus.PENDING,
-    comment: '新闻状态：PENDING-待审核，APPROVED-已发布，REJECTED-已拒绝',
+    comment: '新闻状态：PENDING-待审核,APPROVED-已发布,REJECTED-已拒绝',
   })
   status: NewsStatus;
 

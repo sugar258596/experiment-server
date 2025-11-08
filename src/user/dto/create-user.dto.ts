@@ -16,7 +16,7 @@ import { Role } from '../../common/enums/role.enum';
  */
 export class CreateUserDto {
   @ApiProperty({
-    description: '用户名，唯一标识',
+    description: '用户名,唯一标识',
     example: 'student001',
     minLength: 4,
     maxLength: 20,

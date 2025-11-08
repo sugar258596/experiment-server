@@ -27,7 +27,7 @@ export class JwtAuthGuard implements CanActivate {
     const token = this.extractTokenFromHeader(request);
 
     if (isPublic) {
-      // 公开路由:如果有token就验证并设置用户信息，没有token就忽略
+      // 公开路由:如果有token就验证并设置用户信息,没有token就忽略
       if (token) {
         try {
           const payload = await this.jwtService.verifyAsync(token);
@@ -49,7 +49,7 @@ export class JwtAuthGuard implements CanActivate {
 
     // 受保护的路由:必须有有效token
     if (!token) {
-      throw new UnauthorizedException('未提供身份验证令牌，请先登录');
+      throw new UnauthorizedException('未提供身份验证令牌,请先登录');
     }
 
     try {

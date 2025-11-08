@@ -66,7 +66,7 @@ export class CreateEvaluationDto {
 
   @ApiPropertyOptional({
     description: '评价备注',
-    example: '实验室设备齐全，环境整洁，老师服务态度很好',
+    example: '实验室设备齐全,环境整洁,老师服务态度很好',
     maxLength: 200,
   })
   @IsOptional()

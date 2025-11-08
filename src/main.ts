@@ -9,7 +9,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // 信任代理，以便正确获取客户端IP
+  // 信任代理,以便正确获取客户端IP
   app.set('trust proxy', true);
 
   // 配置Cookie解析

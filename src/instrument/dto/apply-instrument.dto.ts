@@ -24,7 +24,7 @@ export class ApplyInstrumentDto {
   @ApiProperty({
     description: '详细说明',
     example:
-      '需要使用示波器测量正弦波的幅度和频率，并分析波形的失真情况。实验预计耗时2小时。',
+      '需要使用示波器测量正弦波的幅度和频率,并分析波形的失真情况。实验预计耗时2小时。',
     minLength: 50,
   })
   @IsString()

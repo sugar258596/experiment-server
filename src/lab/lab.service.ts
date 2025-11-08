@@ -28,9 +28,9 @@ export class LabService {
       status,
       equipmentType,
       page = 1,
-      limit = 10,
+      paagSize = 10,
     } = searchDto;
-    const skip = (page - 1) * limit;
+    const skip = (page - 1) * paagSize;
 
     const queryBuilder = this.labRepository.createQueryBuilder('lab');
 
@@ -65,15 +65,13 @@ export class LabService {
       });
     }
 
-    queryBuilder.skip(skip).take(limit).orderBy('lab.createdAt', 'DESC');
+    queryBuilder.skip(skip).take(paagSize).orderBy('lab.createdAt', 'DESC');
 
     const [labs, total] = await queryBuilder.getManyAndCount();
 
     return {
       data: labs,
       total,
-      page,
-      limit,
     };
   }
 

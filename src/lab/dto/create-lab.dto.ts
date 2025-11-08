@@ -41,7 +41,7 @@ export class CreateLabDto {
 
   @ApiPropertyOptional({
     description: '实验室描述',
-    example: '配备50台电脑，支持Java、Python等编程语言教学',
+    example: '配备50台电脑,支持Java、Python等编程语言教学',
   })
   @IsOptional()
   @IsString()

@@ -38,7 +38,7 @@ export class InstrumentRepair {
     type: 'enum',
     enum: FaultType,
     comment:
-      '故障类型：HARDWARE-硬件故障，SOFTWARE-软件故障，OPERATION_ERROR-操作错误，OTHER-其他',
+      '故障类型：HARDWARE-硬件故障,SOFTWARE-软件故障,OPERATION_ERROR-操作错误,OTHER-其他',
   })
   faultType: FaultType;
 
@@ -52,7 +52,7 @@ export class InstrumentRepair {
     type: 'enum',
     enum: UrgencyLevel,
     default: UrgencyLevel.MEDIUM,
-    comment: '紧急程度：LOW-低，MEDIUM-中，HIGH-高，URGENT-紧急',
+    comment: '紧急程度：LOW-低,MEDIUM-中,HIGH-高,URGENT-紧急',
   })
   urgency: UrgencyLevel;
 
@@ -60,7 +60,7 @@ export class InstrumentRepair {
     type: 'enum',
     enum: RepairStatus,
     default: RepairStatus.PENDING,
-    comment: '维修状态：PENDING-待处理，IN_PROGRESS-维修中，COMPLETED-已完成',
+    comment: '维修状态：PENDING-待处理,IN_PROGRESS-维修中,COMPLETED-已完成',
   })
   status: RepairStatus;
 

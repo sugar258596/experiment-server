@@ -30,7 +30,7 @@ export class Notification {
     type: 'enum',
     enum: NotificationType,
     comment:
-      '通知类型：APPOINTMENT_REVIEW-预约审核，TEMPORARY_NOTICE-临时通知，APPOINTMENT_REMINDER-预约提醒，INSTRUMENT_APPLICATION-设备申请，REPAIR_PROGRESS-维修进度',
+      '通知类型：APPOINTMENT_REVIEW-预约审核,TEMPORARY_NOTICE-临时通知,APPOINTMENT_REMINDER-预约提醒,INSTRUMENT_APPLICATION-设备申请,REPAIR_PROGRESS-维修进度',
   })
   type: NotificationType;
 
@@ -40,7 +40,7 @@ export class Notification {
   @Column({ type: 'text', comment: '通知内容' })
   content: string;
 
-  @Column({ default: false, comment: '是否已读（false-未读，true-已读）' })
+  @Column({ default: false, comment: '是否已读（false-未读,true-已读）' })
   isRead: boolean;
 
   @Column({ nullable: true, comment: '关联数据ID（如预约ID、设备申请ID等）' })

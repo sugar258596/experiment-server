@@ -39,7 +39,7 @@ export class CreateInstrumentDto {
 
   @ApiPropertyOptional({
     description: '仪器描述',
-    example: '数字存储示波器，200MHz带宽',
+    example: '数字存储示波器,200MHz带宽',
   })
   @IsOptional()
   @IsString()
@@ -57,7 +57,7 @@ export class CreateInstrumentDto {
 
   @ApiPropertyOptional({
     description: '仪器规格参数',
-    example: '200MHz带宽，2GSa/s采样率',
+    example: '200MHz带宽,2GSa/s采样率',
   })
   @IsOptional()
   @IsString()

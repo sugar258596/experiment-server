@@ -9,6 +9,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { Status } from '../common/enums/status.enum';
+import { CheckExistenceDto } from './dto/check-existence.dto';
 
 interface JwtPayload {
   sub: number;
@@ -35,13 +36,15 @@ export class UserService {
       throw new ConflictException('用户名已存在');
     }
 
-    // 检查邮箱是否已存在
-    const existingUserByEmail = await this.userRepository.findOne({
-      where: { email },
-    });
+    // 检查邮箱是否已存在（仅当邮箱不为空时检查）
+    if (email) {
+      const existingUserByEmail = await this.userRepository.findOne({
+        where: { email },
+      });
 
-    if (existingUserByEmail) {
-      throw new ConflictException('邮箱已存在');
+      if (existingUserByEmail) {
+        throw new ConflictException('邮箱已存在');
+      }
     }
 
     const user = this.userRepository.create({
@@ -96,10 +99,30 @@ export class UserService {
     return user;
   }
 
-  async findByUsername(username: string): Promise<User | null> {
-    return await this.userRepository.findOne({
-      where: { username },
-    });
+  async checkExistence(checkExistenceDto: CheckExistenceDto) {
+    const { username, email } = checkExistenceDto;
+
+    if (username) {
+      const existingUserByUsername = await this.userRepository.findOne({
+        where: { username },
+        select: ['id'],
+      });
+      if (existingUserByUsername) {
+        return { exists: 1 };
+      }
+    }
+
+    if (email) {
+      const existingUserByEmail = await this.userRepository.findOne({
+        where: { email },
+        select: ['id'],
+      });
+      if (existingUserByEmail) {
+        return { exists: 1 };
+      }
+    }
+
+    return { exists: 0 };
   }
 
   async getCurrentUser(jwtPayload: JwtPayload): Promise<User> {
@@ -131,6 +154,17 @@ export class UserService {
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
+
+    // 如果更新邮箱,需要检查新邮箱是否已被其他用户使用
+    if (updateUserDto.email && updateUserDto.email !== user.email) {
+      const existingUserByEmail = await this.userRepository.findOne({
+        where: { email: updateUserDto.email },
+      });
+
+      if (existingUserByEmail && existingUserByEmail.id !== id) {
+        throw new ConflictException('邮箱已被其他用户使用');
+      }
+    }
 
     Object.assign(user, updateUserDto);
     return await this.userRepository.save(user);

@@ -89,7 +89,7 @@ import { MiddlewareModule } from './common/middleware/middleware.module';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     // 对所有需要认证的路径应用当前用户中间件
-    // 中间件会在 JwtAuthGuard 之后执行，用于标准化用户信息格式
+    // 中间件会在 JwtAuthGuard 之后执行,用于标准化用户信息格式
     consumer
       .apply(CurrentUserMiddleware)
       .forRoutes(

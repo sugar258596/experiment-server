@@ -43,7 +43,7 @@ export class InstrumentApplication {
     type: 'enum',
     enum: ApplicationStatus,
     default: ApplicationStatus.PENDING,
-    comment: '申请状态：PENDING-待审核，APPROVED-已通过，REJECTED-已拒绝',
+    comment: '申请状态：PENDING-待审核,APPROVED-已通过,REJECTED-已拒绝',
   })
   status: ApplicationStatus;
 

@@ -29,7 +29,7 @@ export class ReportInstrumentDto {
 
   @ApiProperty({
     description: '故障描述',
-    example: '示波器开机后屏幕无显示，电源指示灯亮，风扇转动正常',
+    example: '示波器开机后屏幕无显示,电源指示灯亮,风扇转动正常',
     minLength: 20,
     maxLength: 1000,
   })

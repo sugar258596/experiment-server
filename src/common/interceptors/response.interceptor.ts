@@ -33,7 +33,7 @@ export class ResponseInterceptor<T>
           };
         }
 
-        // 2. 如果已经是标准格式，直接返回
+        // 2. 如果已经是标准格式,直接返回
         if (this.isApiResponse(response)) {
           return response;
         }
@@ -52,7 +52,7 @@ export class ResponseInterceptor<T>
             };
           }
 
-          // 3.2 data 是数组，没有 total
+          // 3.2 data 是数组,没有 total
           if (Array.isArray(response.data) && !('total' in response)) {
             return {
               code: 200,
@@ -64,7 +64,7 @@ export class ResponseInterceptor<T>
             };
           }
 
-          // 3.3 data 是数组，有 total
+          // 3.3 data 是数组,有 total
           if (Array.isArray(response.data) && 'total' in response) {
             return {
               code: 200,
