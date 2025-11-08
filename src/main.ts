@@ -30,7 +30,8 @@ async function bootstrap() {
   );
 
   // 配置静态资源
-  app.useStaticAssets(join(__dirname, '..', 'public'), {
+  // 注意: 编译后 __dirname 指向 dist/src，所以需要向上两级到达项目根目录
+  app.useStaticAssets(join(__dirname, '..', '..', 'public'), {
     prefix: '/static/',
   });
 

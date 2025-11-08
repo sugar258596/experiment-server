@@ -172,6 +172,8 @@ export enum InstrumentStatus {
   MAINTENANCE = 2,
   /**故障 */
   FAULT = 3,
+  /** 借出 */
+  BORROWED = 4,
 }
 
 /** 故障类型枚举 */

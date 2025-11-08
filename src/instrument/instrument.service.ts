@@ -11,10 +11,12 @@ import { InstrumentApplication } from './entities/instrument-application.entity'
 import { InstrumentRepair } from './entities/instrument-repair.entity';
 import { ApplicationStatus, RepairStatus } from '../common/enums/status.enum';
 import { CreateInstrumentDto } from './dto/create-instrument.dto';
+import { UpdateInstrumentDto } from './dto/update-instrument.dto';
 import { ApplyInstrumentDto } from './dto/apply-instrument.dto';
 import { ReportInstrumentDto } from './dto/report-instrument.dto';
 import { UserPayload } from '../common/interfaces/request.interface';
 import { Lab } from '../lab/entities/lab.entity';
+import { generateFileUrl, deleteFile } from '../config/upload.config';
 
 @Injectable()
 export class InstrumentService {
@@ -29,10 +31,28 @@ export class InstrumentService {
     private labRepository: Repository<Lab>,
   ) {}
 
-  async create(createInstrumentDto: CreateInstrumentDto): Promise<Instrument> {
+  /**
+   * 创建仪器(支持文件上传)
+   */
+  async createWithFiles(
+    createInstrumentDto: CreateInstrumentDto,
+    files: Array<Express.Multer.File>,
+  ) {
     const { labId, ...dto } = createInstrumentDto;
 
-    const instrument = this.instrumentRepository.create(dto);
+    // 生成图片URL数组
+    const imageUrls: string[] = [];
+    if (files && files.length > 0) {
+      files.forEach((file) => {
+        const imageUrl = generateFileUrl('instruments', file.filename);
+        imageUrls.push(imageUrl);
+      });
+    }
+
+    const instrument = this.instrumentRepository.create({
+      ...dto,
+      images: imageUrls,
+    });
 
     if (labId) {
       const lab = await this.labRepository.findOne({ where: { id: labId } });
@@ -42,7 +62,104 @@ export class InstrumentService {
       instrument.lab = lab;
     }
 
-    return await this.instrumentRepository.save(instrument);
+    await this.instrumentRepository.save(instrument);
+
+    return {
+      message: '创建成功',
+    };
+  }
+
+  /**
+   * 更新仪器信息(支持文件上传)
+   * @param id 仪器ID
+   * @param updateInstrumentDto 更新数据
+   * @param files 上传的新图片文件（由multer拦截器处理）
+   */
+  async updateWithFiles(
+    id: number,
+    updateInstrumentDto: UpdateInstrumentDto,
+    files: Array<Express.Multer.File>,
+  ) {
+    // 查询现有仪器
+    const instrument = await this.findOne(id);
+    const oldImages = instrument.images || [];
+
+    // 处理图片更新逻辑
+    let finalImages: string[] = [];
+    let shouldDeleteOldImages = false;
+
+    // 判断images字段的类型
+    if (files && files.length > 0) {
+      // 情况1：上传了新文件（files是文件数组）
+      // 生成新图片URL
+      const newImageUrls: string[] = [];
+      files.forEach((file) => {
+        const imageUrl = generateFileUrl('instruments', file.filename);
+        newImageUrls.push(imageUrl);
+      });
+
+      finalImages = newImageUrls;
+      shouldDeleteOldImages = true; // 需要删除所有旧图片
+    } else if (
+      updateInstrumentDto.images &&
+      typeof updateInstrumentDto.images === 'string'
+    ) {
+      // 情况2：传入的是字符串（JSON格式的URL数组）
+      try {
+        const parsed: unknown = JSON.parse(updateInstrumentDto.images);
+        if (Array.isArray(parsed)) {
+          finalImages = parsed as string[];
+          // 不删除旧图片，保持原有的
+          shouldDeleteOldImages = false;
+        } else {
+          // 格式不正确，保持原有图片
+          finalImages = oldImages;
+        }
+      } catch {
+        // JSON解析失败，保持原有图片
+        finalImages = oldImages;
+      }
+    } else {
+      // 情况3：未提供images字段，保持原有图片
+      finalImages = oldImages;
+    }
+
+    // 删除旧图片文件（仅在重新上传时）
+    if (shouldDeleteOldImages && oldImages.length > 0) {
+      oldImages.forEach((imageUrl) => {
+        deleteFile(imageUrl);
+      });
+    }
+
+    // 处理实验室关联
+    if (updateInstrumentDto.labId) {
+      const lab = await this.labRepository.findOne({
+        where: { id: updateInstrumentDto.labId },
+      });
+      if (!lab) {
+        throw new NotFoundException('所属实验室不存在');
+      }
+      instrument.lab = lab;
+    }
+
+    // 构建更新数据（排除images字段，因为已经单独处理）
+    const { images, ...updateData } = updateInstrumentDto;
+
+    // 更新仪器
+    Object.assign(instrument, {
+      ...updateData,
+      images: finalImages,
+    });
+    const savedInstrument = await this.instrumentRepository.save(instrument);
+
+    return {
+      message: '更新成功',
+      data: {
+        id: savedInstrument.id,
+        name: savedInstrument.name,
+        images: savedInstrument.images,
+      },
+    };
   }
 
   async findAll(keyword?: string, labId?: string) {

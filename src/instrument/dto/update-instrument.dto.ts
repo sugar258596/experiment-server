@@ -4,31 +4,34 @@ import {
   IsEnum,
   IsNumber,
   MaxLength,
+  IsArray,
 } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { InstrumentStatus } from '../../common/enums/status.enum';
 import { Transform } from 'class-transformer';
 
 /**
- * 创建仪器DTO (支持文件上传)
+ * 更新仪器DTO (支持文件上传)
  * 用于接收 multipart/form-data 表单数据
  */
-export class CreateInstrumentDto {
-  @ApiProperty({
+export class UpdateInstrumentDto {
+  @ApiPropertyOptional({
     description: '仪器名称',
     example: '示波器',
   })
+  @IsOptional()
   @IsString()
   @MaxLength(100, { message: '仪器名称不能超过100个字符' })
-  name: string;
+  name?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: '仪器型号',
     example: 'DSO-X 2012A',
   })
+  @IsOptional()
   @IsString()
   @MaxLength(100, { message: '仪器型号不能超过100个字符' })
-  model: string;
+  model?: string;
 
   @ApiPropertyOptional({
     description: '仪器序列号',
@@ -95,7 +98,10 @@ export class CreateInstrumentDto {
   labId?: number;
 
   @ApiPropertyOptional({
-    description: '仪器图片文件(最多10张)',
+    description:
+      '仪器图片：上传文件则删除旧图片并使用新图片；传入JSON字符串则保留原有图片',
+    example:
+      '["https://example.com/image1.jpg", "https://example.com/image2.jpg"]',
     type: 'array',
     items: {
       type: 'string',
@@ -103,5 +109,5 @@ export class CreateInstrumentDto {
     },
   })
   @IsOptional()
-  images?: Express.Multer.File[];
+  images?: string | Express.Multer.File[];
 }

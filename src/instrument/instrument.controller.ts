@@ -4,10 +4,12 @@ import {
   Post,
   Body,
   Param,
+  Patch,
   Query,
   UseGuards,
   Req,
   ParseIntPipe,
+  UploadedFiles,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -20,10 +22,12 @@ import {
 } from '@nestjs/swagger';
 import { InstrumentService } from './instrument.service';
 import { CreateInstrumentDto } from './dto/create-instrument.dto';
+import { UpdateInstrumentDto } from './dto/update-instrument.dto';
 import { ApplyInstrumentDto } from './dto/apply-instrument.dto';
 import { ReportInstrumentDto } from './dto/report-instrument.dto';
 import { JwtAuthGuard, RolesGuard } from 'src/common/guards';
 import { Public, Roles } from 'src/common/decorators';
+import { MultipleImageUpload } from 'src/common/decorators/upload.decorator';
 
 import type { AuthenticatedRequest } from 'src/common/interfaces/request.interface';
 import { RepairStatus } from 'src/common/enums/status.enum';
@@ -38,11 +42,15 @@ export class InstrumentController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.TEACHER, Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()
+  @MultipleImageUpload('images', 10, 'instruments')
   @ApiOperation({
     summary: '创建仪器',
-    description: '添加新的仪器设备(教师及以上权限)',
+    description: '添加新的仪器设备(教师及以上权限)，支持上传最多10张图片',
   })
-  @ApiBody({ type: CreateInstrumentDto })
+  @ApiBody({
+    type: CreateInstrumentDto,
+    description: '创建仪器表单数据（multipart/form-data）',
+  })
   @ApiResponse({
     status: 201,
     description: '创建成功',
@@ -51,8 +59,11 @@ export class InstrumentController {
     status: 403,
     description: '权限不足',
   })
-  create(@Body() createInstrumentDto: CreateInstrumentDto) {
-    return this.instrumentService.create(createInstrumentDto);
+  create(
+    @Body() createInstrumentDto: CreateInstrumentDto,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+  ) {
+    return this.instrumentService.createWithFiles(createInstrumentDto, files);
   }
 
   @Get()
@@ -123,7 +134,42 @@ export class InstrumentController {
     return this.instrumentService.findOne(id);
   }
 
-  @Post(':id/apply')
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.TEACHER, Role.ADMIN, Role.SUPER_ADMIN)
+  @ApiBearerAuth()
+  @MultipleImageUpload('images', 10, 'instruments')
+  @ApiOperation({
+    summary: '更新仪器信息',
+    description:
+      '根据ID更新仪器信息(教师及以上权限)。images字段：上传文件则删除旧图片并使用新图片；传入JSON字符串则保持原有图片',
+  })
+  @ApiParam({ name: 'id', description: '仪器ID', example: 1 })
+  @ApiBody({
+    type: UpdateInstrumentDto,
+    description: '更新仪器表单数据（multipart/form-data）',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '更新成功',
+  })
+  @ApiResponse({
+    status: 403,
+    description: '权限不足',
+  })
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateInstrumentDto: UpdateInstrumentDto,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+  ) {
+    return this.instrumentService.updateWithFiles(
+      id,
+      updateInstrumentDto,
+      files,
+    );
+  }
+
+  @Post('apply/:id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
@@ -144,7 +190,7 @@ export class InstrumentController {
     return this.instrumentService.apply(id, req.user, applyDto);
   }
 
-  @Post('applications/:id/review')
+  @Post('applications//review/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.TEACHER, Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()
@@ -180,7 +226,7 @@ export class InstrumentController {
     );
   }
 
-  @Post(':id/repair')
+  @Post('repair/:id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
@@ -201,7 +247,7 @@ export class InstrumentController {
     return this.instrumentService.report(id, req.user, reportDto);
   }
 
-  @Post('repairs/:id/update')
+  @Post('repairs/update/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()
