@@ -4,7 +4,6 @@ import {
   IsEnum,
   IsNumber,
   MaxLength,
-  IsArray,
 } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { InstrumentStatus } from '../../common/enums/status.enum';
@@ -109,5 +108,5 @@ export class UpdateInstrumentDto {
     },
   })
   @IsOptional()
-  images?: string | Express.Multer.File[];
+  images?: string | Express.Multer.File[] = [];
 }

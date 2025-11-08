@@ -101,7 +101,7 @@ export class UpdateLabFormDto {
     return Array.isArray(value) ? value : [];
   })
   @IsArray()
-  equipmentList?: string[];
+  equipmentList?: string[] = [];
 
   @ApiPropertyOptional({
     description: '实验室标签(JSON字符串)',
@@ -120,7 +120,7 @@ export class UpdateLabFormDto {
     return Array.isArray(value) ? value : [];
   })
   @IsArray()
-  tags?: string[];
+  tags?: string[] = [];
 
   @ApiPropertyOptional({
     description:
@@ -143,5 +143,5 @@ export class UpdateLabFormDto {
     ],
   })
   @IsOptional()
-  images?: Express.Multer.File[] | string;
+  images?: Express.Multer.File[] | string = [];
 }

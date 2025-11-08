@@ -43,7 +43,7 @@ export class CreateNewsFormDto {
     return Array.isArray(value) ? value : [];
   })
   @IsArray()
-  tags?: string[];
+  tags?: string[] = [];
 
   @ApiPropertyOptional({
     description: '封面图片文件',
@@ -62,5 +62,5 @@ export class CreateNewsFormDto {
     },
   })
   @IsOptional()
-  images?: Express.Multer.File[];
+  images?: Express.Multer.File[] = [];
 }

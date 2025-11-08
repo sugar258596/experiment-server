@@ -103,5 +103,5 @@ export class CreateInstrumentDto {
     },
   })
   @IsOptional()
-  images?: Express.Multer.File[];
+  images?: Express.Multer.File[] = [];
 }

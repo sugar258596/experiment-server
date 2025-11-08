@@ -41,7 +41,7 @@ export class CreateNewsDto {
   })
   @IsOptional()
   @IsArray()
-  images?: string[];
+  images?: string[] = [];
 
   @ApiPropertyOptional({
     description: '新闻标签',
@@ -49,5 +49,5 @@ export class CreateNewsDto {
   })
   @IsOptional()
   @IsArray()
-  tags?: string[];
+  tags?: string[] = [];
 }

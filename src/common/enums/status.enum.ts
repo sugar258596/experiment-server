@@ -253,6 +253,7 @@ export const InstrumentStatusLabels = {
   [InstrumentStatus.INACTIVE]: '停用',
   [InstrumentStatus.MAINTENANCE]: '维护中',
   [InstrumentStatus.FAULT]: '故障',
+  [InstrumentStatus.BORROWED]: '借出',
 };
 
 /** 故障类型标签 */

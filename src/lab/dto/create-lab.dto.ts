@@ -54,7 +54,7 @@ export class CreateLabDto {
   })
   @IsOptional()
   @IsArray()
-  images?: string[];
+  images?: string[] = [];
 
   @ApiPropertyOptional({
     description: '实验室状态',
@@ -79,7 +79,7 @@ export class CreateLabDto {
   })
   @IsOptional()
   @IsArray()
-  equipmentList?: string[];
+  equipmentList?: string[] = [];
 
   @ApiPropertyOptional({
     description: '实验室标签',
@@ -87,5 +87,5 @@ export class CreateLabDto {
   })
   @IsOptional()
   @IsArray()
-  tags?: string[];
+  tags?: string[] = [];
 }

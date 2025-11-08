@@ -96,7 +96,7 @@ export class CreateLabFormDto {
     return Array.isArray(value) ? value : [];
   })
   @IsArray()
-  equipmentList?: string[];
+  equipmentList?: string[] = [];
 
   @ApiPropertyOptional({
     description: '实验室标签(JSON字符串)',
@@ -115,7 +115,7 @@ export class CreateLabFormDto {
     return Array.isArray(value) ? value : [];
   })
   @IsArray()
-  tags?: string[];
+  tags?: string[] = [];
 
   @ApiPropertyOptional({
     description: '实验室图片文件(最多10张)',
@@ -126,5 +126,5 @@ export class CreateLabFormDto {
     },
   })
   @IsOptional()
-  images?: Express.Multer.File[];
+  images?: Express.Multer.File[] = [];
 }

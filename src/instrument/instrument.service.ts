@@ -9,7 +9,11 @@ import { instanceToPlain } from 'class-transformer';
 import { Instrument } from './entities/instrument.entity';
 import { InstrumentApplication } from './entities/instrument-application.entity';
 import { InstrumentRepair } from './entities/instrument-repair.entity';
-import { ApplicationStatus, RepairStatus } from '../common/enums/status.enum';
+import {
+  ApplicationStatus,
+  RepairStatus,
+  InstrumentStatus,
+} from '../common/enums/status.enum';
 import { CreateInstrumentDto } from './dto/create-instrument.dto';
 import { UpdateInstrumentDto } from './dto/update-instrument.dto';
 import { ApplyInstrumentDto } from './dto/apply-instrument.dto';
@@ -17,6 +21,7 @@ import { ReportInstrumentDto } from './dto/report-instrument.dto';
 import { UserPayload } from '../common/interfaces/request.interface';
 import { Lab } from '../lab/entities/lab.entity';
 import { generateFileUrl, deleteFile } from '../config/upload.config';
+import { QueryInstrumentDto } from './dto/query-instrument.dto';
 
 @Injectable()
 export class InstrumentService {
@@ -143,7 +148,8 @@ export class InstrumentService {
     }
 
     // 构建更新数据（排除images字段，因为已经单独处理）
-    const { images, ...updateData } = updateInstrumentDto;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { images: _images, ...updateData } = updateInstrumentDto;
 
     // 更新仪器
     Object.assign(instrument, {
@@ -162,11 +168,16 @@ export class InstrumentService {
     };
   }
 
-  async findAll(keyword?: string, labId?: string) {
+  /**
+   * 查询仪器列表（支持关键词、实验室ID、状态筛选和分页）
+   */
+  async findAll(query: QueryInstrumentDto) {
+    const { keyword, labId, status, page = 1, pageSize = 10 } = query;
     const queryBuilder = this.instrumentRepository
       .createQueryBuilder('instrument')
       .leftJoinAndSelect('instrument.lab', 'lab');
 
+    // 关键词搜索（名称或型号）
     if (keyword) {
       queryBuilder.andWhere(
         '(instrument.name LIKE :keyword OR instrument.model LIKE :keyword)',
@@ -176,11 +187,42 @@ export class InstrumentService {
       );
     }
 
+    // 实验室ID筛选
     if (labId) {
-      queryBuilder.andWhere('lab.id = :labId', { labId });
+      queryBuilder.andWhere('instrument.labId = :labId', { labId });
     }
 
-    return await queryBuilder.getMany();
+    // 状态筛选
+    if (status !== undefined && status !== null) {
+      queryBuilder.andWhere('instrument.status = :status', { status });
+    }
+
+    // 分页
+    const skip = (page - 1) * pageSize;
+    queryBuilder.skip(skip).take(pageSize);
+
+    // 按创建时间倒序排列
+    queryBuilder.orderBy('instrument.createdAt', 'DESC');
+
+    // 获取数据和总数
+    const [data, total] = await queryBuilder.getManyAndCount();
+
+    const instrument = data.map((item) => {
+      const { lab, ...inst } = item;
+      return {
+        ...inst,
+        lab: {
+          id: lab.id,
+          name: lab.name,
+          department: lab.department,
+        },
+      };
+    });
+
+    return {
+      data: instrument,
+      total,
+    };
   }
 
   async findOne(id: number): Promise<Instrument> {
@@ -202,7 +244,20 @@ export class InstrumentService {
     applyDto: ApplyInstrumentDto,
   ) {
     // 验证仪器是否存在
-    await this.findOne(instrumentId);
+    const instrument = await this.findOne(instrumentId);
+
+    // 验证仪器状态
+    if (instrument.status !== InstrumentStatus.ACTIVE) {
+      const statusLabels = {
+        [InstrumentStatus.INACTIVE]: '停用',
+        [InstrumentStatus.MAINTENANCE]: '维护中',
+        [InstrumentStatus.FAULT]: '故障',
+        [InstrumentStatus.BORROWED]: '借出',
+      };
+      throw new BadRequestException(
+        `该仪器当前状态为"${statusLabels[instrument.status]}"，暂时无法申请使用`,
+      );
+    }
 
     if (applyDto.startTime >= applyDto.endTime) {
       throw new BadRequestException('结束时间必须大于开始时间');
@@ -244,8 +299,18 @@ export class InstrumentService {
     if (!approved && reason) {
       application.rejectionReason = reason;
     }
+    await this.applicationRepository.save(application);
 
-    return await this.applicationRepository.save(application);
+    // 如果审核通过，将仪器状态设置为借出
+    if (approved) {
+      const instrument = application.instrument;
+      instrument.status = InstrumentStatus.BORROWED;
+      await this.instrumentRepository.save(instrument);
+    }
+
+    return {
+      message: '审核成功',
+    };
   }
 
   async report(

@@ -33,7 +33,7 @@ export class Instrument {
   @Column({
     type: 'int',
     default: InstrumentStatus.ACTIVE,
-    comment: '设备状态:0-正常,1-停用,2-维护中,3-故障',
+    comment: '设备状态:0-正常,1-停用,2-维护中,3-故障,4-借出',
   })
   status: InstrumentStatus;
 

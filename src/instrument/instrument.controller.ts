@@ -17,7 +17,6 @@ import {
   ApiResponse,
   ApiBearerAuth,
   ApiParam,
-  ApiQuery,
   ApiBody,
 } from '@nestjs/swagger';
 import { InstrumentService } from './instrument.service';
@@ -25,6 +24,7 @@ import { CreateInstrumentDto } from './dto/create-instrument.dto';
 import { UpdateInstrumentDto } from './dto/update-instrument.dto';
 import { ApplyInstrumentDto } from './dto/apply-instrument.dto';
 import { ReportInstrumentDto } from './dto/report-instrument.dto';
+import { QueryInstrumentDto } from './dto/query-instrument.dto';
 import { JwtAuthGuard, RolesGuard } from 'src/common/guards';
 import { Public, Roles } from 'src/common/decorators';
 import { MultipleImageUpload } from 'src/common/decorators/upload.decorator';
@@ -68,15 +68,20 @@ export class InstrumentController {
 
   @Get()
   @Public()
-  @ApiOperation({ summary: '获取仪器列表', description: '查询所有仪器设备' })
-  @ApiQuery({ name: 'keyword', required: false, description: '搜索关键词' })
-  @ApiQuery({ name: 'labId', required: false, description: '实验室ID' })
+  @ApiOperation({
+    summary: '获取仪器列表',
+    description:
+      '查询所有仪器设备，支持关键词搜索、实验室ID筛选、状态筛选和分页',
+  })
   @ApiResponse({
     status: 200,
-    description: '查询成功',
+    description: '查询成功，返回分页数据',
+    schema: {
+      type: 'object',
+    },
   })
-  findAll(@Query('keyword') keyword?: string, @Query('labId') labId?: string) {
-    return this.instrumentService.findAll(keyword, labId);
+  findAll(@Query() query: QueryInstrumentDto) {
+    return this.instrumentService.findAll(query);
   }
 
   @Get('applications')
