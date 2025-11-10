@@ -102,49 +102,6 @@ export class UserController {
     description: '获取成功',
     schema: {
       type: 'object',
-      properties: {
-        id: { type: 'number', description: '用户ID' },
-        username: { type: 'string', description: '用户名' },
-        nickname: { type: 'string', description: '用户昵称' },
-        avatar: { type: 'string', description: '用户头像URL', nullable: true },
-        email: { type: 'string', description: '用户邮箱', nullable: true },
-        phone: { type: 'string', description: '用户手机号', nullable: true },
-        department: {
-          type: 'string',
-          description: '所属院系/部门',
-          nullable: true,
-        },
-        role: {
-          type: 'string',
-          description:
-            '用户角色:student-学生,teacher-教师,admin-管理员,super_admin-超级管理员',
-        },
-        status: {
-          type: 'string',
-          description: '用户状态:ACTIVE-正常,INACTIVE-禁用,BANNED-封禁',
-        },
-        teachingTags: {
-          type: 'array',
-          items: { type: 'string' },
-          description: '教学标签数组',
-          nullable: true,
-        },
-        auditTimeSlots: {
-          type: 'object',
-          description: '审核时间段配置',
-          nullable: true,
-        },
-        createdAt: {
-          type: 'string',
-          format: 'date-time',
-          description: '创建时间',
-        },
-        updatedAt: {
-          type: 'string',
-          format: 'date-time',
-          description: '更新时间',
-        },
-      },
     },
   })
   @ApiResponse({

@@ -2,10 +2,10 @@ import {
   Controller,
   Get,
   Post,
-  Delete,
   Param,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -17,6 +17,7 @@ import {
 import { FavoritesService } from './favorites.service';
 import { JwtAuthGuard } from 'src/common/guards';
 import type { AuthenticatedRequest } from 'src/common/interfaces/request.interface';
+import { SearchAppointmentDto } from 'src/appointment/dto/search-appointment.dto';
 
 @ApiTags('我的收藏')
 @Controller('favorites')
@@ -25,58 +26,37 @@ import type { AuthenticatedRequest } from 'src/common/interfaces/request.interfa
 export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
 
-  @Post(':labId')
+  @Post('appointments/:labId')
   @ApiOperation({
-    summary: '添加收藏',
-    description: '将实验室添加到我的收藏',
+    summary: '切换收藏状态实验室',
+    description: '切换实验室的收藏状态，如果已收藏则取消，如果未收藏则添加',
   })
-  @ApiParam({ name: 'labId', description: '实验室ID', example: 'lab-001' })
-  @ApiResponse({
-    status: 201,
-    description: '收藏成功',
-  })
-  add(@Param('labId') labId: number, @Req() req: AuthenticatedRequest) {
-    return this.favoritesService.add(req.user.id, labId);
-  }
-
-  @Delete(':labId')
-  @ApiOperation({
-    summary: '取消收藏',
-    description: '从我的收藏中移除实验室',
-  })
-  @ApiParam({ name: 'labId', description: '实验室ID', example: 'lab-001' })
+  @ApiParam({ name: 'labId', description: '实验室ID', example: 1 })
   @ApiResponse({
     status: 200,
-    description: '取消成功',
+    description: '操作成功',
+    schema: {
+      type: 'object',
+    },
   })
-  remove(@Param('labId') labId: number, @Req() req: AuthenticatedRequest) {
-    return this.favoritesService.remove(req.user.id, labId);
+  toggle(@Param('labId') labId: number, @Req() req: AuthenticatedRequest) {
+    return this.favoritesService.toggle(req.user.id, labId);
   }
 
-  @Get()
+  @Get('appointments')
   @ApiOperation({
-    summary: '获取我的收藏',
-    description: '查询当前用户收藏的所有实验室',
+    summary: '获取我的收藏实验室',
+    description:
+      '查询当前用户收藏的所有实验室，支持分页和筛选（关键词搜索、院系筛选）',
   })
   @ApiResponse({
     status: 200,
     description: '查询成功',
   })
-  getMyFavorites(@Req() req: AuthenticatedRequest) {
-    return this.favoritesService.getMyFavorites(req.user.id);
-  }
-
-  @Get(':labId/check')
-  @ApiOperation({
-    summary: '检查是否收藏',
-    description: '检查指定实验室是否已收藏',
-  })
-  @ApiParam({ name: 'labId', description: '实验室ID', example: 'lab-001' })
-  @ApiResponse({
-    status: 200,
-    description: '查询成功',
-  })
-  isFavorited(@Param('labId') labId: number, @Req() req: AuthenticatedRequest) {
-    return this.favoritesService.isFavorited(req.user.id, labId);
+  getMyFavorites(
+    @Req() req: AuthenticatedRequest,
+    @Query() searchDto: SearchAppointmentDto,
+  ) {
+    return this.favoritesService.getMyFavorites(req.user.id, searchDto);
   }
 }

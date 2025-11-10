@@ -5,9 +5,10 @@ import {
   IsString,
   IsDateString,
 } from 'class-validator';
+import { PaginationDto } from 'src/common/Dto';
 import { AppointmentStatus } from 'src/common/enums/status.enum';
 
-export class SearchAppointmentDto {
+export class SearchAppointmentDto extends PaginationDto {
   @IsOptional()
   @IsEnum(AppointmentStatus)
   status?: AppointmentStatus;
@@ -31,10 +32,4 @@ export class SearchAppointmentDto {
   @IsOptional()
   @IsString()
   department?: string;
-
-  @IsOptional()
-  page?: number;
-
-  @IsOptional()
-  limit?: number;
 }

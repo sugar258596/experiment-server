@@ -73,9 +73,9 @@ export class AppointmentService {
       endDate,
       department,
       page = 1,
-      limit = 10,
+      pageSize = 10,
     } = searchDto;
-    const skip = (page - 1) * limit;
+    const skip = (page - 1) * pageSize;
 
     const queryBuilder = this.appointmentRepository
       .createQueryBuilder('appointment')
@@ -111,7 +111,7 @@ export class AppointmentService {
 
     queryBuilder
       .skip(skip)
-      .take(limit)
+      .take(pageSize)
       .orderBy('appointment.createdAt', 'DESC');
 
     const [appointments, total] = await queryBuilder.getManyAndCount();
@@ -122,8 +122,6 @@ export class AppointmentService {
     return {
       data: serializedAppointments,
       total,
-      page,
-      limit,
     };
   }
 
