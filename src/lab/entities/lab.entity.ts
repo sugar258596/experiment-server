@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
   OneToMany,
 } from 'typeorm';
 import { Appointment } from '../../appointment/entities/appointment.entity';
@@ -61,6 +62,9 @@ export class Lab {
 
   @UpdateDateColumn({ comment: '更新时间' })
   updatedAt: Date;
+
+  @DeleteDateColumn({ comment: '软删除时间' })
+  deletedAt: Date;
 
   @OneToMany(() => Appointment, (appointment) => appointment.lab)
   appointments: Appointment[];

@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
   ManyToOne,
   OneToMany,
   JoinColumn,
@@ -55,6 +56,9 @@ export class Instrument {
 
   @UpdateDateColumn({ comment: '更新时间' })
   updatedAt: Date;
+
+  @DeleteDateColumn({ comment: '软删除时间' })
+  deletedAt: Date;
 
   @OneToMany(
     () => InstrumentApplication,

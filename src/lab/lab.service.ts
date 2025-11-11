@@ -217,7 +217,8 @@ export class LabService {
 
   async remove(id: number): Promise<void> {
     const lab = await this.findOne(id);
-    await this.labRepository.remove(lab);
+    // 使用软删除而非真正删除
+    await this.labRepository.softRemove(lab);
   }
 
   async getPopularLabs(searchDto: PaginationDto) {

@@ -3,12 +3,13 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
   Request,
   ParseIntPipe,
+  UploadedFile,
+  Put,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -21,11 +22,13 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard, RolesGuard } from '../common/guards';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { UpdateUserByAdminDto } from './dto/update-user-by-admin.dto';
 import { CheckExistenceDto } from './dto/check-existence.dto';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
 import { Public } from '../common/decorators';
+import { AvatarUpload } from '../common/decorators/upload.decorator';
 
 interface RequestWithUser extends Request {
   user: {
@@ -112,6 +115,40 @@ export class UserController {
     return this.userService.getCurrentUser(req.user);
   }
 
+  @Put('profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @AvatarUpload('avatar', 'avatars')
+  @ApiOperation({
+    summary: '更新个人信息',
+    description:
+      '用户更新自己的个人信息,只能修改基本信息(昵称、头像、邮箱、手机号、院系等),不能修改角色、状态、密码。头像字段：上传文件则删除旧头像并使用新头像；传入JSON字符串则保持原有头像',
+  })
+  @ApiBody({ type: UpdateProfileDto })
+  @ApiResponse({
+    status: 200,
+    description: '更新成功',
+  })
+  @ApiResponse({
+    status: 401,
+    description: '未授权访问',
+  })
+  @ApiResponse({
+    status: 409,
+    description: '邮箱已被其他用户使用',
+  })
+  async updateProfile(
+    @Request() req: RequestWithUser,
+    @Body() updateProfileDto: UpdateProfileDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.userService.updateProfileWithFile(
+      req.user.sub,
+      updateProfileDto,
+      file,
+    );
+  }
+
   @Get()
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN, Role.SUPER_ADMIN)
@@ -145,19 +182,44 @@ export class UserController {
     return this.userService.findOne(id);
   }
 
-  @Patch(':id')
-  @ApiOperation({ summary: '更新用户信息', description: '根据ID更新用户信息' })
+  @Post(':id')
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN, Role.SUPER_ADMIN)
+  @ApiBearerAuth()
+  @AvatarUpload('avatar', 'avatars')
+  @ApiOperation({
+    summary: '管理员更新用户信息',
+    description:
+      '管理员更新用户信息,可以修改角色、状态以及所有基本信息,但不能修改密码(仅管理员可操作)。头像字段：上传文件则删除旧头像并使用新头像；传入JSON字符串则保持原有头像',
+  })
   @ApiParam({ name: 'id', description: '用户ID', example: '1' })
-  @ApiBody({ type: UpdateUserDto })
+  @ApiBody({ type: UpdateUserByAdminDto })
   @ApiResponse({
     status: 200,
     description: '更新成功',
   })
-  update(
+  @ApiResponse({
+    status: 403,
+    description: '权限不足',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '用户不存在',
+  })
+  @ApiResponse({
+    status: 409,
+    description: '邮箱已被其他用户使用',
+  })
+  updateUserByAdmin(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() updateUserByAdminDto: UpdateUserByAdminDto,
+    @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.userService.update(id, updateUserDto);
+    return this.userService.updateUserByAdminWithFile(
+      id,
+      updateUserByAdminDto,
+      file,
+    );
   }
 
   @Delete(':id')

@@ -6,10 +6,12 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { UpdateUserByAdminDto } from './dto/update-user-by-admin.dto';
 import { User } from './entities/user.entity';
 import { Status } from '../common/enums/status.enum';
 import { CheckExistenceDto } from './dto/check-existence.dto';
+import { generateFileUrl, deleteFile } from '../config/upload.config';
 
 interface JwtPayload {
   sub: number;
@@ -86,7 +88,6 @@ export class UserService {
         'role',
         'status',
         'teachingTags',
-        'auditTimeSlots',
         'createdAt',
         'updatedAt',
       ],
@@ -139,7 +140,6 @@ export class UserService {
         'role',
         'status',
         'teachingTags',
-        'auditTimeSlots',
         'createdAt',
         'updatedAt',
       ],
@@ -152,7 +152,7 @@ export class UserService {
     return user;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+  async update(id: number, updateUserDto: UpdateUserByAdminDto): Promise<User> {
     const user = await this.findOne(id);
 
     // 如果更新邮箱,需要检查新邮箱是否已被其他用户使用
@@ -172,6 +172,204 @@ export class UserService {
 
   async remove(id: number): Promise<void> {
     const user = await this.findOne(id);
-    await this.userRepository.remove(user);
+    // 使用软删除而非真正删除
+    await this.userRepository.softRemove(user);
+  }
+
+  /**
+   * 用户更新自己的个人信息
+   * 只能修改基本信息，不能修改角色、状态、密码
+   */
+  async updateProfile(
+    userId: number,
+    updateProfileDto: UpdateProfileDto,
+  ): Promise<User> {
+    const user = await this.findOne(userId);
+
+    // 如果更新邮箱,需要检查新邮箱是否已被其他用户使用
+    if (updateProfileDto.email && updateProfileDto.email !== user.email) {
+      const existingUserByEmail = await this.userRepository.findOne({
+        where: { email: updateProfileDto.email },
+      });
+
+      if (existingUserByEmail && existingUserByEmail.id !== userId) {
+        throw new ConflictException('邮箱已被其他用户使用');
+      }
+    }
+
+    // 更新用户信息（只更新允许的字段）
+    const allowedFields: (keyof UpdateProfileDto)[] = [
+      'nickname',
+      'avatar',
+      'email',
+      'phone',
+      'department',
+      'teachingTags',
+    ];
+
+    allowedFields.forEach((field) => {
+      if (updateProfileDto[field] !== undefined) {
+        user[field] = updateProfileDto[field] as never;
+      }
+    });
+
+    return await this.userRepository.save(user);
+  }
+
+  /**
+   * 用户更新自己的个人信息（支持文件上传）
+   * 只能修改基本信息，不能修改角色、状态、密码
+   */
+  async updateProfileWithFile(
+    userId: number,
+    updateProfileDto: UpdateProfileDto,
+    file: Express.Multer.File,
+  ): Promise<User> {
+    const user = await this.findOne(userId);
+    const oldAvatar = user.avatar;
+
+    // 如果更新邮箱,需要检查新邮箱是否已被其他用户使用
+    if (updateProfileDto.email && updateProfileDto.email !== user.email) {
+      const existingUserByEmail = await this.userRepository.findOne({
+        where: { email: updateProfileDto.email },
+      });
+
+      if (existingUserByEmail && existingUserByEmail.id !== userId) {
+        throw new ConflictException('邮箱已被其他用户使用');
+      }
+    }
+
+    // 处理头像更新逻辑
+    let finalAvatar: string | undefined = oldAvatar;
+    let shouldDeleteOldAvatar = false;
+
+    // 判断avatar字段的类型
+    if (file) {
+      // 情况1：上传了新文件
+      const avatarUrl = generateFileUrl('avatars', file.filename);
+      finalAvatar = avatarUrl;
+      shouldDeleteOldAvatar = true; // 需要删除旧头像
+    } else if (updateProfileDto.avatar) {
+      // 情况2：传入的是字符串（保持原有头像）
+      finalAvatar = updateProfileDto.avatar;
+      shouldDeleteOldAvatar = false;
+    }
+
+    // 删除旧头像文件（仅在重新上传时）
+    if (shouldDeleteOldAvatar && oldAvatar) {
+      deleteFile(oldAvatar);
+    }
+
+    // 更新用户信息（只更新允许的字段）
+    const allowedFields: (keyof UpdateProfileDto)[] = [
+      'nickname',
+      'email',
+      'phone',
+      'department',
+      'teachingTags',
+    ];
+
+    allowedFields.forEach((field) => {
+      if (updateProfileDto[field] !== undefined) {
+        user[field] = updateProfileDto[field] as never;
+      }
+    });
+
+    // 单独设置avatar
+    user.avatar = finalAvatar;
+
+    return await this.userRepository.save(user);
+  }
+
+  /**
+   * 管理员更新用户信息
+   * 可以修改角色、状态以及所有基本信息，但不能修改密码
+   */
+  async updateUserByAdmin(
+    userId: number,
+    updateUserByAdminDto: UpdateUserByAdminDto,
+  ): Promise<User> {
+    const user = await this.findOne(userId);
+
+    // 如果更新邮箱,需要检查新邮箱是否已被其他用户使用
+    if (
+      updateUserByAdminDto.email &&
+      updateUserByAdminDto.email !== user.email
+    ) {
+      const existingUserByEmail = await this.userRepository.findOne({
+        where: { email: updateUserByAdminDto.email },
+      });
+
+      if (existingUserByEmail && existingUserByEmail.id !== userId) {
+        throw new ConflictException('邮箱已被其他用户使用');
+      }
+    }
+
+    // 更新用户信息
+    Object.assign(user, updateUserByAdminDto);
+    return await this.userRepository.save(user);
+  }
+
+  /**
+   * 管理员更新用户信息（支持文件上传）
+   * 可以修改角色、状态以及所有基本信息，但不能修改密码
+   */
+  async updateUserByAdminWithFile(
+    userId: number,
+    updateUserByAdminDto: UpdateUserByAdminDto,
+    file: Express.Multer.File,
+  ) {
+    const user = await this.findOne(userId);
+    const oldAvatar = user.avatar;
+
+    // 如果更新邮箱,需要检查新邮箱是否已被其他用户使用
+    if (
+      updateUserByAdminDto.email &&
+      updateUserByAdminDto.email !== user.email
+    ) {
+      const existingUserByEmail = await this.userRepository.findOne({
+        where: { email: updateUserByAdminDto.email },
+      });
+
+      if (existingUserByEmail && existingUserByEmail.id !== userId) {
+        throw new ConflictException('邮箱已被其他用户使用');
+      }
+    }
+
+    // 处理头像更新逻辑
+    let finalAvatar: string | undefined = oldAvatar;
+    let shouldDeleteOldAvatar = false;
+
+    // 判断avatar字段的类型
+    if (file) {
+      // 情况1：上传了新文件
+      const avatarUrl = generateFileUrl('avatars', file.filename);
+      finalAvatar = avatarUrl;
+      shouldDeleteOldAvatar = true; // 需要删除旧头像
+    } else if (updateUserByAdminDto.avatar) {
+      // 情况2：传入的是字符串（保持原有头像）
+      finalAvatar = updateUserByAdminDto.avatar;
+      shouldDeleteOldAvatar = false;
+    }
+
+    // 删除旧头像文件（仅在重新上传时）
+    if (shouldDeleteOldAvatar && oldAvatar) {
+      deleteFile(oldAvatar);
+    }
+
+    // 构建更新数据（排除avatar字段，因为已经单独处理）
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { avatar: _avatar, ...updateData } = updateUserByAdminDto;
+
+    // 更新用户信息
+    Object.assign(user, {
+      ...updateData,
+      avatar: finalAvatar,
+    });
+
+    await this.userRepository.save(user);
+    return {
+      message: '更新成功',
+    };
   }
 }

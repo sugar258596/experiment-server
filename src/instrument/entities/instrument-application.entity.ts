@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
@@ -64,4 +65,7 @@ export class InstrumentApplication {
 
   @UpdateDateColumn({ comment: '更新时间' })
   updatedAt: Date;
+
+  @DeleteDateColumn({ comment: '软删除时间' })
+  deletedAt: Date;
 }

@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
   OneToMany,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
@@ -60,21 +61,21 @@ export class User {
   @Column({ nullable: true, comment: '所属院系/部门' })
   department: string;
 
-  @Column({ type: 'text', nullable: true, comment: '教学标签数组' })
-  teachingTags: string[];
-
   @Column({
-    type: 'json',
+    type: 'simple-array',
     nullable: true,
-    comment: '审核时间段配置(JSON格式)',
+    comment: '教学标签数组(逗号分隔)',
   })
-  auditTimeSlots: any;
+  teachingTags: string[];
 
   @CreateDateColumn({ comment: '创建时间' })
   createdAt: Date;
 
   @UpdateDateColumn({ comment: '更新时间' })
   updatedAt: Date;
+
+  @DeleteDateColumn({ comment: '软删除时间' })
+  deletedAt: Date;
 
   @OneToMany(() => Appointment, (appointment) => appointment.user)
   appointments: Appointment[];

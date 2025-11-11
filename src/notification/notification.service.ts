@@ -90,7 +90,8 @@ export class NotificationService {
       throw new NotFoundException('通知不存在');
     }
 
-    await this.notificationRepository.remove(notification);
+    // 使用软删除而非真正删除
+    await this.notificationRepository.softRemove(notification);
     return { message: '通知已删除' };
   }
 }

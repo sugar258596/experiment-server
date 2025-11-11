@@ -4,6 +4,7 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
+  DeleteDateColumn,
   Column,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
@@ -30,4 +31,7 @@ export class Favorites {
 
   @CreateDateColumn({ comment: '收藏时间' })
   createdAt: Date;
+
+  @DeleteDateColumn({ comment: '软删除时间' })
+  deletedAt: Date;
 }

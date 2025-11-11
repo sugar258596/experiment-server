@@ -18,12 +18,4 @@ export class LoginDto {
   })
   @IsString()
   password: string;
-
-  @ApiPropertyOptional({
-    description: '记住登录状态',
-    example: false,
-  })
-  @IsOptional()
-  @IsBoolean()
-  remember?: boolean;
 }
