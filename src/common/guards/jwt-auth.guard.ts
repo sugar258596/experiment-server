@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 import { JwtErrorHelper } from '../helpers/jwt-error.helper';
+import { JwtPayload, RequestUser } from '../interfaces/jwt-payload.interface';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -30,9 +31,9 @@ export class JwtAuthGuard implements CanActivate {
       // 公开路由:如果有token就验证并设置用户信息,没有token就忽略
       if (token) {
         try {
-          const payload = await this.jwtService.verifyAsync(token);
+          const payload = await this.jwtService.verifyAsync<JwtPayload>(token);
           // 标准化user对象:将sub转换为id
-          const user = {
+          const user: RequestUser = {
             id: payload.sub,
             username: payload.username,
             email: payload.email || '',
@@ -40,7 +41,7 @@ export class JwtAuthGuard implements CanActivate {
             status: payload.status !== undefined ? payload.status : 1,
           };
           request['user'] = user;
-        } catch (error) {
+        } catch {
           // 公开路由中token无效时不抛出错误,只是不设置user
         }
       }
@@ -53,9 +54,9 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(token);
+      const payload = await this.jwtService.verifyAsync<JwtPayload>(token);
       // 标准化user对象:将sub转换为id
-      const user = {
+      const user: RequestUser = {
         id: payload.sub,
         username: payload.username,
         email: payload.email || '',

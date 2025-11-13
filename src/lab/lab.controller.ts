@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Query,
@@ -116,7 +115,7 @@ export class LabController {
     return this.labService.findOne(id);
   }
 
-  @Patch(':id')
+  @Post(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.TEACHER, Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()
@@ -124,7 +123,7 @@ export class LabController {
   @ApiOperation({
     summary: '更新实验室信息',
     description:
-      '根据ID更新实验室信息(教师及以上权限)。images字段：上传文件则删除旧图片并使用新图片；传入JSON字符串则保持原有图片',
+      '根据ID更新实验室信息(教师及以上权限)。图片自动检测模式：1. 仅上传文件 - 替换所有旧图片；2. 上传文件+传入images(旧图URL字符串/数组) - 混合模式，保留指定的旧图片并追加新图片；3. 仅传入images - 保持/调整图片；4. 都不传 - 保持原样',
   })
   @ApiParam({ name: 'id', description: '实验室ID', example: 1 })
   @ApiBody({
@@ -134,37 +133,6 @@ export class LabController {
   @ApiResponse({
     status: 200,
     description: '更新成功',
-    schema: {
-      type: 'object',
-      properties: {
-        message: {
-          type: 'string',
-          example: '更新成功',
-        },
-        data: {
-          type: 'object',
-          properties: {
-            id: {
-              type: 'number',
-              example: 1,
-            },
-            name: {
-              type: 'string',
-              example: '计算机基础实验室',
-            },
-            images: {
-              type: 'array',
-              items: {
-                type: 'string',
-              },
-              example: [
-                'http://localhost:3000/static/uploads/labs/1234567890.jpg',
-              ],
-            },
-          },
-        },
-      },
-    },
   })
   update(
     @Param('id', ParseIntPipe) id: number,

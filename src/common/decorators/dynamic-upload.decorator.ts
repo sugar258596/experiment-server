@@ -24,7 +24,7 @@ const ensureDirectoryExists = (dirPath: string): void => {
 // 动态路径单文件上传装饰器
 export function DynamicSingleFileUpload(
   fieldName: string = 'file',
-  pathExtractor: (req: any) => string,
+  pathExtractor: (req: Express.Request) => string,
   allowedTypes: string[] = [
     'image/jpeg',
     'image/jpg',
@@ -36,7 +36,11 @@ export function DynamicSingleFileUpload(
 ) {
   const multerOptions = {
     storage: diskStorage({
-      destination: (req, file, cb) => {
+      destination: (
+        req: Express.Request,
+        file: Express.Multer.File,
+        cb: (error: Error | null, destination: string) => void,
+      ) => {
         try {
           const dynamicPath = pathExtractor(req);
           const uploadPath = join(
@@ -47,16 +51,24 @@ export function DynamicSingleFileUpload(
           );
           ensureDirectoryExists(uploadPath);
           cb(null, uploadPath);
-        } catch (error) {
+        } catch {
           cb(new BadRequestException('无法确定上传路径'), '');
         }
       },
-      filename: (req, file, cb) => {
+      filename: (
+        req: Express.Request,
+        file: Express.Multer.File,
+        cb: (error: Error | null, filename: string) => void,
+      ) => {
         const filename = generateFileName(file.originalname);
         cb(null, filename);
       },
     }),
-    fileFilter: (req, file, cb) => {
+    fileFilter: (
+      req: Express.Request,
+      file: Express.Multer.File,
+      cb: (error: Error | null, acceptFile: boolean) => void,
+    ) => {
       if (allowedTypes.includes(file.mimetype)) {
         cb(null, true);
       } else {
@@ -92,7 +104,7 @@ export function DynamicSingleFileUpload(
 export function DynamicMultipleFileUpload(
   fieldName: string = 'files',
   maxCount: number = 10,
-  pathExtractor: (req: any) => string,
+  pathExtractor: (req: Express.Request) => string,
   allowedTypes: string[] = [
     'image/jpeg',
     'image/jpg',
@@ -104,7 +116,11 @@ export function DynamicMultipleFileUpload(
 ) {
   const multerOptions = {
     storage: diskStorage({
-      destination: (req, file, cb) => {
+      destination: (
+        req: Express.Request,
+        file: Express.Multer.File,
+        cb: (error: Error | null, destination: string) => void,
+      ) => {
         try {
           const dynamicPath = pathExtractor(req);
           const uploadPath = join(
@@ -115,16 +131,24 @@ export function DynamicMultipleFileUpload(
           );
           ensureDirectoryExists(uploadPath);
           cb(null, uploadPath);
-        } catch (error) {
+        } catch {
           cb(new BadRequestException('无法确定上传路径'), '');
         }
       },
-      filename: (req, file, cb) => {
+      filename: (
+        req: Express.Request,
+        file: Express.Multer.File,
+        cb: (error: Error | null, filename: string) => void,
+      ) => {
         const filename = generateFileName(file.originalname);
         cb(null, filename);
       },
     }),
-    fileFilter: (req, file, cb) => {
+    fileFilter: (
+      req: Express.Request,
+      file: Express.Multer.File,
+      cb: (error: Error | null, acceptFile: boolean) => void,
+    ) => {
       if (allowedTypes.includes(file.mimetype)) {
         cb(null, true);
       } else {

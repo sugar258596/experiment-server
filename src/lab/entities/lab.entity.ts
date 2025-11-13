@@ -10,6 +10,7 @@ import {
 import { Appointment } from '../../appointment/entities/appointment.entity';
 import { Favorites } from '../../favorites/entities/favorites.entity';
 import { Evaluation } from '../../evaluation/entities/evaluation.entity';
+import { Instrument } from '../../instrument/entities/instrument.entity';
 import { LabStatus } from '../../common/enums/status.enum';
 
 @Entity('labs')
@@ -42,9 +43,6 @@ export class Lab {
   @Column({ comment: '所属院系/部门' })
   department: string;
 
-  @Column({ type: 'json', nullable: true, comment: '设备清单数组' })
-  equipmentList: string[];
-
   @Column({ type: 'json', nullable: true, comment: '实验室标签数组' })
   tags: string[];
 
@@ -74,4 +72,7 @@ export class Lab {
 
   @OneToMany(() => Evaluation, (evaluation) => evaluation.lab)
   evaluations: Evaluation[];
+
+  @OneToMany(() => Instrument, (instrument) => instrument.lab)
+  instruments: Instrument[];
 }

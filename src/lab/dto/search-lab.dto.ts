@@ -43,12 +43,4 @@ export class SearchLabDto extends PaginationDto {
   @IsOptional()
   @IsEnum(LabStatus)
   status?: LabStatus;
-
-  @ApiPropertyOptional({
-    description: '设备类型(筛选包含特定设备的实验室)',
-    example: '显微镜',
-  })
-  @IsOptional()
-  @IsString()
-  equipmentType?: string;
 }

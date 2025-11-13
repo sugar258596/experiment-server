@@ -49,7 +49,7 @@ export class Instrument {
 
   @ManyToOne(() => Lab, (lab) => lab.id, { nullable: true })
   @JoinColumn({ name: 'labId' })
-  lab: Lab;
+  lab: Lab | null;
 
   @CreateDateColumn({ comment: '创建时间' })
   createdAt: Date;

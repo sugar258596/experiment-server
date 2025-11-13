@@ -85,25 +85,6 @@ export class UpdateLabFormDto {
   department?: string;
 
   @ApiPropertyOptional({
-    description: '设备列表(JSON字符串)',
-    example: '["投影仪", "电脑50台", "空调"]',
-  })
-  @IsOptional()
-  @Transform(({ value }: { value: string | string[] }) => {
-    if (typeof value === 'string') {
-      try {
-        const parsed: unknown = JSON.parse(value);
-        return Array.isArray(parsed) ? (parsed as string[]) : [];
-      } catch {
-        return [];
-      }
-    }
-    return Array.isArray(value) ? value : [];
-  })
-  @IsArray()
-  equipmentList?: string[] = [];
-
-  @ApiPropertyOptional({
     description: '实验室标签(JSON字符串)',
     example: '["编程", "基础教学", "多媒体"]',
   })
@@ -111,8 +92,8 @@ export class UpdateLabFormDto {
   @Transform(({ value }: { value: string | string[] }) => {
     if (typeof value === 'string') {
       try {
-        const parsed: unknown = JSON.parse(value);
-        return Array.isArray(parsed) ? (parsed as string[]) : [];
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? (parsed as string[]) : [parsed];
       } catch {
         return [];
       }
@@ -124,7 +105,7 @@ export class UpdateLabFormDto {
 
   @ApiPropertyOptional({
     description:
-      '实验室图片：可以是上传的文件（重新上传，会删除旧图片），或者是现有图片URL的JSON字符串（保持原有图片）',
+      '实验室图片（自动检测模式）：1. 仅上传文件 - 替换所有旧图片；2. 上传文件 + 传入旧图片URL（字符串/字符串数组） - 混合模式，保留指定的旧图片并追加新图片；3. 仅传入图片URL - 保持/调整模式；4. 都不传 - 保持原样',
     oneOf: [
       {
         type: 'array',
@@ -136,12 +117,42 @@ export class UpdateLabFormDto {
       },
       {
         type: 'string',
-        description:
-          '现有图片URL数组的JSON字符串，例如：["http://localhost:3000/static/uploads/labs/1.jpg"]',
-        example: '["http://localhost:3000/static/uploads/labs/1234567890.jpg"]',
+        description: '单个图片URL字符串',
+        example: 'http://localhost:3000/static/uploads/labs/1234567890.jpg',
+      },
+      {
+        type: 'array',
+        items: {
+          type: 'string',
+        },
+        description: '多个图片URL字符串数组',
+        example: [
+          'http://localhost:3000/static/uploads/labs/1234567890.jpg',
+          'http://localhost:3000/static/uploads/labs/0987654321.jpg',
+        ],
       },
     ],
   })
   @IsOptional()
-  images?: Express.Multer.File[] | string = [];
+  images?: Express.Multer.File[] | string | string[] = [];
+
+  @ApiPropertyOptional({
+    description:
+      '关联的仪器ID数组(JSON字符串或数字数组)。传入此字段将更新实验室的仪器关联关系，不传则保持原有关联不变',
+    example: '[1, 2, 3]',
+  })
+  @IsOptional()
+  @Transform(({ value }: { value: string | number[] }) => {
+    if (typeof value === 'string') {
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? (parsed as number[]) : [value];
+      } catch {
+        return [];
+      }
+    }
+    return Array.isArray(value) ? value : [];
+  })
+  @IsArray()
+  instrumentIds?: number[] = [];
 }

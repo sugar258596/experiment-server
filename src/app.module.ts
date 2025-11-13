@@ -35,7 +35,7 @@ import { MiddlewareModule } from './common/middleware/middleware.module';
     JwtModule.register(jwtConfig),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => {
+      useFactory: (configService: ConfigService) => {
         return getDatabaseConfigAsync(configService);
       },
       inject: [ConfigService],

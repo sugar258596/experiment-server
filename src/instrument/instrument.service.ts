@@ -213,9 +213,9 @@ export class InstrumentService {
       return {
         ...inst,
         lab: {
-          id: lab.id,
-          name: lab.name,
-          department: lab.department,
+          id: lab?.id,
+          name: lab?.name,
+          department: lab?.department,
         },
       };
     });

@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsArray,
   MaxLength,
+  IsNumber,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LabStatus } from '../../common/enums/status.enum';
@@ -74,18 +75,20 @@ export class CreateLabDto {
   department: string;
 
   @ApiPropertyOptional({
-    description: '设备列表',
-    example: ['投影仪', '电脑50台', '空调'],
-  })
-  @IsOptional()
-  @IsArray()
-  equipmentList?: string[] = [];
-
-  @ApiPropertyOptional({
     description: '实验室标签',
     example: ['编程', '基础教学', '多媒体'],
   })
   @IsOptional()
   @IsArray()
   tags?: string[] = [];
+
+  @ApiPropertyOptional({
+    description: '关联的仪器ID数组',
+    example: [1, 2, 3],
+    type: [Number],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsNumber({}, { each: true })
+  instrumentIds?: number[] = [];
 }

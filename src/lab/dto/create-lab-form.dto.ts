@@ -80,25 +80,6 @@ export class CreateLabFormDto {
   department: string;
 
   @ApiPropertyOptional({
-    description: '设备列表(JSON字符串)',
-    example: '["投影仪", "电脑50台", "空调"]',
-  })
-  @IsOptional()
-  @Transform(({ value }: { value: string | string[] }) => {
-    if (typeof value === 'string') {
-      try {
-        const parsed: unknown = JSON.parse(value);
-        return Array.isArray(parsed) ? (parsed as string[]) : [];
-      } catch {
-        return [];
-      }
-    }
-    return Array.isArray(value) ? value : [];
-  })
-  @IsArray()
-  equipmentList?: string[] = [];
-
-  @ApiPropertyOptional({
     description: '实验室标签(JSON字符串)',
     example: '["编程", "基础教学", "多媒体"]',
   })
@@ -106,8 +87,8 @@ export class CreateLabFormDto {
   @Transform(({ value }: { value: string | string[] }) => {
     if (typeof value === 'string') {
       try {
-        const parsed: unknown = JSON.parse(value);
-        return Array.isArray(parsed) ? (parsed as string[]) : [];
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? (parsed as number[]) : [value];
       } catch {
         return [];
       }
@@ -127,4 +108,23 @@ export class CreateLabFormDto {
   })
   @IsOptional()
   images?: Express.Multer.File[] = [];
+
+  @ApiPropertyOptional({
+    description: '关联的仪器ID数组(JSON字符串或数字数组)',
+    example: '[1, 2, 3]',
+  })
+  @IsOptional()
+  @Transform(({ value }: { value: string | number[] }) => {
+    if (typeof value === 'string') {
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? (parsed as number[]) : [value];
+      } catch {
+        return [];
+      }
+    }
+    return Array.isArray(value) ? value : [];
+  })
+  @IsArray()
+  instrumentIds?: number[] = [];
 }

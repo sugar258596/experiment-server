@@ -70,6 +70,7 @@ export class UserService {
         'status',
         'createdAt',
         'updatedAt',
+        'teachingTags',
       ],
     });
   }
@@ -90,6 +91,7 @@ export class UserService {
         'teachingTags',
         'createdAt',
         'updatedAt',
+        'teachingTags',
       ],
     });
 
@@ -142,6 +144,7 @@ export class UserService {
         'teachingTags',
         'createdAt',
         'updatedAt',
+        'teachingTags',
       ],
     });
 
