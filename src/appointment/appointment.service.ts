@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { instanceToPlain } from 'class-transformer';
 import { Appointment } from './entities/appointment.entity';
 import { AppointmentStatus, TimeSlot } from '../common/enums/status.enum';
 import { Role } from '../common/enums/role.enum';
@@ -80,10 +79,9 @@ export class AppointmentService {
     const queryBuilder = this.appointmentRepository
       .createQueryBuilder('appointment')
       .leftJoinAndSelect('appointment.lab', 'lab')
-      .leftJoinAndSelect('appointment.user', 'user')
-      .leftJoinAndSelect('appointment.reviewer', 'reviewer');
+      .leftJoinAndSelect('appointment.user', 'user');
 
-    if (status) {
+    if (status !== undefined) {
       queryBuilder.andWhere('appointment.status = :status', { status });
     }
 
@@ -116,11 +114,34 @@ export class AppointmentService {
 
     const [appointments, total] = await queryBuilder.getManyAndCount();
 
-    // 使用 instanceToPlain 序列化数据，自动排除 @Exclude() 标记的字段（如密码）
-    const serializedAppointments = instanceToPlain(appointments);
+    // 直接映射实体数据，避免 any 类型
+    const appointmentsWithLab = appointments.map((item) => ({
+      id: item.id,
+      lab: {
+        id: item.lab?.id ?? 0,
+        name: item.lab?.name ?? '',
+        location: item.lab?.location,
+        capacity: item.lab?.capacity,
+        description: item.lab?.description,
+        department: item.lab?.department,
+        rating: item.lab?.rating,
+      },
+      user: {
+        id: item.user.id,
+        name: item.user.username,
+      },
+      timeSlot: item.timeSlot,
+      appointmentDate: item.appointmentDate,
+      purpose: item.purpose,
+      description: item.description,
+      participantCount: item.participantCount,
+      status: item.status,
+      createdAt: item.createdAt,
+      rejectionReason: item.rejectionReason,
+    }));
 
     return {
-      data: serializedAppointments,
+      data: appointmentsWithLab,
       total,
     };
   }
@@ -132,32 +153,30 @@ export class AppointmentService {
       order: { createdAt: 'DESC' },
     });
 
-    const appointmentsWithLab = appointments.map((item) => {
-      return {
-        id: item.id,
-        lab: {
-          id: item.lab.id,
-          name: item.lab.name,
-        },
-        user: {
-          id: item.user.id,
-          name: item.user.username,
-        },
-        timeSlot: item.timeSlot,
-        appointmentDate: item.appointmentDate,
-        purpose: item.purpose,
-        description: item.description,
-        participantCount: item.participantCount,
-        status: item.status,
-        createdAt: item.createdAt,
-        rejectionReason: item.rejectionReason,
-      };
-    });
+    const appointmentsWithLab = appointments.map((item) => ({
+      id: item.id,
+      lab: {
+        id: item.lab.id,
+        name: item.lab.name,
+      },
+      user: {
+        id: item.user.id,
+        name: item.user.username,
+      },
+      timeSlot: item.timeSlot,
+      appointmentDate: item.appointmentDate,
+      purpose: item.purpose,
+      description: item.description,
+      participantCount: item.participantCount,
+      status: item.status,
+      createdAt: item.createdAt,
+      rejectionReason: item.rejectionReason,
+    }));
 
     return appointmentsWithLab;
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<Appointment> {
     const appointment = await this.appointmentRepository.findOne({
       where: { id },
       relations: ['lab', 'user', 'reviewer'],
@@ -167,16 +186,13 @@ export class AppointmentService {
       throw new NotFoundException(`预约记录ID ${id} 不存在`);
     }
 
-    // 使用 instanceToPlain 序列化数据，自动排除 @Exclude() 标记的字段（如密码）
-    return instanceToPlain(appointment);
+    return appointment;
   }
+
   async finddetails(id: number) {
     const appointment = await this.findOne(id);
 
-    if (!appointment) {
-      throw new NotFoundException(`预约记录ID ${id} 不存在`);
-    }
-    const appointmentsWithLab = {
+    const appointmentDetail = {
       id: appointment.id,
       lab: {
         id: appointment.lab.id,
@@ -201,7 +217,8 @@ export class AppointmentService {
       reviewer: appointment.reviewer?.username,
       reviewTime: appointment.reviewTime,
     };
-    return appointmentsWithLab;
+
+    return appointmentDetail;
   }
 
   async review(
@@ -215,20 +232,21 @@ export class AppointmentService {
       throw new BadRequestException('只能审核待审核状态的预约');
     }
 
-    appointment.status = reviewDto.approved
-      ? AppointmentStatus.APPROVED
-      : AppointmentStatus.REJECTED;
+    appointment.status = reviewDto.status;
     appointment.reviewerId = reviewer.id;
     appointment.reviewTime = new Date();
 
-    if (!reviewDto.approved && reviewDto.reason) {
+    if (reviewDto.status === AppointmentStatus.REJECTED && reviewDto.reason) {
       appointment.rejectionReason = reviewDto.reason;
     }
 
-    return await this.appointmentRepository.save(appointment);
+    await this.appointmentRepository.save(appointment);
+    return {
+      message: '审核成功',
+    };
   }
 
-  async cancel(id: number, user: UserPayload) {
+  async cancel(id: number, user: UserPayload): Promise<Appointment> {
     const appointment = await this.findOne(id);
 
     if (
@@ -289,14 +307,94 @@ export class AppointmentService {
     return date;
   }
 
-  async getPendingAppointments() {
-    const pendingAppointments = await this.appointmentRepository.find({
-      where: { status: AppointmentStatus.PENDING },
-      relations: ['lab', 'user'],
-      order: { createdAt: 'ASC' },
-    });
+  async getPendingAppointments(searchDto: SearchAppointmentDto) {
+    const {
+      keyword,
+      labId,
+      userId,
+      startDate,
+      endDate,
+      department,
+      page = 1,
+      pageSize = 10,
+    } = searchDto;
+    const skip = (page - 1) * pageSize;
 
-    // 使用 instanceToPlain 序列化数据，自动排除 @Exclude() 标记的字段（如密码）
-    return instanceToPlain(pendingAppointments);
+    const queryBuilder = this.appointmentRepository
+      .createQueryBuilder('appointment')
+      .leftJoinAndSelect('appointment.lab', 'lab')
+      .leftJoinAndSelect('appointment.user', 'user')
+      .where('appointment.status = :status', {
+        status: AppointmentStatus.PENDING,
+      });
+
+    // 关键词搜索（搜索实验室名称、用户名、预约目的）
+    if (keyword) {
+      queryBuilder.andWhere(
+        '(lab.name LIKE :keyword OR user.username LIKE :keyword OR appointment.purpose LIKE :keyword)',
+        { keyword: `%${keyword}%` },
+      );
+    }
+
+    // 实验室ID筛选
+    if (labId) {
+      queryBuilder.andWhere('lab.id = :labId', { labId });
+    }
+
+    // 用户ID筛选
+    if (userId) {
+      queryBuilder.andWhere('user.id = :userId', { userId });
+    }
+
+    // 日期范围筛选
+    if (startDate && endDate) {
+      queryBuilder.andWhere(
+        'appointment.appointmentDate BETWEEN :startDate AND :endDate',
+        {
+          startDate,
+          endDate,
+        },
+      );
+    }
+
+    // 院系筛选
+    if (department) {
+      queryBuilder.andWhere('user.department = :department', { department });
+    }
+
+    // 分页和排序
+    queryBuilder
+      .skip(skip)
+      .take(pageSize)
+      .orderBy('appointment.createdAt', 'ASC');
+
+    const [appointments, total] = await queryBuilder.getManyAndCount();
+
+    // 直接映射实体数据，避免 any 类型
+    const formattedAppointments = appointments.map((item) => ({
+      id: item.id,
+      lab: {
+        id: item.lab?.id ?? 0,
+        name: item.lab?.name ?? '',
+        location: item.lab?.location ?? '',
+      },
+      user: {
+        id: item.user?.id ?? 0,
+        username: item.user?.username ?? '',
+        department: item.user?.department,
+      },
+      timeSlot: item.timeSlot,
+      appointmentDate: item.appointmentDate,
+      purpose: item.purpose,
+      description: item.description,
+      participantCount: item.participantCount,
+      status: item.status,
+      createdAt: item.createdAt,
+    }));
+
+    return {
+      data: formattedAppointments,
+      total,
+    };
   }
 }

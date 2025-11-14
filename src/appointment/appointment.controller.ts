@@ -80,18 +80,33 @@ export class AppointmentController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: '获取待审核预约',
-    description: '查询待审核的预约(仅教师和管理员可查看)',
+    description:
+      '查询待审核的预约(仅教师和管理员可查看)，支持关键词搜索、实验室ID筛选、用户ID筛选、日期范围筛选、院系筛选和分页',
   })
   @ApiResponse({
     status: 200,
-    description: '查询成功',
+    description: '查询成功，返回分页数据',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+          },
+        },
+        total: { type: 'number' },
+        page: { type: 'number' },
+        pageSize: { type: 'number' },
+      },
+    },
   })
   @ApiResponse({
     status: 403,
     description: '权限不足',
   })
-  getPendingAppointments() {
-    return this.appointmentService.getPendingAppointments();
+  getPendingAppointments(@Query() searchDto: SearchAppointmentDto) {
+    return this.appointmentService.getPendingAppointments(searchDto);
   }
 
   @Get(':id')
@@ -117,7 +132,7 @@ export class AppointmentController {
     summary: '审核预约',
     description: '审核实验室预约申请(仅教师和管理员可操作)',
   })
-  @ApiParam({ name: 'id', description: '预约ID', example: 'appointment-001' })
+  @ApiParam({ name: 'id', description: '预约ID', example: 1 })
   @ApiBody({ type: ReviewAppointmentDto })
   @ApiResponse({
     status: 200,

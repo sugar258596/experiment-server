@@ -23,6 +23,7 @@ import { Lab } from '../lab/entities/lab.entity';
 import { generateFileUrl, deleteFile } from '../config/upload.config';
 import { QueryInstrumentDto } from './dto/query-instrument.dto';
 import { QueryMyApplicationDto } from './dto/query-my-application.dto';
+import { InstrumentSelectDto } from './dto/instrument-select.dto';
 
 @Injectable()
 export class InstrumentService {
@@ -603,5 +604,47 @@ export class InstrumentService {
 
     // 使用 instanceToPlain 序列化数据，自动排除 @Exclude() 标记的字段（如密码）
     return instanceToPlain(repairs);
+  }
+
+  /**
+   * 获取仪器下拉选择列表
+   * 仅返回正常状态的仪器，支持关键字搜索和分页
+   */
+  async getInstrumentSelect(query: InstrumentSelectDto) {
+    const { keyword, page = 1, pageSize = 10 } = query;
+
+    const queryBuilder = this.instrumentRepository
+      .createQueryBuilder('instrument')
+      .select(['instrument.id', 'instrument.name'])
+      .where('instrument.status = :status', {
+        status: InstrumentStatus.ACTIVE,
+      });
+
+    // 关键词搜索（名称或型号）
+    if (keyword) {
+      queryBuilder.andWhere(
+        '(instrument.name LIKE :keyword OR instrument.model LIKE :keyword)',
+        {
+          keyword: `%${keyword}%`,
+        },
+      );
+    }
+
+    // 分页
+    const skip = (page - 1) * pageSize;
+    queryBuilder.skip(skip).take(pageSize);
+
+    // 按名称排序
+    queryBuilder.orderBy('instrument.name', 'ASC');
+
+    // 获取数据和总数
+    const [data, total] = await queryBuilder.getManyAndCount();
+
+    return {
+      data,
+      total,
+      page,
+      pageSize,
+    };
   }
 }

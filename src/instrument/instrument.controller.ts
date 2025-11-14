@@ -28,6 +28,7 @@ import { QueryInstrumentDto } from './dto/query-instrument.dto';
 import { QueryApplicationDto } from './dto/query-application.dto';
 import { QueryMyApplicationDto } from './dto/query-my-application.dto';
 import { ReviewApplicationDto } from './dto/review-application.dto';
+import { InstrumentSelectDto } from './dto/instrument-select.dto';
 import { JwtAuthGuard, RolesGuard } from 'src/common/guards';
 import { Public, Roles } from 'src/common/decorators';
 import { MultipleImageUpload } from 'src/common/decorators/upload.decorator';
@@ -85,6 +86,39 @@ export class InstrumentController {
   })
   findAll(@Query() query: QueryInstrumentDto) {
     return this.instrumentService.findAll(query);
+  }
+
+  @Get('options')
+  @Public()
+  @ApiOperation({
+    summary: '获取仪器下拉选择列表',
+    description:
+      '获取可用仪器的下拉列表（仅返回id和name），仅包含正常状态的仪器，支持关键词搜索和分页',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '查询成功，返回仪器下拉列表',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'number', example: 1 },
+              name: { type: 'string', example: '电子显微镜' },
+            },
+          },
+        },
+        total: { type: 'number', example: 50 },
+        page: { type: 'number', example: 1 },
+        pageSize: { type: 'number', example: 10 },
+      },
+    },
+  })
+  getInstrumentSelect(@Query() query: InstrumentSelectDto) {
+    return this.instrumentService.getInstrumentSelect(query);
   }
 
   @Get('applications/my')
@@ -154,7 +188,7 @@ export class InstrumentController {
     return this.instrumentService.findOne(id);
   }
 
-  @Patch(':id')
+  @Post(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.TEACHER, Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()

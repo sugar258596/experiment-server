@@ -19,6 +19,7 @@ import { NewsModule } from './news/news.module';
 import { NotificationModule } from './notification/notification.module';
 import { FavoritesModule } from './favorites/favorites.module';
 import { EvaluationModule } from './evaluation/evaluation.module';
+import { BannerModule } from './banner/banner.module';
 import { APP_PIPE, APP_INTERCEPTOR, APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AllExceptionsFilter } from './common/filters';
 import { AuthRolesGuard } from './common/guards';
@@ -50,6 +51,7 @@ import { MiddlewareModule } from './common/middleware/middleware.module';
     NotificationModule,
     FavoritesModule,
     EvaluationModule,
+    BannerModule,
   ],
   controllers: [AppController],
   providers: [
@@ -101,6 +103,7 @@ export class AppModule implements NestModule {
         'favorites',
         'evaluations',
         'labs',
+        'banners',
       );
   }
 }
