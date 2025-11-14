@@ -386,6 +386,34 @@ export class InstrumentService {
     return await this.repairRepository.save(repair);
   }
 
+  /**
+   * 删除仪器（软删除）
+   */
+  async remove(id: number): Promise<void> {
+    const instrument = await this.instrumentRepository.findOne({
+      where: { id },
+    });
+
+    if (!instrument) {
+      throw new NotFoundException(`仪器ID ${id} 不存在`);
+    }
+
+    // 删除仪器图片文件
+    if (instrument.images && instrument.images.length > 0) {
+      for (const imageUrl of instrument.images) {
+        try {
+          deleteFile(imageUrl);
+        } catch (error) {
+          // 即使删除文件失败也继续执行，不影响数据库删除操作
+          console.error(`删除图片失败: ${imageUrl}`, error);
+        }
+      }
+    }
+
+    // 使用软删除而非真正删除
+    await this.instrumentRepository.softRemove(instrument);
+  }
+
   async getApplications(queryDto: {
     keyword?: string;
     page?: number;

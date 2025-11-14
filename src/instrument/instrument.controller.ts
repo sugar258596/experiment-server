@@ -4,7 +4,7 @@ import {
   Post,
   Body,
   Param,
-  Patch,
+  Delete,
   Query,
   UseGuards,
   Req,
@@ -29,12 +29,12 @@ import { QueryApplicationDto } from './dto/query-application.dto';
 import { QueryMyApplicationDto } from './dto/query-my-application.dto';
 import { ReviewApplicationDto } from './dto/review-application.dto';
 import { InstrumentSelectDto } from './dto/instrument-select.dto';
+import { UpdateRepairStatusDto } from './dto/update-repair-status.dto';
 import { JwtAuthGuard, RolesGuard } from 'src/common/guards';
 import { Public, Roles } from 'src/common/decorators';
 import { MultipleImageUpload } from 'src/common/decorators/upload.decorator';
 
 import type { AuthenticatedRequest } from 'src/common/interfaces/request.interface';
-import { RepairStatus } from 'src/common/enums/status.enum';
 import { Role } from 'src/common/enums/role.enum';
 
 @ApiTags('仪器管理')
@@ -223,6 +223,31 @@ export class InstrumentController {
     );
   }
 
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.SUPER_ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: '删除仪器',
+    description: '根据ID删除仪器设备(仅管理员可操作)，使用软删除',
+  })
+  @ApiParam({ name: 'id', description: '仪器ID', example: 1 })
+  @ApiResponse({
+    status: 200,
+    description: '删除成功',
+  })
+  @ApiResponse({
+    status: 403,
+    description: '权限不足',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '仪器不存在',
+  })
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.instrumentService.remove(id);
+  }
+
   @Post('apply/:id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -299,20 +324,8 @@ export class InstrumentController {
     summary: '更新维修状态',
     description: '更新仪器维修状态(仅管理员可操作)',
   })
-  @ApiParam({ name: 'id', description: '维修记录ID', example: 'repair-001' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        status: {
-          type: 'string',
-          enum: Object.values(RepairStatus),
-          description: '维修状态',
-        },
-        summary: { type: 'string', description: '维修总结' },
-      },
-    },
-  })
+  @ApiParam({ name: 'id', description: '维修记录ID', example: 1 })
+  @ApiBody({ type: UpdateRepairStatusDto })
   @ApiResponse({
     status: 200,
     description: '更新成功',
@@ -323,9 +336,12 @@ export class InstrumentController {
   })
   updateRepairStatus(
     @Param('id', ParseIntPipe) id: number,
-    @Body('status') status: RepairStatus,
-    @Body('summary') summary?: string,
+    @Body() updateDto: UpdateRepairStatusDto,
   ) {
-    return this.instrumentService.updateRepairStatus(id, status, summary);
+    return this.instrumentService.updateRepairStatus(
+      id,
+      updateDto.status,
+      updateDto.summary,
+    );
   }
 }
