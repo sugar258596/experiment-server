@@ -20,6 +20,8 @@ import { ApplyInstrumentDto } from './dto/apply-instrument.dto';
 import { ReportInstrumentDto } from './dto/report-instrument.dto';
 import { UserPayload } from '../common/interfaces/request.interface';
 import { Lab } from '../lab/entities/lab.entity';
+import { NotificationService } from '../notification/notification.service';
+import { NotificationType } from '../notification/entities/notification.entity';
 import { generateFileUrl, deleteFile } from '../config/upload.config';
 import { QueryInstrumentDto } from './dto/query-instrument.dto';
 import { QueryMyApplicationDto } from './dto/query-my-application.dto';
@@ -36,6 +38,7 @@ export class InstrumentService {
     private repairRepository: Repository<InstrumentRepair>,
     @InjectRepository(Lab)
     private labRepository: Repository<Lab>,
+    private notificationService: NotificationService,
   ) {}
 
   /**
@@ -368,13 +371,14 @@ export class InstrumentService {
   ) {
     const repair = await this.repairRepository.findOne({
       where: { id: repairId },
-      relations: ['instrument'],
+      relations: ['instrument', 'reporter'],
     });
 
     if (!repair) {
       throw new NotFoundException('报修记录不存在');
     }
 
+    // 保存维修状态更新
     repair.status = status;
     if (summary) {
       repair.repairSummary = summary;
@@ -383,7 +387,35 @@ export class InstrumentService {
       repair.completedAt = new Date();
     }
 
-    return await this.repairRepository.save(repair);
+    const savedRepair = await this.repairRepository.save(repair);
+
+    // 发送通知给报告人
+    let notificationTitle = '';
+    let notificationContent = '';
+
+    switch (status) {
+      case RepairStatus.IN_PROGRESS:
+        notificationTitle = '维修进度更新';
+        notificationContent = `您的仪器维修已开始处理。\n仪器：${repair.instrument.name}\n维修单号：${repair.repairNumber}`;
+        break;
+      case RepairStatus.COMPLETED:
+        notificationTitle = '维修完成';
+        notificationContent = `您的仪器维修已完成。\n仪器：${repair.instrument.name}\n维修单号：${repair.repairNumber}\n维修总结：${summary || '无'}`;
+        break;
+      default:
+        notificationTitle = '维修状态更新';
+        notificationContent = `您的仪器维修状态已更新为：${status}。\n仪器：${repair.instrument.name}`;
+    }
+
+    await this.notificationService.create({
+      userId: repair.reporterId,
+      type: NotificationType.REPAIR_PROGRESS,
+      title: notificationTitle,
+      content: notificationContent,
+      relatedId: `repair-${repair.id}`,
+    });
+
+    return savedRepair;
   }
 
   /**

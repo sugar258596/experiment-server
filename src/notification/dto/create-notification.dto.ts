@@ -1,13 +1,6 @@
-import {
-  IsString,
-  IsInt,
-  IsEnum,
-  IsOptional,
-  MaxLength,
-  Min,
-} from 'class-validator';
+import { IsString, IsInt, IsOptional, MaxLength, Min } from 'class-validator';
+import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { NotificationType } from '../entities/notification.entity';
 
 /**
  * 创建通知DTO
@@ -22,12 +15,13 @@ export class CreateNotificationDto {
   userId: number;
 
   @ApiProperty({
-    description: '通知类型',
-    enum: NotificationType,
-    example: NotificationType.APPOINTMENT_REVIEW,
+    description:
+      '通知类型:0-预约审核,1-临时通知,2-预约提醒,3-设备申请,4-维修进度',
+    example: 0,
   })
-  @IsEnum(NotificationType)
-  type: NotificationType;
+  @Type(() => Number)
+  @IsInt()
+  type: number;
 
   @ApiProperty({
     description: '通知标题',

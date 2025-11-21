@@ -13,6 +13,8 @@ import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { ReviewAppointmentDto } from './dto/review-appointment.dto';
 import { SearchAppointmentDto } from './dto/search-appointment.dto';
 import { Lab } from '../lab/entities/lab.entity';
+import { NotificationService } from '../notification/notification.service';
+import { NotificationType } from '../notification/entities/notification.entity';
 import type { UserPayload } from '../common/interfaces/request.interface';
 
 @Injectable()
@@ -22,6 +24,7 @@ export class AppointmentService {
     private appointmentRepository: Repository<Appointment>,
     @InjectRepository(Lab)
     private labRepository: Repository<Lab>,
+    private notificationService: NotificationService,
   ) {}
 
   async create(user: UserPayload, createDto: CreateAppointmentDto) {
@@ -226,12 +229,20 @@ export class AppointmentService {
     reviewer: UserPayload,
     reviewDto: ReviewAppointmentDto,
   ) {
-    const appointment = await this.findOne(id);
+    const appointment = await this.appointmentRepository.findOne({
+      where: { id },
+      relations: ['user', 'lab'],
+    });
+
+    if (!appointment) {
+      throw new NotFoundException('预约不存在');
+    }
 
     if (appointment.status !== AppointmentStatus.PENDING) {
       throw new BadRequestException('只能审核待审核状态的预约');
     }
 
+    // 保存审核结果
     appointment.status = reviewDto.status;
     appointment.reviewerId = reviewer.id;
     appointment.reviewTime = new Date();
@@ -241,6 +252,23 @@ export class AppointmentService {
     }
 
     await this.appointmentRepository.save(appointment);
+
+    // 发送通知给预约申请人
+    const isApproved = reviewDto.status === AppointmentStatus.APPROVED;
+    const notificationTitle = isApproved ? '预约审核通过' : '预约审核未通过';
+    const appointmentDateStr = appointment.appointmentDate.toString();
+    const notificationContent = isApproved
+      ? `您的实验室预约已通过审核。\n实验室：${appointment.lab.name}\n时间：${appointmentDateStr} ${appointment.timeSlot}`
+      : `您的实验室预约未通过审核。\n实验室：${appointment.lab.name}\n原因：${reviewDto.reason}`;
+
+    await this.notificationService.create({
+      userId: appointment.userId,
+      type: NotificationType.APPOINTMENT_REVIEW,
+      title: notificationTitle,
+      content: notificationContent,
+      relatedId: `appointment-${appointment.id}`,
+    });
+
     return {
       message: '审核成功',
     };

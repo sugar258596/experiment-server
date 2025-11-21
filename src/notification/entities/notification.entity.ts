@@ -10,12 +10,16 @@ import {
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 
+/**
+ * 通知类型枚举
+ * 0-预约审核, 1-临时通知, 2-预约提醒, 3-设备申请, 4-维修进度
+ */
 export enum NotificationType {
-  APPOINTMENT_REVIEW = 'APPOINTMENT_REVIEW',
-  TEMPORARY_NOTICE = 'TEMPORARY_NOTICE',
-  APPOINTMENT_REMINDER = 'APPOINTMENT_REMINDER',
-  INSTRUMENT_APPLICATION = 'INSTRUMENT_APPLICATION',
-  REPAIR_PROGRESS = 'REPAIR_PROGRESS',
+  APPOINTMENT_REVIEW = 0,
+  TEMPORARY_NOTICE = 1,
+  APPOINTMENT_REMINDER = 2,
+  INSTRUMENT_APPLICATION = 3,
+  REPAIR_PROGRESS = 4,
 }
 
 @Entity('notifications')
@@ -31,7 +35,7 @@ export class Notification {
     type: 'int',
     comment: '通知类型:0-预约审核,1-临时通知,2-预约提醒,3-设备申请,4-维修进度',
   })
-  type: NotificationType;
+  type: number;
 
   @Column({ comment: '通知标题' })
   title: string;
