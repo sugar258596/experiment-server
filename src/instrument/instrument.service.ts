@@ -5,27 +5,22 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
-import { instanceToPlain } from 'class-transformer';
 import { Instrument } from './entities/instrument.entity';
 import { InstrumentApplication } from './entities/instrument-application.entity';
-import { InstrumentRepair } from './entities/instrument-repair.entity';
 import {
   ApplicationStatus,
-  RepairStatus,
   InstrumentStatus,
 } from '../common/enums/status.enum';
 import { CreateInstrumentDto } from './dto/create-instrument.dto';
 import { UpdateInstrumentDto } from './dto/update-instrument.dto';
 import { ApplyInstrumentDto } from './dto/apply-instrument.dto';
-import { ReportInstrumentDto } from './dto/report-instrument.dto';
 import { UserPayload } from '../common/interfaces/request.interface';
 import { Lab } from '../lab/entities/lab.entity';
-import { NotificationService } from '../notification/notification.service';
-import { NotificationType } from '../notification/entities/notification.entity';
 import { generateFileUrl, deleteFile } from '../config/upload.config';
 import { QueryInstrumentDto } from './dto/query-instrument.dto';
 import { QueryMyApplicationDto } from './dto/query-my-application.dto';
 import { InstrumentSelectDto } from './dto/instrument-select.dto';
+import { QueryApplicationDto } from './dto/query-application.dto';
 
 @Injectable()
 export class InstrumentService {
@@ -34,11 +29,8 @@ export class InstrumentService {
     private instrumentRepository: Repository<Instrument>,
     @InjectRepository(InstrumentApplication)
     private applicationRepository: Repository<InstrumentApplication>,
-    @InjectRepository(InstrumentRepair)
-    private repairRepository: Repository<InstrumentRepair>,
     @InjectRepository(Lab)
     private labRepository: Repository<Lab>,
-    private notificationService: NotificationService,
   ) {}
 
   /**
@@ -345,79 +337,6 @@ export class InstrumentService {
     };
   }
 
-  async report(
-    instrumentId: number,
-    user: UserPayload,
-    reportDto: ReportInstrumentDto,
-  ) {
-    const instrument = await this.findOne(instrumentId);
-
-    const repair = this.repairRepository.create({
-      instrument,
-      reporterId: user.id,
-      faultType: reportDto.faultType,
-      description: reportDto.description,
-      urgency: reportDto.urgency,
-      repairNumber: `R${Date.now()}${Math.floor(Math.random() * 1000)}`,
-    });
-
-    return await this.repairRepository.save(repair);
-  }
-
-  async updateRepairStatus(
-    repairId: number,
-    status: RepairStatus,
-    summary?: string,
-  ) {
-    const repair = await this.repairRepository.findOne({
-      where: { id: repairId },
-      relations: ['instrument', 'reporter'],
-    });
-
-    if (!repair) {
-      throw new NotFoundException('报修记录不存在');
-    }
-
-    // 保存维修状态更新
-    repair.status = status;
-    if (summary) {
-      repair.repairSummary = summary;
-    }
-    if (status === RepairStatus.COMPLETED) {
-      repair.completedAt = new Date();
-    }
-
-    const savedRepair = await this.repairRepository.save(repair);
-
-    // 发送通知给报告人
-    let notificationTitle = '';
-    let notificationContent = '';
-
-    switch (status) {
-      case RepairStatus.IN_PROGRESS:
-        notificationTitle = '维修进度更新';
-        notificationContent = `您的仪器维修已开始处理。\n仪器：${repair.instrument.name}\n维修单号：${repair.repairNumber}`;
-        break;
-      case RepairStatus.COMPLETED:
-        notificationTitle = '维修完成';
-        notificationContent = `您的仪器维修已完成。\n仪器：${repair.instrument.name}\n维修单号：${repair.repairNumber}\n维修总结：${summary || '无'}`;
-        break;
-      default:
-        notificationTitle = '维修状态更新';
-        notificationContent = `您的仪器维修状态已更新为：${status}。\n仪器：${repair.instrument.name}`;
-    }
-
-    await this.notificationService.create({
-      userId: repair.reporterId,
-      type: NotificationType.REPAIR_PROGRESS,
-      title: notificationTitle,
-      content: notificationContent,
-      relatedId: `repair-${repair.id}`,
-    });
-
-    return savedRepair;
-  }
-
   /**
    * 删除仪器（软删除）
    */
@@ -446,14 +365,7 @@ export class InstrumentService {
     await this.instrumentRepository.softRemove(instrument);
   }
 
-  async getApplications(queryDto: {
-    keyword?: string;
-    page?: number;
-    pageSize?: number;
-    instrumentId?: number;
-    applicantId?: number;
-    status?: ApplicationStatus;
-  }) {
+  async getApplications(queryDto: QueryApplicationDto) {
     const {
       keyword,
       page = 1,
@@ -541,13 +453,13 @@ export class InstrumentService {
             id: app.instrument.id,
             name: app.instrument.name,
             serialNumber: app.instrument.serialNumber,
-            lab: app.instrument.lab
-              ? {
-                  id: app.instrument.lab.id,
-                  name: app.instrument.lab.name,
-                  location: app.instrument.lab.location,
-                }
-              : null,
+          }
+        : null,
+      lab: app.instrument.lab
+        ? {
+            id: app.instrument.lab.id,
+            name: app.instrument.lab.name,
+            location: app.instrument.lab.location,
           }
         : null,
     }));
@@ -646,24 +558,6 @@ export class InstrumentService {
       page,
       pageSize,
     };
-  }
-
-  async getRepairs(status?: RepairStatus) {
-    const queryBuilder = this.repairRepository
-      .createQueryBuilder('repair')
-      .leftJoinAndSelect('repair.instrument', 'instrument')
-      .leftJoinAndSelect('repair.reporter', 'reporter')
-      .leftJoinAndSelect('repair.assignee', 'assignee')
-      .orderBy('repair.createdAt', 'DESC');
-
-    if (status) {
-      queryBuilder.where('repair.status = :status', { status });
-    }
-
-    const repairs = await queryBuilder.getMany();
-
-    // 使用 instanceToPlain 序列化数据，自动排除 @Exclude() 标记的字段（如密码）
-    return instanceToPlain(repairs);
   }
 
   /**

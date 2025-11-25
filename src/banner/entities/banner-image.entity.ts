@@ -28,10 +28,6 @@ export class BannerImage {
   @Column({ type: 'varchar', length: 500 })
   imageUrl: string;
 
-  @ApiProperty({ description: '图片排序', default: 0 })
-  @Column({ default: 0 })
-  sort: number;
-
   @ApiProperty({ description: '创建时间' })
   @CreateDateColumn()
   createdAt: Date;

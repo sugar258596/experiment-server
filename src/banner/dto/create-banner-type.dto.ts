@@ -15,11 +15,6 @@ export class CreateBannerTypeDto {
   @IsString()
   description?: string;
 
-  @ApiProperty({ description: '排序值', default: 0, required: false })
-  @IsOptional()
-  @IsInt()
-  sort?: number;
-
   @ApiProperty({
     description: '状态：0-启用，1-禁用',
     enum: BaseStatus,

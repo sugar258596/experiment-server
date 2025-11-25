@@ -28,10 +28,6 @@ export class BannerType {
   @Column({ type: 'text', nullable: true })
   description: string;
 
-  @ApiProperty({ description: '排序值', default: 0 })
-  @Column({ default: 0 })
-  sort: number;
-
   @ApiProperty({
     description: '状态：0-启用，1-禁用',
     enum: BaseStatus,

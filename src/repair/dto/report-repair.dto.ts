@@ -1,11 +1,17 @@
-import { IsString, IsEnum, MinLength, MaxLength } from 'class-validator';
+import {
+  IsString,
+  IsEnum,
+  MinLength,
+  MaxLength,
+  IsOptional,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { FaultType, UrgencyLevel } from '../../common/enums/status.enum';
 
 /**
  * 仪器故障报告DTO
  */
-export class ReportInstrumentDto {
+export class ReportRepairDto {
   @ApiProperty({
     description: '故障类型',
     enum: FaultType,
@@ -32,4 +38,16 @@ export class ReportInstrumentDto {
   })
   @IsEnum(UrgencyLevel)
   urgency: UrgencyLevel;
+
+  @ApiProperty({
+    description: '故障图片（最多5张）',
+    type: 'array',
+    items: {
+      type: 'string',
+      format: 'binary',
+    },
+    required: false,
+  })
+  @IsOptional()
+  images?: Array<Express.Multer.File>;
 }

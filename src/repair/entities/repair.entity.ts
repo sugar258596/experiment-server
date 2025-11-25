@@ -8,7 +8,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Instrument } from './instrument.entity';
+import { Instrument } from '../../instrument/entities/instrument.entity';
 import { User } from '../../user/entities/user.entity';
 import {
   FaultType,
@@ -17,7 +17,7 @@ import {
 } from 'src/common/enums/status.enum';
 
 @Entity('instrument_repairs')
-export class InstrumentRepair {
+export class Repair {
   @PrimaryGeneratedColumn({ comment: '维修单唯一标识' })
   id: number;
 
@@ -57,7 +57,7 @@ export class InstrumentRepair {
   @Column({
     type: 'int',
     default: RepairStatus.PENDING,
-    comment: '维修状态:0-待处理,1-维修中,3-已完成',
+    comment: '维修状态:0-待处理,1-维修中,2-已完成',
   })
   status: RepairStatus;
 

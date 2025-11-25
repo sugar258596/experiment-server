@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Banner } from './entities/banner.entity';
 import { BannerType } from './entities/banner-type.entity';
-import { BannerImage } from './entities/banner-image.entity';
 import { CreateBannerTypeDto } from './dto/create-banner-type.dto';
 import { UpdateBannerTypeDto } from './dto/update-banner-type.dto';
 import { CreateBannerDto } from './dto/create-banner.dto';
@@ -17,8 +16,6 @@ export class BannerService {
     private bannerRepository: Repository<Banner>,
     @InjectRepository(BannerType)
     private bannerTypeRepository: Repository<BannerType>,
-    @InjectRepository(BannerImage)
-    private bannerImageRepository: Repository<BannerImage>,
   ) {}
 
   // ==================== 轮播图类型相关方法 ====================
@@ -39,7 +36,7 @@ export class BannerService {
    */
   async findAllTypes() {
     const types = await this.bannerTypeRepository.find({
-      order: { sort: 'ASC', createdAt: 'DESC' },
+      order: { createdAt: 'DESC' },
     });
     return {
       data: types,
@@ -128,7 +125,6 @@ export class BannerService {
       typeId: createBannerDto.typeId,
       link: createBannerDto.link,
       description: createBannerDto.description,
-      sort: createBannerDto.sort || 0,
       status: createBannerDto.status,
     });
 
@@ -137,19 +133,14 @@ export class BannerService {
 
     // 处理图片上传
     if (files && files.length > 0) {
-      const bannerImages: BannerImage[] = [];
-      files.forEach((file, index) => {
+      const imageUrls: string[] = [];
+      files.forEach((file) => {
         const imageUrl = generateFileUrl('banners', file.filename);
-        const bannerImage = this.bannerImageRepository.create({
-          bannerId: savedBanner.id,
-          imageUrl,
-          sort: index,
-        });
-        bannerImages.push(bannerImage);
+        imageUrls.push(imageUrl);
       });
 
-      // 批量保存图片
-      await this.bannerImageRepository.save(bannerImages);
+      savedBanner.images = imageUrls;
+      await this.bannerRepository.save(savedBanner);
     }
 
     return {
@@ -164,10 +155,7 @@ export class BannerService {
     const queryBuilder = this.bannerRepository
       .createQueryBuilder('banner')
       .leftJoinAndSelect('banner.type', 'type')
-      .leftJoinAndSelect('banner.images', 'images')
-      .orderBy('banner.sort', 'ASC')
-      .addOrderBy('banner.createdAt', 'DESC')
-      .addOrderBy('images.sort', 'ASC');
+      .addOrderBy('banner.createdAt', 'DESC');
 
     if (typeId) {
       queryBuilder.andWhere('banner.typeId = :typeId', { typeId });
@@ -187,12 +175,7 @@ export class BannerService {
   async findOneBanner(id: number) {
     const banner = await this.bannerRepository.findOne({
       where: { id },
-      relations: ['type', 'images'],
-      order: {
-        images: {
-          sort: 'ASC',
-        },
-      },
+      relations: ['type'],
     });
 
     if (!banner) {
@@ -210,8 +193,8 @@ export class BannerService {
    *
    * 自动检测模式说明：
    * 1. 仅上传文件 - 替换模式：删除所有旧图片，只使用新上传的图片
-   * 2. 上传文件 + 传入imageIds(数字数组) - 混合模式：保留imageIds中指定的旧图片，并追加新上传的图片
-   * 3. 仅传入imageIds(数字数组) - 保持/调整模式：只保留imageIds中指定的图片
+   * 2. 上传文件 + 传入images(URL字符串/数组) - 混合模式：保留images中指定的旧图片，并追加新上传的图片
+   * 3. 仅传入images(URL字符串/数组) - 保持/调整模式：只保留images中指定的图片
    * 4. 都不传 - 保持原样：保持数据库中原有的图片
    */
   async updateBanner(
@@ -221,7 +204,6 @@ export class BannerService {
   ) {
     const banner = await this.bannerRepository.findOne({
       where: { id },
-      relations: ['images'],
     });
 
     if (!banner) {
@@ -254,64 +236,104 @@ export class BannerService {
     if (updateBannerDto.description !== undefined) {
       banner.description = updateBannerDto.description;
     }
-    if (updateBannerDto.sort !== undefined) {
-      banner.sort = updateBannerDto.sort;
-    }
+
     if (updateBannerDto.status !== undefined) {
       banner.status = updateBannerDto.status;
     }
 
-    await this.bannerRepository.save(banner);
+    const oldImages = banner.images || [];
 
     // 处理图片更新逻辑
-    const oldImages = banner.images || [];
-    const hasNewFiles = files && files.length > 0;
-    const hasImageIds =
-      updateBannerDto.imageIds && updateBannerDto.imageIds.length > 0;
+    let finalImages: string[] = [];
+    let imagesToDelete: string[] = [];
 
-    if (hasNewFiles || hasImageIds) {
-      let imagesToKeep: BannerImage[] = [];
-      let imagesToDelete: BannerImage[] = [];
+    // 辅助函数：将images字段转换为字符串数组
+    const parseImagesToArray = (
+      images: string | string[] | undefined,
+    ): string[] | null => {
+      if (!images) return null;
 
-      if (hasImageIds) {
-        // 保留指定ID的图片
-        imagesToKeep = oldImages.filter((img) =>
-          updateBannerDto.imageIds?.includes(img.id),
-        );
+      // 如果已经是数组，直接返回
+      if (Array.isArray(images)) {
+        return images;
+      }
+
+      // 如果是字符串，转换为数组
+      if (typeof images === 'string') {
+        return [images];
+      }
+
+      return null;
+    };
+
+    // 情况1：上传了新文件
+    if (files && files.length > 0) {
+      // 生成新图片URL
+      const newImageUrls: string[] = [];
+      files.forEach((file) => {
+        const imageUrl = generateFileUrl('banners', file.filename);
+        newImageUrls.push(imageUrl);
+      });
+
+      // 检查是否同时传入了images字段（字符串或字符串数组）
+      // 排除 File[] 类型（如果是数组，检查第一个元素是否为字符串）
+      const imagesValue =
+        typeof updateBannerDto.images === 'string' ||
+        (Array.isArray(updateBannerDto.images) &&
+          updateBannerDto.images.length > 0 &&
+          typeof updateBannerDto.images[0] === 'string')
+          ? (updateBannerDto.images as string | string[])
+          : undefined;
+      const oldImagesToKeep = parseImagesToArray(imagesValue);
+
+      if (oldImagesToKeep && oldImagesToKeep.length > 0) {
+        // 混合模式：保留images中指定的旧图片 + 追加新上传的图片
+        finalImages = [...oldImagesToKeep, ...newImageUrls];
+        // 计算需要删除的旧图片（数据库中有的，但用户没有指定保留的）
         imagesToDelete = oldImages.filter(
-          (img) => !updateBannerDto.imageIds?.includes(img.id),
+          (img) => !oldImagesToKeep.includes(img),
         );
-      } else if (hasNewFiles) {
-        // 只有新文件，删除所有旧图片
+      } else {
+        // 替换模式：删除所有旧图片，只使用新图片
+        finalImages = newImageUrls;
         imagesToDelete = oldImages;
       }
+    } else if (updateBannerDto.images) {
+      // 情况2：仅传入images字段（字符串或字符串数组），没有上传新文件
+      // 排除 File[] 类型（如果是数组，检查第一个元素是否为字符串）
+      const imagesValue =
+        typeof updateBannerDto.images === 'string' ||
+        (Array.isArray(updateBannerDto.images) &&
+          updateBannerDto.images.length > 0 &&
+          typeof updateBannerDto.images[0] === 'string')
+          ? (updateBannerDto.images as string | string[])
+          : undefined;
+      const imagesToKeep = parseImagesToArray(imagesValue);
 
-      // 删除不需要的旧图片
-      if (imagesToDelete.length > 0) {
-        for (const image of imagesToDelete) {
-          deleteFile(image.imageUrl);
-          await this.bannerImageRepository.softRemove(image);
-        }
+      if (imagesToKeep && imagesToKeep.length > 0) {
+        // 保持/调整模式：使用传入的图片
+        finalImages = imagesToKeep;
+        // 计算需要删除的图片（数据库中有的，但用户没有保留的）
+        imagesToDelete = oldImages.filter((img) => !imagesToKeep.includes(img));
+      } else {
+        // 无效数据，保持原有图片
+        finalImages = oldImages;
       }
+    } else {
+      // 情况3：既没有上传文件，也没有传入images字段
+      // 保持原有图片
+      finalImages = oldImages;
+    }
 
-      // 添加新图片
-      if (hasNewFiles) {
-        const newImages: BannerImage[] = [];
-        const startSort = imagesToKeep.length;
-
-        files.forEach((file, index) => {
-          const imageUrl = generateFileUrl('banners', file.filename);
-          const bannerImage = this.bannerImageRepository.create({
-            bannerId: banner.id,
-            imageUrl,
-            sort: startSort + index,
-          });
-          newImages.push(bannerImage);
-        });
-
-        await this.bannerImageRepository.save(newImages);
+    // 删除不需要的旧图片文件
+    if (imagesToDelete.length > 0) {
+      for (const imageUrl of imagesToDelete) {
+        deleteFile(imageUrl);
       }
     }
+
+    banner.images = finalImages;
+    await this.bannerRepository.save(banner);
 
     return {
       message: '轮播图更新成功',
@@ -324,7 +346,6 @@ export class BannerService {
   async removeBanner(id: number) {
     const banner = await this.bannerRepository.findOne({
       where: { id },
-      relations: ['images'],
     });
 
     if (!banner) {
@@ -333,9 +354,8 @@ export class BannerService {
 
     // 删除关联的图片文件
     if (banner.images && banner.images.length > 0) {
-      for (const image of banner.images) {
-        deleteFile(image.imageUrl);
-        await this.bannerImageRepository.softRemove(image);
+      for (const imageUrl of banner.images) {
+        deleteFile(imageUrl);
       }
     }
 

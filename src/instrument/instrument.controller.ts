@@ -23,13 +23,11 @@ import { InstrumentService } from './instrument.service';
 import { CreateInstrumentDto } from './dto/create-instrument.dto';
 import { UpdateInstrumentDto } from './dto/update-instrument.dto';
 import { ApplyInstrumentDto } from './dto/apply-instrument.dto';
-import { ReportInstrumentDto } from './dto/report-instrument.dto';
 import { QueryInstrumentDto } from './dto/query-instrument.dto';
 import { QueryApplicationDto } from './dto/query-application.dto';
 import { QueryMyApplicationDto } from './dto/query-my-application.dto';
 import { ReviewApplicationDto } from './dto/review-application.dto';
 import { InstrumentSelectDto } from './dto/instrument-select.dto';
-import { UpdateRepairStatusDto } from './dto/update-repair-status.dto';
 import { JwtAuthGuard, RolesGuard } from 'src/common/guards';
 import { Public, Roles } from 'src/common/decorators';
 import { MultipleImageUpload } from 'src/common/decorators/upload.decorator';
@@ -98,24 +96,6 @@ export class InstrumentController {
   @ApiResponse({
     status: 200,
     description: '查询成功，返回仪器下拉列表',
-    schema: {
-      type: 'object',
-      properties: {
-        data: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              id: { type: 'number', example: 1 },
-              name: { type: 'string', example: '电子显微镜' },
-            },
-          },
-        },
-        total: { type: 'number', example: 50 },
-        page: { type: 'number', example: 1 },
-        pageSize: { type: 'number', example: 10 },
-      },
-    },
   })
   getInstrumentSelect(@Query() query: InstrumentSelectDto) {
     return this.instrumentService.getInstrumentSelect(query);
@@ -151,26 +131,6 @@ export class InstrumentController {
   })
   getApplications(@Query() query: QueryApplicationDto) {
     return this.instrumentService.getApplications(query);
-  }
-
-  @Get('repairs')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.SUPER_ADMIN)
-  @ApiBearerAuth()
-  @ApiOperation({
-    summary: '获取维修记录',
-    description: '查询仪器维修记录(仅管理员可查看)',
-  })
-  @ApiResponse({
-    status: 200,
-    description: '查询成功',
-  })
-  @ApiResponse({
-    status: 403,
-    description: '权限不足',
-  })
-  getRepairs() {
-    return this.instrumentService.getRepairs();
   }
 
   @Get(':id')
@@ -293,55 +253,5 @@ export class InstrumentController {
     @Req() req: AuthenticatedRequest,
   ) {
     return this.instrumentService.reviewApplication(id, req.user, reviewDto);
-  }
-
-  @Post('repair/:id')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({
-    summary: '报告仪器故障',
-    description: '报告仪器设备故障并申请维修',
-  })
-  @ApiParam({ name: 'id', description: '仪器ID', example: 'instrument-001' })
-  @ApiBody({ type: ReportInstrumentDto })
-  @ApiResponse({
-    status: 201,
-    description: '报告提交成功',
-  })
-  report(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() reportDto: ReportInstrumentDto,
-    @Req() req: AuthenticatedRequest,
-  ) {
-    return this.instrumentService.report(id, req.user, reportDto);
-  }
-
-  @Post('repairs/update/:id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.SUPER_ADMIN)
-  @ApiBearerAuth()
-  @ApiOperation({
-    summary: '更新维修状态',
-    description: '更新仪器维修状态(仅管理员可操作)',
-  })
-  @ApiParam({ name: 'id', description: '维修记录ID', example: 1 })
-  @ApiBody({ type: UpdateRepairStatusDto })
-  @ApiResponse({
-    status: 200,
-    description: '更新成功',
-  })
-  @ApiResponse({
-    status: 403,
-    description: '权限不足',
-  })
-  updateRepairStatus(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updateDto: UpdateRepairStatusDto,
-  ) {
-    return this.instrumentService.updateRepairStatus(
-      id,
-      updateDto.status,
-      updateDto.summary,
-    );
   }
 }

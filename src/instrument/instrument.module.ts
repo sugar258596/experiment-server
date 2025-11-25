@@ -4,23 +4,14 @@ import { InstrumentService } from './instrument.service';
 import { InstrumentController } from './instrument.controller';
 import { Instrument } from './entities/instrument.entity';
 import { InstrumentApplication } from './entities/instrument-application.entity';
-import { InstrumentRepair } from './entities/instrument-repair.entity';
 import { Lab } from '../lab/entities/lab.entity';
 import { User } from '../user/entities/user.entity';
 import { CommonModule } from '../common/common.module';
-import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      Instrument,
-      InstrumentApplication,
-      InstrumentRepair,
-      Lab,
-      User,
-    ]),
+    TypeOrmModule.forFeature([Instrument, InstrumentApplication, Lab, User]),
     CommonModule,
-    NotificationModule,
   ],
   controllers: [InstrumentController],
   providers: [InstrumentService],

@@ -14,7 +14,7 @@ import { Favorites } from '../../favorites/entities/favorites.entity';
 import { Evaluation } from '../../evaluation/entities/evaluation.entity';
 import { News } from '../../news/entities/news.entity';
 import { InstrumentApplication } from '../../instrument/entities/instrument-application.entity';
-import { InstrumentRepair } from '../../instrument/entities/instrument-repair.entity';
+import { Repair } from '../../repair/entities/repair.entity';
 import { Role } from '../../common/enums/role.enum';
 import { Status } from '../../common/enums/status.enum';
 
@@ -98,6 +98,6 @@ export class User {
   )
   instrumentApplications: InstrumentApplication[];
 
-  @OneToMany(() => InstrumentRepair, (repair) => repair.reporter)
-  instrumentRepairs: InstrumentRepair[];
+  @OneToMany(() => Repair, (repair) => repair.reporter)
+  instrumentRepairs: Repair[];
 }

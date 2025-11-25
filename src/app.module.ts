@@ -14,6 +14,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { LabModule } from './lab/lab.module';
 import { InstrumentModule } from './instrument/instrument.module';
+import { RepairModule } from './repair/repair.module';
 import { AppointmentModule } from './appointment/appointment.module';
 import { NewsModule } from './news/news.module';
 import { NotificationModule } from './notification/notification.module';
@@ -46,6 +47,7 @@ import { MiddlewareModule } from './common/middleware/middleware.module';
     AuthModule,
     LabModule,
     InstrumentModule,
+    RepairModule,
     AppointmentModule,
     NewsModule,
     NotificationModule,
@@ -98,6 +100,7 @@ export class AppModule implements NestModule {
         'user',
         'appointments',
         'instruments',
+        'repairs',
         'news',
         'notifications',
         'favorites',

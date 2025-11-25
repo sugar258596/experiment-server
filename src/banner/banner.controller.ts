@@ -44,10 +44,6 @@ export class BannerController {
     summary: '创建轮播图类型',
     description: '创建新的轮播图类型（管理员及以上权限）',
   })
-  @ApiBody({
-    type: CreateBannerTypeDto,
-    description: '创建轮播图类型数据',
-  })
   @ApiResponse({
     status: 201,
     description: '创建成功',
@@ -102,10 +98,6 @@ export class BannerController {
     description: '根据ID更新轮播图类型信息（管理员及以上权限）',
   })
   @ApiParam({ name: 'id', description: '轮播图类型ID', example: 1 })
-  @ApiBody({
-    type: UpdateBannerTypeDto,
-    description: '更新轮播图类型数据',
-  })
   @ApiResponse({
     status: 200,
     description: '更新成功',

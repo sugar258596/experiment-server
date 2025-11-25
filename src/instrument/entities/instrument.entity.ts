@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 import { Lab } from '../../lab/entities/lab.entity';
 import { InstrumentApplication } from './instrument-application.entity';
-import { InstrumentRepair } from './instrument-repair.entity';
+import { Repair } from '../../repair/entities/repair.entity';
 import { InstrumentStatus } from '../../common/enums/status.enum';
 
 @Entity('instruments')
@@ -66,6 +66,6 @@ export class Instrument {
   )
   applications: InstrumentApplication[];
 
-  @OneToMany(() => InstrumentRepair, (repair) => repair.instrument)
-  repairs: InstrumentRepair[];
+  @OneToMany(() => Repair, (repair) => repair.instrument)
+  repairs: Repair[];
 }

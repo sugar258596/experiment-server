@@ -59,17 +59,6 @@ export class CreateBannerDto {
   @MaxLength(1000, { message: '描述信息不能超过1000个字符' })
   description?: string;
 
-  @ApiPropertyOptional({ description: '排序值', default: 0 })
-  @IsOptional()
-  @Transform(({ value }: { value: string | number }) => {
-    if (typeof value === 'string') {
-      return parseInt(value, 10);
-    }
-    return value;
-  })
-  @IsInt()
-  sort?: number;
-
   @ApiPropertyOptional({
     description: '状态：0-启用，1-禁用',
     enum: BaseStatus,

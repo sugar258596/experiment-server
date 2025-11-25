@@ -98,6 +98,7 @@ export class UpdateLabFormDto {
         return [];
       }
     }
+
     return Array.isArray(value) ? value : [];
   })
   @IsArray()
@@ -143,6 +144,8 @@ export class UpdateLabFormDto {
   })
   @IsOptional()
   @Transform(({ value }: { value: string | number[] }) => {
+    console.log(value, typeof value === 'string');
+
     if (typeof value === 'string') {
       try {
         const parsed = JSON.parse(value);
@@ -151,6 +154,7 @@ export class UpdateLabFormDto {
         return [];
       }
     }
+
     return Array.isArray(value) ? value : [];
   })
   @IsArray()

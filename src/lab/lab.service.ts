@@ -25,15 +25,16 @@ export class LabService {
    * 为实验室添加设备列表（从关联的仪器中生成）
    */
   private addEquipmentList(lab: Lab) {
-    const { instruments, ...newLab } = lab;
-    const equipmentList =
-      instruments?.map((instrument) => {
+    const { instruments: equipmentList, ...newLab } = lab;
+
+    const instruments =
+      equipmentList?.map((instrument) => {
         return {
           id: instrument.id,
           name: instrument.name,
         };
       }) || [];
-    return { ...newLab, equipmentList };
+    return { ...newLab, instruments };
   }
 
   async create(createLabDto: CreateLabDto) {
@@ -60,9 +61,13 @@ export class LabService {
       });
     }
 
+    // 从formDto中排除images字段，避免干扰
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { images, ...restFormDto } = createLabFormDto;
+
     // 创建实验室数据
     const labData: CreateLabDto = {
-      ...createLabFormDto,
+      ...restFormDto,
       images: imageUrls,
     };
 
@@ -174,7 +179,7 @@ export class LabService {
     }
 
     Object.assign(lab, updateLabDto);
-    const savedLab = await this.labRepository.save(lab);
+    await this.labRepository.save(lab);
     return {
       message: '更新成功',
     };
@@ -298,9 +303,13 @@ export class LabService {
       });
     }
 
+    // 从formDto中排除images字段，避免干扰
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { images, ...restFormDto } = updateLabFormDto;
+
     // 构建更新数据
     const updateData: UpdateLabDto = {
-      ...updateLabFormDto,
+      ...restFormDto,
       images: finalImages,
     };
 
@@ -310,16 +319,12 @@ export class LabService {
 
     // 如果提供了 instrumentIds 字段，则更新仪器关联
     if (updateLabFormDto.instrumentIds !== undefined) {
-      console.log(updateLabFormDto.instrumentIds);
-
       // 先查询该实验室当前关联的所有仪器
       const currentInstruments = await this.instrumentRepository.find({
         where: {
           lab: { id },
         },
       });
-
-      console.log(currentInstruments);
 
       // 解除当前所有仪器与该实验室的关联
       if (currentInstruments.length > 0) {
