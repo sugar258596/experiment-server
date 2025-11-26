@@ -7,11 +7,11 @@ import { ApiProperty } from '@nestjs/swagger';
  */
 export class CreateNotificationDto {
   @ApiProperty({
-    description: '用户ID',
+    description: '用户ID（0表示全体用户）',
     example: 1,
   })
   @IsInt({ message: '用户ID必须为整数' })
-  @Min(1, { message: '用户ID必须为正整数' })
+  @Min(0, { message: '用户ID必须为非负整数（0表示全体用户）' })
   userId: number;
 
   @ApiProperty({

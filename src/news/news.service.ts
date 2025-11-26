@@ -79,16 +79,10 @@ export class NewsService {
       status: NewsStatus.APPROVED, // 设为已发布状态便于测试
     });
 
-    const savedNews = await this.newsRepository.save(news);
+    await this.newsRepository.save(news);
 
     return {
       message: '创建成功',
-      data: {
-        id: savedNews.id,
-        title: savedNews.title,
-        coverImage: savedNews.coverImage,
-        images: savedNews.images,
-      },
     };
   }
 

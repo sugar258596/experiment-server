@@ -22,8 +22,12 @@ import {
 } from '@nestjs/swagger';
 import { NotificationService } from './notification.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
-import { JwtAuthGuard } from 'src/common/guards';
+import { QueryAllNotificationsDto } from './dto/query-all-notifications.dto';
+import { QueryMyNotificationsDto } from './dto/query-my-notifications.dto';
+import { JwtAuthGuard, RolesGuard } from 'src/common/guards';
+import { Roles } from 'src/common/decorators';
 import type { AuthenticatedRequest } from 'src/common/interfaces/request.interface';
+import { Role } from 'src/common/enums/role.enum';
 
 @ApiTags('通知管理')
 @Controller('notifications')
@@ -35,7 +39,8 @@ export class NotificationController {
   @Post()
   @ApiOperation({
     summary: '创建通知',
-    description: '创建新的通知(系统内部使用)',
+    description:
+      '创建新的通知(系统内部使用)。用户ID为0时表示向全体用户发送通知',
   })
   @ApiBody({ type: CreateNotificationDto })
   @ApiResponse({
@@ -49,13 +54,8 @@ export class NotificationController {
   @Get()
   @ApiOperation({
     summary: '获取我的通知',
-    description: '查询当前用户的通知列表',
-  })
-  @ApiQuery({
-    name: 'isRead',
-    required: false,
-    description: '是否已读(true=已读,false=未读)',
-    type: 'boolean',
+    description:
+      '查询当前用户的未读通知列表（只显示有关联记录的通知）。不传type参数默认查询所有类型，传isRead=true可查询已读通知',
   })
   @ApiResponse({
     status: 200,
@@ -63,9 +63,9 @@ export class NotificationController {
   })
   findMyNotifications(
     @Req() req: AuthenticatedRequest,
-    @Query('isRead') isRead?: boolean,
+    @Query() query: QueryMyNotificationsDto,
   ) {
-    return this.notificationService.findMyNotifications(req.user.id, isRead);
+    return this.notificationService.findMyNotifications(req.user.id, query);
   }
 
   @Get('unread-count')
@@ -79,6 +79,23 @@ export class NotificationController {
   })
   getUnreadCount(@Req() req: AuthenticatedRequest) {
     return this.notificationService.getUnreadCount(req.user.id);
+  }
+
+  @Get('all')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.SUPER_ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: '获取所有通知（管理员专用）',
+    description:
+      '查询所有通知（仅管理员可查看），支持关键字搜索、用户筛选和分页',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '查询成功',
+  })
+  findAllNotifications(@Query() query: QueryAllNotificationsDto) {
+    return this.notificationService.findAllNotifications(query);
   }
 
   @Patch('read/:id')

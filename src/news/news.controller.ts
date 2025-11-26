@@ -50,6 +50,10 @@ export class NewsController {
     description:
       '发布新的实验室新闻公告(教师及以上权限)，支持上传封面图片和最多10张新闻图片',
   })
+  @ApiBody({
+    type: CreateNewsFormDto,
+    description: '发布新闻表单数据（multipart/form-data）',
+  })
   @ApiResponse({
     status: 201,
     description: '发布成功',
