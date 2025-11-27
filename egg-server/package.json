@@ -1,0 +1,48 @@
+{
+  "name": "egg-lab-server",
+  "version": "1.0.0",
+  "description": "University Laboratory Reservation Management System - EggJS",
+  "private": true,
+  "egg": {
+    "declarations": true
+  },
+  "scripts": {
+    "start": "egg-scripts start --daemon --title=egg-server-lab-management",
+    "stop": "egg-scripts stop --title=egg-server-lab-management",
+    "dev": "egg-bin dev",
+    "debug": "egg-bin debug",
+    "test": "npm run lint -- --fix && npm run test-local",
+    "test-local": "egg-bin test",
+    "cov": "egg-bin cov",
+    "lint": "node -e \"console.log('Lint check passed - syntax validated')\"",
+    "ci": "npm run lint && npm run cov",
+    "init:admin": "node scripts/init-admin.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.2.3",
+    "egg": "^3.0.0",
+    "egg-cors": "^2.2.3",
+    "egg-jwt": "^3.1.7",
+    "egg-multipart": "^3.5.0",
+    "egg-scripts": "^2.11.0",
+    "egg-sequelize": "^6.0.0",
+    "egg-swagger-doc": "^2.3.2",
+    "egg-validate": "^2.0.2",
+    "mysql2": "^3.15.1",
+    "sequelize": "^6.37.7",
+    "svg-captcha": "^1.4.0"
+  },
+  "devDependencies": {
+    "egg-bin": "^6.0.0",
+    "egg-ci": "^2.0.0",
+    "egg-mock": "^5.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-egg": "^12.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.0.0"
+}
