@@ -1,7 +1,7 @@
 'use strict';
 
 const Service = require('egg').Service;
-const { generateFileUrl, deleteFile, saveFile, ALLOWED_IMAGE_TYPES } = require('../utils/upload');
+const { deleteFile, saveFile, ALLOWED_IMAGE_TYPES } = require('../utils/upload');
 const fs = require('fs');
 
 class InstrumentService extends Service {
@@ -13,7 +13,14 @@ class InstrumentService extends Service {
       }
     }
 
-    return this.ctx.model.Instrument.create(data);
+    const instrument = await this.ctx.model.Instrument.create(data);
+
+    // 重新查询以包含实验室信息
+    const instrumentWithLab = await this.ctx.model.Instrument.findByPk(instrument.id, {
+      include: [{ model: this.ctx.model.Lab, as: 'lab' }],
+    });
+
+    return instrumentWithLab;
   }
 
   /**
@@ -52,7 +59,7 @@ class InstrumentService extends Service {
         } catch (error) {
           // 清理临时文件
           if (file.filepath) {
-            await fs.promises.unlink(file.filepath).catch(() => {});
+            await fs.promises.unlink(file.filepath).catch(() => { });
           }
           this.ctx.throw(400, error.message);
         }
@@ -65,7 +72,12 @@ class InstrumentService extends Service {
       images: imageUrls,
     });
 
-    return { message: '创建成功', data: instrument };
+    // 重新查询以包含实验室信息
+    const instrumentWithLab = await this.ctx.model.Instrument.findByPk(instrument.id, {
+      include: [{ model: this.ctx.model.Lab, as: 'lab' }],
+    });
+
+    return { message: '创建成功', data: instrumentWithLab };
   }
 
   /**
@@ -106,7 +118,7 @@ class InstrumentService extends Service {
         } catch (error) {
           // 清理临时文件
           if (file.filepath) {
-            await fs.promises.unlink(file.filepath).catch(() => {});
+            await fs.promises.unlink(file.filepath).catch(() => { });
           }
           this.ctx.throw(400, error.message);
         }
@@ -158,13 +170,19 @@ class InstrumentService extends Service {
       images: finalImages,
     });
 
-    return { message: '更新成功' };
+    // 重新查询以包含实验室信息
+    const updatedInstrument = await this.ctx.model.Instrument.findByPk(id, {
+      include: [{ model: this.ctx.model.Lab, as: 'lab' }],
+    });
+
+    return { message: '更新成功', data: updatedInstrument };
   }
 
   async findAll(query = {}) {
     const { keyword, labId, status, page = 1, pageSize = 10 } = query;
     const where = {};
-    const offset = (page - 1) * pageSize;
+    const limit = parseInt(pageSize) || 10;
+    const offset = (parseInt(page) - 1) * limit;
 
     if (keyword) {
       where[this.app.Sequelize.Op.or] = [
@@ -185,11 +203,11 @@ class InstrumentService extends Service {
       where,
       include: [{ model: this.ctx.model.Lab, as: 'lab', attributes: ['id', 'name', 'department'] }],
       order: [['createdAt', 'DESC']],
-      limit: pageSize,
+      limit,
       offset,
     });
 
-    return { data: rows, total: count };
+    return { list: rows, total: count };
   }
 
   async findOne(id) {
@@ -215,7 +233,13 @@ class InstrumentService extends Service {
     }
 
     await instrument.update(data);
-    return instrument;
+
+    // 重新查询以包含最新的实验室信息
+    const updatedInstrument = await this.ctx.model.Instrument.findByPk(id, {
+      include: [{ model: this.ctx.model.Lab, as: 'lab' }],
+    });
+
+    return updatedInstrument;
   }
 
   async remove(id) {
@@ -291,7 +315,8 @@ class InstrumentService extends Service {
   async getApplications(query = {}) {
     const { keyword, page = 1, pageSize = 10, instrumentId, applicantId, status } = query;
     const where = {};
-    const offset = (page - 1) * pageSize;
+    const limit = parseInt(pageSize) || 10;
+    const offset = (parseInt(page) - 1) * limit;
 
     if (instrumentId) {
       where.instrumentId = instrumentId;
@@ -313,17 +338,18 @@ class InstrumentService extends Service {
         { model: this.ctx.model.User, as: 'reviewer', attributes: ['id', 'username', 'role'] },
       ],
       order: [['createdAt', 'DESC']],
-      limit: pageSize,
+      limit,
       offset,
     });
 
-    return { data: rows, total: count, page, pageSize };
+    return { data: rows, total: count, page: parseInt(page), pageSize: limit };
   }
 
   async getMyApplications(userId, query = {}) {
     const { keyword, page = 1, pageSize = 10, status } = query;
     const where = { applicantId: userId };
-    const offset = (page - 1) * pageSize;
+    const limit = parseInt(pageSize) || 10;
+    const offset = (parseInt(page) - 1) * limit;
 
     if (status !== undefined) {
       where.status = status;
@@ -337,11 +363,46 @@ class InstrumentService extends Service {
         { model: this.ctx.model.User, as: 'reviewer', attributes: ['id', 'username', 'role'] },
       ],
       order: [['createdAt', 'DESC']],
-      limit: pageSize,
+      limit,
       offset,
     });
 
-    return { data: rows, total: count, page, pageSize };
+    return { data: rows, total: count, page: parseInt(page), pageSize: limit };
+  }
+
+  /**
+   * 获取仪器下拉选择列表
+   * @param {Object} query - 查询参数
+   * @return {Promise<Object>} 仪器列表和总数
+   */
+  async getInstrumentSelect(query = {}) {
+    const { keyword, page = 1, pageSize = 10 } = query;
+    const whereCondition = {};
+
+    if (keyword) {
+      whereCondition[this.app.Sequelize.Op.or] = [
+        { name: { [this.app.Sequelize.Op.like]: `%${keyword}%` } },
+        { model: { [this.app.Sequelize.Op.like]: `%${keyword}%` } },
+      ];
+    }
+
+    const offset = (page - 1) * pageSize;
+    const limit = parseInt(pageSize);
+
+    const { count, rows } = await this.ctx.model.Instrument.findAndCountAll({
+      where: whereCondition,
+      attributes: ['id', 'name', 'model', 'status'],
+      include: [{ model: this.ctx.model.Lab, as: 'lab', attributes: ['id', 'name', 'department', 'location'] }],
+      order: [['name', 'ASC']],
+      limit,
+      offset,
+    });
+
+    return {
+      success: true,
+      data: rows,
+      total: count,
+    };
   }
 }
 

@@ -36,21 +36,22 @@ module.exports = () => {
         path.startsWith('/api/labs/') ||
         // 新闻相关路由：排除需要权限的路径
         (path.startsWith('/api/news/') &&
-         !path.startsWith('/api/news/pending')) ||
+          !path.startsWith('/api/news/pending')) ||
         path.startsWith('/api/banners/') ||
         // 预约相关路由：排除需要权限的路径
         (path.startsWith('/api/appointments/') &&
-         !path.startsWith('/api/appointments/my') &&
-         !path.startsWith('/api/appointments/pending')) ||
+          !path.startsWith('/api/appointments/my') &&
+          !path.startsWith('/api/appointments/pending')) ||
         // 仪器相关路由：排除需要权限的路径
         (path.startsWith('/api/instruments/') &&
-         !path.startsWith('/api/instruments/applications')) ||
+          !path.startsWith('/api/instruments/applications')) ||
         path.startsWith('/api/evaluations/')
       )) ||
       // 认证相关的公开接口（POST 方法）
       (method === 'POST' && (
         path === '/api/auth/register' ||
         path === '/api/auth/login' ||
+        path === '/api/auth/logout' ||  // 退出登录不需要验证 token
         path === '/api/user/check-existence'
       ));
 

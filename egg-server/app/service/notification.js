@@ -61,9 +61,9 @@ class NotificationService extends Service {
     }
 
     if (keyword) {
-      whereCondition[this.ctx.model.Op.or] = [
-        { title: { [this.ctx.model.Op.like]: `%${keyword}%` } },
-        { content: { [this.ctx.model.Op.like]: `%${keyword}%` } },
+      whereCondition[this.app.Sequelize.Op.or] = [
+        { title: { [this.app.Sequelize.Op.like]: `%${keyword}%` } },
+        { content: { [this.app.Sequelize.Op.like]: `%${keyword}%` } },
       ];
     }
 

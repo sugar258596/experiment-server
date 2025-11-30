@@ -11,6 +11,8 @@ import { NewsStatus } from '../common/enums/status.enum';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { SearchNewsDto } from './dto/search-news.dto';
 import { CreateNewsFormDto } from './dto/create-news-form.dto';
+import { UpdateNewsDto } from './dto/update-news.dto';
+import { UpdateNewsFormDto } from './dto/update-news-form.dto';
 import { UserPayload } from '../common/interfaces/request.interface';
 import { Role } from '../common/enums/role.enum';
 import { generateFileUrl } from 'src/config/upload.config';
@@ -167,6 +169,118 @@ export class NewsService {
     }
 
     return await this.newsRepository.save(news);
+  }
+
+  /**
+   * 更新新闻（支持文件上传）
+   */
+  async updateWithFiles(
+    id: number,
+    updateFormDto: UpdateNewsFormDto,
+    files: {
+      coverImage?: Express.Multer.File[];
+      images?: Express.Multer.File[];
+    },
+    user: UserPayload,
+  ) {
+    // 查找新闻
+    const news = await this.newsRepository.findOne({
+      where: { id },
+    });
+
+    if (!news) {
+      throw new NotFoundException(`新闻ID ${id} 不存在`);
+    }
+
+    // 权限检查：只有作者或管理员可以修改
+    if (news.authorId !== user.id && !this.isAdminOrSuperAdmin(user.role)) {
+      throw new ForbiddenException('只有作者或管理员可以修改新闻');
+    }
+
+    // 处理封面图片
+    let coverImageUrl: string | undefined = news.coverImage;
+    if (files.coverImage && files.coverImage.length > 0) {
+      coverImageUrl = generateFileUrl('news', files.coverImage[0].filename);
+    }
+
+    // 处理新闻图片
+    const imageUrls: string[] = news.images || [];
+    if (files.images && files.images.length > 0) {
+      files.images.forEach((file) => {
+        const imageUrl = generateFileUrl('news', file.filename);
+        imageUrls.push(imageUrl);
+      });
+    }
+
+    // 创建更新数据
+    const updateData: UpdateNewsDto = {
+      ...updateFormDto,
+      coverImage: coverImageUrl,
+      images: imageUrls,
+    };
+
+    // 合并更新数据
+    Object.assign(news, updateData);
+
+    await this.newsRepository.save(news);
+
+    return {
+      message: '更新成功',
+    };
+  }
+
+  /**
+   * 更新新闻（不支持文件上传）
+   */
+  async update(id: number, updateDto: UpdateNewsDto, user: UserPayload) {
+    // 查找新闻
+    const news = await this.newsRepository.findOne({
+      where: { id },
+    });
+
+    if (!news) {
+      throw new NotFoundException(`新闻ID ${id} 不存在`);
+    }
+
+    // 权限检查：只有作者或管理员可以修改
+    if (news.authorId !== user.id && !this.isAdminOrSuperAdmin(user.role)) {
+      throw new ForbiddenException('只有作者或管理员可以修改新闻');
+    }
+
+    // 合并更新数据
+    Object.assign(news, updateDto);
+
+    await this.newsRepository.save(news);
+
+    return {
+      message: '更新成功',
+    };
+  }
+
+  /**
+   * 删除新闻（软删除）
+   */
+  async remove(id: number, user: UserPayload) {
+    // 查找新闻
+    const news = await this.newsRepository.findOne({
+      where: { id },
+    });
+
+    if (!news) {
+      throw new NotFoundException(`新闻ID ${id} 不存在`);
+    }
+
+    // 权限检查：只有作者或管理员可以删除
+    if (news.authorId !== user.id && !this.isAdminOrSuperAdmin(user.role)) {
+      throw new ForbiddenException('只有作者或管理员可以删除新闻');
+    }
+
+    // 执行软删除
+    await this.newsRepository.softRemove(news);
+
+    return {
+      message: '删除成功',
+    };
   }
 
   private isAdminOrSuperAdmin(role: Role): boolean {

@@ -367,21 +367,33 @@ class LabService extends Service {
     return labs;
   }
 
-  async getOptions(keyword) {
+  async getOptions(query = {}) {
+    const { keyword, page = 1, pageSize = 10 } = query;
     const whereCondition = {};
+
     if (keyword) {
-      whereCondition[this.ctx.model.Op.or] = [
-        { name: { [this.ctx.model.Op.like]: `%${keyword}%` } },
-        { location: { [this.ctx.model.Op.like]: `%${keyword}%` } },
-        { department: { [this.ctx.model.Op.like]: `%${keyword}%` } },
+      whereCondition[this.app.Sequelize.Op.or] = [
+        { name: { [this.app.Sequelize.Op.like]: `%${keyword}%` } },
+        { location: { [this.app.Sequelize.Op.like]: `%${keyword}%` } },
+        { department: { [this.app.Sequelize.Op.like]: `%${keyword}%` } },
       ];
     }
 
-    return this.ctx.model.Lab.findAll({
+    const limit = parseInt(pageSize) || 10;
+    const offset = (parseInt(page) - 1) * limit;
+
+    const { count, rows } = await this.ctx.model.Lab.findAndCountAll({
       where: whereCondition,
       attributes: ['id', 'name'],
       order: [['name', 'ASC']],
+      limit,
+      offset,
     });
+
+    return {
+      data: rows,
+      total: count,
+    };
   }
 }
 

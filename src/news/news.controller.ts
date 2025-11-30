@@ -5,6 +5,7 @@ import {
   Body,
   Param,
   Patch,
+  Delete,
   Query,
   UseGuards,
   Req,
@@ -22,6 +23,7 @@ import {
 import { NewsService } from './news.service';
 import { SearchNewsDto } from './dto/search-news.dto';
 import { CreateNewsFormDto } from './dto/create-news-form.dto';
+import { UpdateNewsFormDto } from './dto/update-news-form.dto';
 import { JwtAuthGuard, RolesGuard } from 'src/common/guards';
 import { Public, Roles } from 'src/common/decorators';
 import type { AuthenticatedRequest } from 'src/common/interfaces/request.interface';
@@ -120,7 +122,7 @@ export class NewsController {
     return this.newsService.findOne(id);
   }
 
-  @Post(':id/like')
+  @Post('like/:id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
@@ -136,7 +138,7 @@ export class NewsController {
     return this.newsService.like(id);
   }
 
-  @Patch(':id/review')
+  @Patch('review/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN, Role.SUPER_ADMIN)
   @ApiBearerAuth()
@@ -167,5 +169,77 @@ export class NewsController {
     @Req() req: AuthenticatedRequest,
   ) {
     return this.newsService.review(id, approved, req.user);
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @MultiFieldFileUpload(
+    [
+      { name: 'coverImage', maxCount: 1 },
+      { name: 'images', maxCount: 10 },
+    ],
+    createImageUploadConfig('news'),
+  )
+  @ApiOperation({
+    summary: '更新新闻',
+    description:
+      '更新新闻内容（只有作者或管理员可操作），支持上传封面图片和最多10张新闻图片',
+  })
+  @ApiParam({ name: 'id', description: '新闻ID', example: 1 })
+  @ApiBody({
+    type: UpdateNewsFormDto,
+    description: '更新新闻表单数据（multipart/form-data）',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '更新成功',
+  })
+  @ApiResponse({
+    status: 403,
+    description: '权限不足',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '新闻不存在',
+  })
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateFormDto: UpdateNewsFormDto,
+    @UploadedFiles()
+    files: {
+      coverImage?: Express.Multer.File[];
+      images?: Express.Multer.File[];
+    },
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.newsService.updateWithFiles(id, updateFormDto, files, req.user);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: '删除新闻',
+    description: '删除新闻（软删除，只有作者或管理员可操作）',
+  })
+  @ApiParam({ name: 'id', description: '新闻ID', example: 1 })
+  @ApiResponse({
+    status: 200,
+    description: '删除成功',
+  })
+  @ApiResponse({
+    status: 403,
+    description: '权限不足',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '新闻不存在',
+  })
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.newsService.remove(id, req.user);
   }
 }

@@ -40,7 +40,12 @@ class AppointmentController extends Controller {
    */
   async create() {
     const { ctx } = this;
-    const appointment = await ctx.service.appointment.create(ctx.request.body);
+    const userId = ctx.state.user.sub;
+    const appointmentData = {
+      ...ctx.request.body,
+      userId,
+    };
+    const appointment = await ctx.service.appointment.create(appointmentData);
     ctx.body = { success: true, data: appointment };
   }
 

@@ -26,12 +26,18 @@ module.exports = app => {
   const roles = app.middleware.roles;
   const jwtAuth = app.middleware.jwtAuth();
 
+  // ==================== Swagger 文档重定向 ====================
+  // 根路径重定向到 Swagger 文档
+  router.redirect('/', '/swagger-ui.html', 302);
+  // /swagger 路径重定向到 Swagger 文档
+  router.redirect('/swagger', '/swagger-ui.html', 302);
+
   // ==================== 认证路由 (公开) ====================
   router.post('/api/auth/register', controller.auth.register);
   router.post('/api/auth/login', controller.auth.login);
+  router.post('/api/auth/logout', jwtAuth, controller.auth.logout);
 
   // ==================== 用户管理路由 ====================
-  // 检查用户名或邮箱是否存在 (公开)
   router.post('/api/user/check-existence', controller.user.checkExistence);
 
   // 获取当前用户信息 (需要登录) - 必须在 /api/user/:id 之前
@@ -39,6 +45,9 @@ module.exports = app => {
 
   // 更新个人信息 (需要登录)
   router.post('/api/user/profile', jwtAuth, controller.user.updateProfile);
+
+  // 修改密码 (需要登录)
+  router.post('/api/user/change-password', jwtAuth, controller.user.changePassword);
 
   // 获取所有用户 (管理员) - 必须在 /api/user/:id 之前
   router.get('/api/user', jwtAuth, roles('ADMIN', 'SUPER_ADMIN'), controller.user.index);
@@ -53,7 +62,7 @@ module.exports = app => {
   router.post('/api/user', jwtAuth, roles('ADMIN', 'SUPER_ADMIN'), controller.user.create);
 
   // 更新用户 (管理员)
-  router.put('/api/user/:id', jwtAuth, roles('ADMIN', 'SUPER_ADMIN'), controller.user.update);
+  router.post('/api/user/:id', jwtAuth, roles('ADMIN', 'SUPER_ADMIN'), controller.user.update);
 
   // 删除用户 (超级管理员)
   router.delete('/api/user/:id', jwtAuth, roles('SUPER_ADMIN'), controller.user.destroy);
@@ -84,10 +93,10 @@ module.exports = app => {
   // 获取预约列表 (公开)
   router.get('/api/appointments', controller.appointment.index);
 
-  // 获取我的预约 (需要登录)
+  // 获取我的预约 (需要登录) - 必须在 /api/appointments/:id 之前
   router.get('/api/appointments/my', jwtAuth, controller.appointment.findMyAppointments);
 
-  // 获取待审核预约 (教师及以上)
+  // 获取待审核预约 (教师及以上) - 必须在 /api/appointments/:id 之前
   router.get('/api/appointments/pending', jwtAuth, roles('TEACHER', 'ADMIN', 'SUPER_ADMIN'), controller.appointment.getPendingAppointments);
 
   // 获取预约详情 (公开)
@@ -112,13 +121,13 @@ module.exports = app => {
   // 获取仪器列表 (公开)
   router.get('/api/instruments', controller.instrument.index);
 
-  // 获取仪器下拉选择列表 (公开)
+  // 获取仪器下拉选择列表 (公开) - 必须在 /api/instruments/:id 之前
   router.get('/api/instruments/options', controller.instrument.getInstrumentSelect);
 
-  // 获取我的申请列表 (需要登录)
+  // 获取我的申请列表 (需要登录) - 必须在 /api/instruments/:id 之前
   router.get('/api/instruments/applications/my', jwtAuth, controller.instrument.getMyApplications);
 
-  // 获取使用申请列表 (教师及以上)
+  // 获取使用申请列表 (教师及以上) - 必须在 /api/instruments/:id 之前
   router.get('/api/instruments/applications', jwtAuth, roles('TEACHER', 'ADMIN', 'SUPER_ADMIN'), controller.instrument.getApplications);
 
   // 获取仪器详情 (公开)
@@ -166,26 +175,23 @@ module.exports = app => {
   // 获取新闻列表 (公开)
   router.get('/api/news', controller.news.index);
 
-  // 获取待审核新闻 (管理员)
-  router.get('/api/news/pending', jwtAuth, roles('ADMIN', 'SUPER_ADMIN'), controller.news.getPendingNews);
-
   // 获取新闻详情 (公开)
   router.get('/api/news/:id', controller.news.show);
 
   // 发布新闻 (教师及以上)
   router.post('/api/news', jwtAuth, roles('TEACHER', 'ADMIN', 'SUPER_ADMIN'), controller.news.create);
 
-  // 点赞新闻 (需要登录)
-  router.post('/api/news/:id/like', jwtAuth, controller.news.like);
+  // 点赞新闻 (需要登录) - 必须在 /api/news/:id 之前
+  router.post('/api/news/like/:id', jwtAuth, controller.news.like);
 
-  // 审核新闻 (管理员)
-  router.patch('/api/news/:id/review', jwtAuth, roles('ADMIN', 'SUPER_ADMIN'), controller.news.review);
+  // 审核新闻 (管理员) - 必须在 /api/news/:id 之前
+  router.patch('/api/news/review/:id', jwtAuth, roles('ADMIN', 'SUPER_ADMIN'), controller.news.review);
 
-  // 更新新闻 (教师及以上)
-  router.put('/api/news/:id', jwtAuth, roles('TEACHER', 'ADMIN', 'SUPER_ADMIN'), controller.news.update);
+  // 更新新闻 (需要登录)
+  router.post('/api/news/:id', jwtAuth, controller.news.update);
 
-  // 删除新闻 (管理员)
-  router.delete('/api/news/:id', jwtAuth, roles('ADMIN', 'SUPER_ADMIN'), controller.news.destroy);
+  // 删除新闻 (需要登录)
+  router.delete('/api/news/:id', jwtAuth, controller.news.destroy);
 
   // ==================== 通知管理路由 ====================
   // 创建通知 (需要登录)

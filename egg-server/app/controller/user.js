@@ -41,7 +41,7 @@ class UserController extends Controller {
 
   /**
    * @summary 创建用户
-   * @description 创建新用户
+   * @description 创建新用户，支持上传头像
    * @router post /api/user
    * @request body createUserBody *body
    * @apikey
@@ -49,17 +49,29 @@ class UserController extends Controller {
    */
   async create() {
     const { ctx } = this;
-    const user = await ctx.service.user.create(ctx.request.body);
-    ctx.body = {
-      success: true,
-      data: user,
-      message: 'User created successfully',
-    };
+
+    try {
+      // 获取上传的文件
+      const files = ctx.request.files || [];
+
+      // 获取其他表单数据
+      const userData = ctx.request.body;
+
+      const user = await ctx.service.user.create(userData, files);
+
+      // 清理临时文件
+      ctx.cleanupRequestFiles();
+
+      ctx.body = user
+    } catch (error) {
+      ctx.cleanupRequestFiles();
+      throw error;
+    }
   }
 
   /**
    * @summary 更新用户
-   * @description 根据ID更新用户信息
+   * @description 根据ID更新用户信息，支持上传头像
    * @router put /api/user/{id}
    * @request path string *id
    * @request body updateUserBody *body
@@ -68,12 +80,26 @@ class UserController extends Controller {
    */
   async update() {
     const { ctx } = this;
-    const user = await ctx.service.user.update(ctx.params.id, ctx.request.body);
-    ctx.body = {
-      success: true,
-      data: user,
-      message: 'User updated successfully',
-    };
+
+    try {
+      const userId = parseInt(ctx.params.id);
+
+      // 获取上传的文件
+      const files = ctx.request.files || [];
+
+      // 获取其他表单数据
+      const updateData = ctx.request.body;
+
+      const user = await ctx.service.user.update(userId, updateData, files);
+
+      // 清理临时文件
+      ctx.cleanupRequestFiles();
+
+      ctx.body = user
+    } catch (error) {
+      ctx.cleanupRequestFiles();
+      throw error;
+    }
   }
 
   /**
@@ -85,48 +111,58 @@ class UserController extends Controller {
    */
   async updateProfile() {
     const { ctx } = this;
-    const userId = ctx.state.user.sub;
 
-    // 获取上传的文件
-    const file = ctx.request.files && ctx.request.files[0];
+    try {
+      const userId = ctx.state.user.sub;
 
-    // 获取其他表单数据
-    const updateData = ctx.request.body;
+      // 获取上传的文件
+      const files = ctx.request.files || [];
 
-    const user = await ctx.service.user.updateProfile(userId, updateData, file);
+      // 获取其他表单数据
+      const updateData = ctx.request.body;
 
-    ctx.body = {
-      success: true,
-      data: user,
-      message: '个人信息更新成功',
-    };
+      const user = await ctx.service.user.updateProfile(userId, updateData, files);
+
+      // 清理临时文件
+      ctx.cleanupRequestFiles();
+
+      ctx.body = user
+    } catch (error) {
+      ctx.cleanupRequestFiles();
+      throw error;
+    }
   }
 
   /**
    * @summary 管理员更新用户信息
    * @description 管理员更新用户信息，可以修改角色、状态等，支持上传头像
-   * @router patch /api/user/{id}/admin
+   * @router patch /api/user/admin/{id}
    * @request path string *id
    * @apikey
    * @response 200 baseResponse 更新成功
    */
   async updateByAdmin() {
     const { ctx } = this;
-    const userId = parseInt(ctx.params.id);
 
-    // 获取上传的文件
-    const file = ctx.request.files && ctx.request.files[0];
+    try {
+      const userId = parseInt(ctx.params.id);
 
-    // 获取其他表单数据
-    const updateData = ctx.request.body;
+      // 获取上传的文件
+      const files = ctx.request.files || [];
 
-    const result = await ctx.service.user.updateByAdmin(userId, updateData, file);
+      // 获取其他表单数据
+      const updateData = ctx.request.body;
 
-    ctx.body = {
-      success: true,
-      data: result,
-      message: '用户信息更新成功',
-    };
+      const result = await ctx.service.user.updateByAdmin(userId, updateData, files);
+
+      // 清理临时文件
+      ctx.cleanupRequestFiles();
+
+      ctx.body = result;
+    } catch (error) {
+      ctx.cleanupRequestFiles();
+      throw error;
+    }
   }
 
   /**
@@ -179,6 +215,34 @@ class UserController extends Controller {
       success: true,
       data: user,
     };
+  }
+
+  /**
+   * @summary 修改密码
+   * @description 修改当前用户的密码
+   * @router post /api/user/change-password
+   * @request body changePasswordBody *body
+   * @apikey
+   * @response 200 baseResponse 修改成功
+   */
+  async changePassword() {
+    const { ctx } = this;
+    const userId = ctx.state.user.sub;
+    const { oldPassword, newPassword, confirmPassword } = ctx.request.body;
+
+    // 验证必填字段
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      ctx.throw(400, '原密码、新密码和确认密码不能为空');
+    }
+
+    const result = await ctx.service.user.changePassword(
+      userId,
+      oldPassword,
+      newPassword,
+      confirmPassword
+    );
+
+    ctx.body = result;
   }
 }
 

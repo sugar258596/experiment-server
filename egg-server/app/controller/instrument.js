@@ -14,8 +14,8 @@ class InstrumentController extends Controller {
    */
   async index() {
     const { ctx } = this;
-    const instruments = await ctx.service.instrument.findAll(ctx.query);
-    ctx.body = instruments
+    const result = await ctx.service.instrument.findAll(ctx.query);
+    ctx.body = result
   }
 
   /**
@@ -28,7 +28,7 @@ class InstrumentController extends Controller {
   async show() {
     const { ctx } = this;
     const instrument = await ctx.service.instrument.findOne(ctx.params.id);
-    ctx.body = instruments
+    ctx.body = instrument
   }
 
   /**
@@ -84,7 +84,7 @@ class InstrumentController extends Controller {
    */
   async destroy() {
     const { ctx } = this;
-    await ctx.service.instrument.delete(ctx.params.id);
+    await ctx.service.instrument.remove(ctx.params.id);
     ctx.body = { success: true, message: 'Instrument deleted' };
   }
 
@@ -96,9 +96,9 @@ class InstrumentController extends Controller {
    */
   async getInstrumentSelect() {
     const { ctx } = this;
-    const instruments = await ctx.service.instrument.getInstrumentSelect(ctx.query);
+    const result = await ctx.service.instrument.getInstrumentSelect(ctx.query);
 
-    ctx.body = instruments
+    ctx.body = result;
   }
 
   /**

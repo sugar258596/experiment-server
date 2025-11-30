@@ -6,7 +6,8 @@ class FavoriteService extends Service {
   async getMyFavorites(userId, query = {}) {
     const { keyword, department, labId, page = 1, pageSize = 10 } = query;
     const where = { userId };
-    const offset = (page - 1) * pageSize;
+    const limit = parseInt(pageSize) || 10;
+    const offset = (parseInt(page) - 1) * limit;
     const labWhere = {};
 
     if (keyword) {
@@ -28,7 +29,7 @@ class FavoriteService extends Service {
       where,
       include: [{ model: this.ctx.model.Lab, as: 'lab', where: labWhere }],
       order: [['createdAt', 'DESC']],
-      limit: pageSize,
+      limit,
       offset,
     });
 

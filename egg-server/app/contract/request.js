@@ -94,4 +94,9 @@ module.exports = {
   updateRepairBody: {
     status: { type: 'string', required: false, description: '维修状态' },
   },
+  changePasswordBody: {
+    oldPassword: { type: 'string', required: true, description: '原密码' },
+    newPassword: { type: 'string', required: true, description: '新密码' },
+    confirmPassword: { type: 'string', required: true, description: '确认新密码' },
+  },
 };

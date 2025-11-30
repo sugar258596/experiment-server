@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = app => {
-  const { STRING, INTEGER, DATE, TEXT } = app.Sequelize;
+  const { STRING, INTEGER, DATE, JSON } = app.Sequelize;
 
   const User = app.model.define('users', {
     id: { type: INTEGER, primaryKey: true, autoIncrement: true, comment: '用户唯一标识' },
@@ -14,7 +14,7 @@ module.exports = app => {
     email: { type: STRING(100), allowNull: true, comment: '用户邮箱' },
     phone: { type: STRING(20), allowNull: true, comment: '用户手机号' },
     department: { type: STRING(100), allowNull: true, comment: '所属院系/部门' },
-    teachingTags: { type: TEXT, allowNull: true, comment: '教学标签数组(逗号分隔)' },
+    teachingTags: { type: JSON, allowNull: true, comment: '教学标签数组' },
     createdAt: { type: DATE, allowNull: false, comment: '创建时间' },
     updatedAt: { type: DATE, allowNull: false, comment: '更新时间' },
     deletedAt: { type: DATE, allowNull: true, comment: '软删除时间' },

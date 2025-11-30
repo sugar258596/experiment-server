@@ -4,10 +4,10 @@ const Service = require('egg').Service;
 
 class AppointmentService extends Service {
   async create(data) {
-    const { userId, labId, date, timeSlot } = data;
+    const { userId, labId, appointmentDate, timeSlot } = data;
 
     const existing = await this.ctx.model.Appointment.findOne({
-      where: { labId, date, timeSlot, status: ['PENDING', 'APPROVED'] },
+      where: { labId, appointmentDate, timeSlot, status: [0, 1] },
     });
 
     if (existing) {
@@ -41,15 +41,15 @@ class AppointmentService extends Service {
 
     await appointment.update({
       status: reviewData.status,
-      reviewedBy: reviewData.reviewedBy,
+      reviewerId: reviewData.reviewerId,
       reviewTime: new Date(),
-      reviewComment: reviewData.reviewComment,
+      rejectionReason: reviewData.reason,
     });
 
     await this.ctx.service.notification.create({
       userId: appointment.userId,
       title: '预约审核通知',
-      content: `您的预约已${reviewData.status === 'APPROVED' ? '通过' : '拒绝'}`,
+      content: `您的预约已${reviewData.status === 1 ? '通过' : '拒绝'}`,
       type: 'APPOINTMENT',
       relatedId: id,
     });
@@ -67,7 +67,7 @@ class AppointmentService extends Service {
       this.ctx.throw(403, 'Forbidden');
     }
 
-    await appointment.update({ status: 'CANCELLED' });
+    await appointment.update({ status: 4 });
     return appointment;
   }
 
@@ -111,13 +111,13 @@ class AppointmentService extends Service {
     const { page = 1, pageSize = 10, keyword, labId, userId, startDate, endDate, department } = query;
 
     const whereCondition = {
-      status: 'PENDING',
+      status: 0,
     };
 
     // 关键词搜索
     if (keyword) {
-      whereCondition[this.ctx.model.Op.or] = [
-        { reason: { [this.ctx.model.Op.like]: `%${keyword}%` } },
+      whereCondition[this.app.Sequelize.Op.or] = [
+        { reason: { [this.app.Sequelize.Op.like]: `%${keyword}%` } },
       ];
     }
 
@@ -133,8 +133,8 @@ class AppointmentService extends Service {
 
     // 日期范围筛选
     if (startDate && endDate) {
-      whereCondition.date = {
-        [this.ctx.model.Op.between]: [new Date(startDate), new Date(endDate)],
+      whereCondition.appointmentDate = {
+        [this.app.Sequelize.Op.between]: [new Date(startDate), new Date(endDate)],
       };
     }
 
@@ -144,7 +144,7 @@ class AppointmentService extends Service {
         {
           model: this.ctx.model.Lab,
           as: 'lab',
-          where: department ? { department: { [this.ctx.model.Op.like]: `%${department}%` } } : undefined,
+          where: department ? { department: { [this.app.Sequelize.Op.like]: `%${department}%` } } : undefined,
         },
         { model: this.ctx.model.User, as: 'user', attributes: ['id', 'username', 'nickname'] },
       ],

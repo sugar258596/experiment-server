@@ -37,7 +37,7 @@ class RepairService extends Service {
         } catch (error) {
           // 清理临时文件
           if (file.filepath) {
-            await fs.promises.unlink(file.filepath).catch(() => {});
+            await fs.promises.unlink(file.filepath).catch(() => { });
           }
           this.ctx.throw(400, error.message);
         }
@@ -46,7 +46,7 @@ class RepairService extends Service {
 
     const repair = await this.ctx.model.Repair.create({
       instrumentId,
-      reporterId: user.id,
+      reporterId: user.sub,
       faultType: data.faultType,
       description: data.description,
       images: imageUrls,
@@ -60,7 +60,8 @@ class RepairService extends Service {
   async getRepairs(query = {}) {
     const { keyword, status, page = 1, pageSize = 10 } = query;
     const where = {};
-    const offset = (page - 1) * pageSize;
+    const limit = parseInt(pageSize) || 10;
+    const offset = (parseInt(page) - 1) * limit;
 
     if (status !== undefined && status !== null) {
       where.status = status;
@@ -74,7 +75,7 @@ class RepairService extends Service {
         { model: this.ctx.model.User, as: 'assignee', attributes: ['id', 'username', 'nickname'] },
       ],
       order: [['createdAt', 'DESC']],
-      limit: pageSize,
+      limit,
       offset,
     });
 
@@ -146,7 +147,7 @@ class RepairService extends Service {
           model: this.ctx.model.Instrument,
           as: 'instrument',
           where: keyword ? {
-            name: { [this.ctx.model.Op.like]: `%${keyword}%` },
+            name: { [this.app.Sequelize.Op.like]: `%${keyword}%` },
           } : undefined,
         },
         { model: this.ctx.model.User, as: 'reporter', attributes: ['id', 'username', 'nickname'] },

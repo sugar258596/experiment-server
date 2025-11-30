@@ -12,7 +12,7 @@ module.exports = app => {
     images: { type: JSON, allowNull: true, comment: '实验室图片URL数组' },
     status: { type: INTEGER, defaultValue: 0, comment: '实验室状态:0-正常,1-维护中,2-停用' },
     department: { type: STRING(100), allowNull: false, comment: '所属院系/部门' },
-    tags: { type: JSON, allowNull: true, comment: '实验室标签数组' },
+    tags: { type: JSON, allowNull: false, comment: '实验室标签数组' },
     rating: { type: DECIMAL(3, 2), defaultValue: 0, comment: '实验室评分(0-5分,保留两位小数)' },
     createdAt: { type: DATE, allowNull: false, comment: '创建时间' },
     updatedAt: { type: DATE, allowNull: false, comment: '更新时间' },

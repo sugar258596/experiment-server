@@ -59,6 +59,7 @@ module.exports = appInfo => {
 
   config.swaggerdoc = {
     dirScanner: './app/controller',
+    basePath: '/api',
     apiInfo: {
       title: 'Egg Lab Server API',
       description: '高校实验室预约管理系统API文档',
