@@ -93,10 +93,10 @@ module.exports = app => {
   // 获取预约列表 (公开)
   router.get('/api/appointments', controller.appointment.index);
 
-  // 获取我的预约 (需要登录) - 必须在 /api/appointments/:id 之前
+  // 获取我的预约 (需要登录)
   router.get('/api/appointments/my', jwtAuth, controller.appointment.findMyAppointments);
 
-  // 获取待审核预约 (教师及以上) - 必须在 /api/appointments/:id 之前
+  // 获取待审核预约 (教师及以上)
   router.get('/api/appointments/pending', jwtAuth, roles('TEACHER', 'ADMIN', 'SUPER_ADMIN'), controller.appointment.getPendingAppointments);
 
   // 获取预约详情 (公开)
@@ -121,13 +121,13 @@ module.exports = app => {
   // 获取仪器列表 (公开)
   router.get('/api/instruments', controller.instrument.index);
 
-  // 获取仪器下拉选择列表 (公开) - 必须在 /api/instruments/:id 之前
+  // 获取仪器下拉选择列表 (公开)
   router.get('/api/instruments/options', controller.instrument.getInstrumentSelect);
 
-  // 获取我的申请列表 (需要登录) - 必须在 /api/instruments/:id 之前
+  // 获取我的申请列表 (需要登录)
   router.get('/api/instruments/applications/my', jwtAuth, controller.instrument.getMyApplications);
 
-  // 获取使用申请列表 (教师及以上) - 必须在 /api/instruments/:id 之前
+  // 获取使用申请列表 (教师及以上)
   router.get('/api/instruments/applications', jwtAuth, roles('TEACHER', 'ADMIN', 'SUPER_ADMIN'), controller.instrument.getApplications);
 
   // 获取仪器详情 (公开)

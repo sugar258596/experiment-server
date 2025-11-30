@@ -123,7 +123,7 @@ class RepairService extends Service {
 
     await this.ctx.service.notification.create({
       userId: repair.reporterId,
-      type: 'REPAIR_PROGRESS',
+      type: 4,
       title: notificationTitle,
       content: notificationContent,
       relatedId: `repair-${repair.id}`,

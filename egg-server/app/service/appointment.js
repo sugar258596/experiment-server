@@ -50,7 +50,7 @@ class AppointmentService extends Service {
       userId: appointment.userId,
       title: '预约审核通知',
       content: `您的预约已${reviewData.status === 1 ? '通过' : '拒绝'}`,
-      type: 'APPOINTMENT',
+      type: 0,
       relatedId: id,
     });
 

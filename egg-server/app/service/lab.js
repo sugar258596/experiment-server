@@ -53,7 +53,20 @@ class LabService extends Service {
   }
 
   async create(data) {
-    return this.ctx.model.Lab.create(data);
+    const lab = await this.ctx.model.Lab.create(data);
+
+    // 重新查询以包含关联的仪器信息
+    const labWithInstruments = await this.ctx.model.Lab.findByPk(lab.id, {
+      include: [
+        {
+          model: this.ctx.model.Instrument,
+          as: 'instruments',
+          attributes: ['id', 'name', 'model', 'status', 'description', 'specifications', 'images'],
+        },
+      ],
+    });
+
+    return labWithInstruments;
   }
 
   /**
@@ -137,8 +150,20 @@ class LabService extends Service {
       );
     }
 
+    // 重新查询以包含关联的仪器信息
+    const labWithInstruments = await this.ctx.model.Lab.findByPk(lab.id, {
+      include: [
+        {
+          model: this.ctx.model.Instrument,
+          as: 'instruments',
+          attributes: ['id', 'name', 'model', 'status', 'description', 'specifications', 'images'],
+        },
+      ],
+    });
+
     return {
       message: '创建成功',
+      data: labWithInstruments,
     };
   }
 
@@ -148,7 +173,19 @@ class LabService extends Service {
       this.ctx.throw(404, 'Lab not found');
     }
     await lab.update(data);
-    return lab;
+
+    // 重新查询以包含最新的仪器关联信息
+    const updatedLab = await this.ctx.model.Lab.findByPk(id, {
+      include: [
+        {
+          model: this.ctx.model.Instrument,
+          as: 'instruments',
+          attributes: ['id', 'name', 'model', 'status', 'description', 'specifications', 'images'],
+        },
+      ],
+    });
+
+    return updatedLab;
   }
 
   async delete(id) {
@@ -337,9 +374,20 @@ class LabService extends Service {
       }
     }
 
+    // 重新查询以包含最新的仪器关联信息
+    const updatedLab = await this.ctx.model.Lab.findByPk(id, {
+      include: [
+        {
+          model: this.ctx.model.Instrument,
+          as: 'instruments',
+          attributes: ['id', 'name', 'model', 'status', 'description', 'specifications', 'images'],
+        },
+      ],
+    });
+
     return {
       message: '更新成功',
-      data: lab,
+      data: updatedLab,
     };
   }
 

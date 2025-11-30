@@ -11,7 +11,7 @@ class EvaluationService extends Service {
     }
 
     const evaluation = await this.ctx.model.Evaluation.create({
-      userId: user.id,
+      userId: user.sub,
       labId: data.labId,
       overallRating: data.overallRating,
       equipmentRating: data.equipmentRating,

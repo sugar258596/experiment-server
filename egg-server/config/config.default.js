@@ -84,6 +84,7 @@ module.exports = appInfo => {
   config.multipart = {
     mode: 'file',
     fileSize: '50mb',
+    fields: 100, // 增加表单字段数量限制，支持包含多个字段的复杂表单
     whitelist: [
       '.jpg',
       '.jpeg',

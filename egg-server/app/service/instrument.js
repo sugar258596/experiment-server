@@ -250,15 +250,17 @@ class InstrumentService extends Service {
   async apply(instrumentId, user, data) {
     const instrument = await this.findOne(instrumentId);
 
-    if (instrument.status !== 'ACTIVE') {
+    // 仪器状态：0-正常,1-停用,2-维护中,3-故障,4-借出
+    // 只有正常状态(0)才可以申请
+    if (instrument.status !== 0) {
       this.ctx.throw(400, '该仪器当前状态不可申请使用');
     }
 
     const existingApplication = await this.ctx.model.InstrumentApplication.findOne({
       where: {
-        applicantId: user.id,
+        applicantId: user.sub,
         instrumentId,
-        status: { [this.app.Sequelize.Op.in]: ['PENDING', 'APPROVED'] },
+        status: { [this.app.Sequelize.Op.in]: [0, 1] },
       },
     });
 
@@ -272,7 +274,7 @@ class InstrumentService extends Service {
 
     await this.ctx.model.InstrumentApplication.create({
       instrumentId,
-      applicantId: user.id,
+      applicantId: user.sub,
       purpose: data.purpose,
       description: data.description,
       startTime: data.startTime,
@@ -291,20 +293,25 @@ class InstrumentService extends Service {
       this.ctx.throw(404, '申请记录不存在');
     }
 
-    if (!['APPROVED', 'REJECTED'].includes(reviewData.status)) {
+    // status: 0-待审核, 1-已通过, 2-已拒绝
+    const statusMap = { 'APPROVED': 1, 'REJECTED': 2 };
+    const statusCode = statusMap[reviewData.status];
+
+    if (statusCode === undefined) {
       this.ctx.throw(400, '审核状态只能是已通过或已拒绝');
     }
 
     await application.update({
-      status: reviewData.status,
-      reviewerId: reviewer.id,
+      status: statusCode,
+      reviewerId: reviewer.sub,
       reviewTime: new Date(),
       rejectionReason: reviewData.reason,
     });
 
-    if (reviewData.status === 'APPROVED') {
+    if (statusCode === 1) {
+      // status: 0-正常, 1-停用, 2-维护中, 3-故障, 4-借出
       await this.ctx.model.Instrument.update(
-        { status: 'BORROWED' },
+        { status: 4 },
         { where: { id: application.instrumentId } }
       );
     }
