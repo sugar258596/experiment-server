@@ -5,14 +5,86 @@ const fs = require('fs');
 const { saveFile, generateFileUrl, deleteFile } = require('../utils/upload');
 
 class LabService extends Service {
-  async findAll(query = {}) {
-    const { status, department } = query;
+  /**
+   * 为实验室数据附加当前用户的收藏状态
+   * @param {Array|Object} labs - 实验室数据（单个或数组）
+   * @param {number} userId - 用户ID
+   * @return {Array|Object} 包含收藏状态的实验室数据
+   */
+  async attachFavoriteStatus(labs, userId) {
+    // 如果没有实验室数据，直接返回
+    if (!labs) {
+      return labs;
+    }
+
+    // 判断是单个对象还是数组
+    const isArray = Array.isArray(labs);
+    const labArray = isArray ? labs : [labs];
+
+    // 如果没有实验室或用户ID为空，设置所有isFavorite为false
+    if (labArray.length === 0 || !userId) {
+      labArray.forEach(lab => {
+        lab.dataValues.isFavorite = false;
+        lab.isFavorite = false;
+      });
+      return isArray ? labArray : labArray[0];
+    }
+
+    // 获取所有实验室ID
+    const labIds = labArray.map(lab => lab.id);
+
+    // 单次查询获取用户的所有收藏记录
+    const favorites = await this.ctx.model.Favorite.findAll({
+      where: {
+        userId,
+        labId: labIds,
+      },
+      attributes: ['labId'],
+    });
+
+    // 创建收藏的实验室ID集合，便于快速查找
+    const favoritedLabIds = new Set(favorites.map(fav => fav.labId));
+
+    // 为每个实验室添加isFavorite字段
+    labArray.forEach(lab => {
+      const isFavorite = favoritedLabIds.has(lab.id);
+      // Set on dataValues for JSON serialization
+      lab.dataValues.isFavorite = isFavorite;
+      // Also set directly on the instance
+      lab.isFavorite = isFavorite;
+    });
+
+    // 返回原始格式（单个对象或数组）
+    return isArray ? labArray : labArray[0];
+  }
+
+  async findAll(query = {}, userId = null) {
+    const { status, department, keyword, page = 1, pageSize = 10, tags } = query;
     const where = {};
+    const Op = this.app.Sequelize.Op;
 
     if (status) where.status = status;
     if (department) where.department = department;
 
-    return this.ctx.model.Lab.findAll({
+    // 关键字搜索：匹配名称、位置、描述
+    if (keyword) {
+      where[Op.or] = [
+        { name: { [Op.like]: `%${keyword}%` } },
+        { location: { [Op.like]: `%${keyword}%` } },
+        { description: { [Op.like]: `%${keyword}%` } },
+        { department: { [Op.like]: `%${keyword}%` } },
+      ];
+    }
+
+    // 标签筛选
+    if (tags) {
+      where.tags = { [Op.like]: `%${tags}%` };
+    }
+
+    const limit = parseInt(pageSize) || 10;
+    const offset = (parseInt(page) - 1) * limit;
+
+    const { count, rows: labs } = await this.ctx.model.Lab.findAndCountAll({
       where,
       include: [
         {
@@ -21,10 +93,30 @@ class LabService extends Service {
           attributes: ['id', 'name', 'model', 'status'],
         },
       ],
+      limit,
+      offset,
+      order: [['createdAt', 'DESC']],
     });
+
+    // 附加收藏状态
+    const labsWithFavorite = await this.attachFavoriteStatus(labs, userId);
+
+    // Convert to plain objects to ensure isFavorite is included in JSON serialization
+    const list = labsWithFavorite.map(lab => {
+      const plainLab = lab.toJSON();
+      plainLab.isFavorite = lab.isFavorite;
+      return plainLab;
+    });
+
+    return {
+      list,
+      total: count,
+      page: parseInt(page),
+      pageSize: limit,
+    };
   }
 
-  async findById(id) {
+  async findById(id, userId = null) {
     const lab = await this.ctx.model.Lab.findByPk(id, {
       include: [
         {
@@ -49,7 +141,14 @@ class LabService extends Service {
     if (!lab) {
       this.ctx.throw(404, 'Lab not found');
     }
-    return lab;
+
+    // 附加收藏状态
+    const labWithFavorite = await this.attachFavoriteStatus(lab, userId);
+
+    // Convert to plain object to ensure isFavorite is included in JSON serialization
+    const plainLab = labWithFavorite.toJSON();
+    plainLab.isFavorite = labWithFavorite.isFavorite;
+    return plainLab;
   }
 
   async create(data) {
@@ -73,9 +172,10 @@ class LabService extends Service {
    * 创建实验室（支持文件上传）
    * @param {Object} formData - 表单数据
    * @param {Array} files - 上传的文件数组
+   * @param {number} creatorId - 创建者ID
    * @return {Object} 创建结果
    */
-  async createWithFiles(formData, files) {
+  async createWithFiles(formData, files, creatorId) {
     console.log(formData);
     const { ALLOWED_IMAGE_TYPES } = require('../utils/upload');
     const imageUrls = [];
@@ -103,6 +203,7 @@ class LabService extends Service {
     const labData = {
       ...formData,
       images: imageUrls,
+      creatorId,
     };
 
     // 解析 JSON 字符串字段
@@ -391,7 +492,7 @@ class LabService extends Service {
     };
   }
 
-  async getPopularLabs(query = {}) {
+  async getPopularLabs(query = {}, userId = null) {
     const { page = 1, pageSize = 10 } = query;
 
     const labs = await this.ctx.model.Lab.findAll({
@@ -412,7 +513,15 @@ class LabService extends Service {
       ],
     });
 
-    return labs;
+    // 附加收藏状态
+    const labsWithFavorite = await this.attachFavoriteStatus(labs, userId);
+
+    // Convert to plain objects to ensure isFavorite is included in JSON serialization
+    return labsWithFavorite.map(lab => {
+      const plainLab = lab.toJSON();
+      plainLab.isFavorite = lab.isFavorite;
+      return plainLab;
+    });
   }
 
   async getOptions(query = {}) {
@@ -442,6 +551,80 @@ class LabService extends Service {
       data: rows,
       total: count,
     };
+  }
+
+  /**
+   * 获取指定创建者的实验室列表
+   * @param {number} creatorId - 创建者ID
+   * @param {Object} query - 查询参数
+   * @return {Object} 实验室列表
+   */
+  async findByCreator(creatorId, query = {}) {
+    const { page = 1, pageSize = 10, keyword } = query;
+    const where = { creatorId };
+    const Op = this.app.Sequelize.Op;
+
+    if (keyword) {
+      where[Op.and] = [
+        { creatorId },
+        {
+          [Op.or]: [
+            { name: { [Op.like]: `%${keyword}%` } },
+            { location: { [Op.like]: `%${keyword}%` } },
+            { description: { [Op.like]: `%${keyword}%` } },
+          ],
+        },
+      ];
+      delete where.creatorId;
+    }
+
+    const limit = parseInt(pageSize) || 10;
+    const offset = (parseInt(page) - 1) * limit;
+
+    const { count, rows: labs } = await this.ctx.model.Lab.findAndCountAll({
+      where,
+      include: [
+        {
+          model: this.ctx.model.Instrument,
+          as: 'instruments',
+          attributes: ['id', 'name', 'model', 'status'],
+        },
+      ],
+      limit,
+      offset,
+      order: [['createdAt', 'DESC']],
+    });
+
+    return {
+      list: labs,
+      total: count,
+      page: parseInt(page),
+      pageSize: limit,
+    };
+  }
+
+  /**
+   * 检查用户是否是实验室的创建者
+   * @param {number} labId - 实验室ID
+   * @param {number} userId - 用户ID
+   * @return {boolean} 是否是创建者
+   */
+  async isLabCreator(labId, userId) {
+    const lab = await this.ctx.model.Lab.findByPk(labId);
+    return lab && lab.creatorId === userId;
+  }
+
+  /**
+   * 获取用户创建的所有实验室ID
+   * @param {number} creatorId - 创建者ID
+   * @return {Array} 实验室ID数组
+   */
+  async getCreatorLabIds(creatorId) {
+    const labs = await this.ctx.model.Lab.findAll({
+      where: { creatorId },
+      attributes: ['id'],
+    });
+    return labs.map(lab => lab.id);
   }
 }
 

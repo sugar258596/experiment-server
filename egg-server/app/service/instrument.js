@@ -380,10 +380,14 @@ class InstrumentService extends Service {
   /**
    * 获取仪器下拉选择列表
    * @param {Object} query - 查询参数
+   * @param {string} query.keyword - 关键词搜索
+   * @param {number} query.labId - 实验室ID筛选
+   * @param {number} query.page - 页码
+   * @param {number} query.pageSize - 每页数量
    * @return {Promise<Object>} 仪器列表和总数
    */
   async getInstrumentSelect(query = {}) {
-    const { keyword, page = 1, pageSize = 10 } = query;
+    const { keyword, labId, page = 1, pageSize = 10 } = query;
     const whereCondition = {};
 
     if (keyword) {
@@ -391,6 +395,11 @@ class InstrumentService extends Service {
         { name: { [this.app.Sequelize.Op.like]: `%${keyword}%` } },
         { model: { [this.app.Sequelize.Op.like]: `%${keyword}%` } },
       ];
+    }
+
+    // 支持按实验室筛选
+    if (labId) {
+      whereCondition.labId = labId;
     }
 
     const offset = (page - 1) * pageSize;

@@ -107,7 +107,14 @@ class AppointmentService extends Service {
     });
   }
 
-  async getPendingAppointments(query = {}) {
+  /**
+   * 获取待审核预约
+   * @param {Object} query - 查询参数
+   * @param {number} reviewerId - 审核人ID
+   * @param {string} reviewerRole - 审核人角色
+   * @return {Object} 预约列表
+   */
+  async getPendingAppointments(query = {}, reviewerId = null, reviewerRole = null) {
     const { page = 1, pageSize = 10, keyword, labId, userId, startDate, endDate, department } = query;
 
     const whereCondition = {
@@ -138,13 +145,25 @@ class AppointmentService extends Service {
       };
     }
 
+    // 构建实验室查询条件
+    const labWhere = {};
+    if (department) {
+      labWhere.department = { [this.app.Sequelize.Op.like]: `%${department}%` };
+    }
+
+    // 如果是教师角色，只能查看自己创建的实验室的预约
+    if (reviewerRole === 'teacher' && reviewerId) {
+      labWhere.creatorId = reviewerId;
+    }
+
     const { count, rows } = await this.ctx.model.Appointment.findAndCountAll({
       where: whereCondition,
       include: [
         {
           model: this.ctx.model.Lab,
           as: 'lab',
-          where: department ? { department: { [this.app.Sequelize.Op.like]: `%${department}%` } } : undefined,
+          where: Object.keys(labWhere).length > 0 ? labWhere : undefined,
+          required: reviewerRole === 'teacher', // 教师必须关联实验室
         },
         { model: this.ctx.model.User, as: 'user', attributes: ['id', 'username', 'nickname'] },
       ],
@@ -157,6 +176,30 @@ class AppointmentService extends Service {
       list: rows,
       total: count,
     };
+  }
+
+  /**
+   * 检查用户是否有权限审核该预约
+   * @param {number} appointmentId - 预约ID
+   * @param {number} reviewerId - 审核人ID
+   * @param {string} reviewerRole - 审核人角色
+   * @return {boolean} 是否有权限
+   */
+  async canReviewAppointment(appointmentId, reviewerId, reviewerRole) {
+    // 管理员可以审核所有预约
+    if (reviewerRole === 'admin' || reviewerRole === 'super_admin') {
+      return true;
+    }
+
+    // 教师只能审核自己创建的实验室的预约
+    if (reviewerRole === 'teacher') {
+      const appointment = await this.ctx.model.Appointment.findByPk(appointmentId, {
+        include: [{ model: this.ctx.model.Lab, as: 'lab' }],
+      });
+      return appointment && appointment.lab && appointment.lab.creatorId === reviewerId;
+    }
+
+    return false;
   }
 }
 

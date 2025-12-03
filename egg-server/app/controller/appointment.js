@@ -73,7 +73,20 @@ class AppointmentController extends Controller {
    */
   async review() {
     const { ctx } = this;
-    const appointment = await ctx.service.appointment.review(ctx.params.id, ctx.request.body);
+    const reviewerId = ctx.state.user.sub;
+    const reviewerRole = ctx.state.user.role;
+
+    // 检查权限
+    const canReview = await ctx.service.appointment.canReviewAppointment(ctx.params.id, reviewerId, reviewerRole);
+    if (!canReview) {
+      ctx.throw(403, '您没有权限审核此预约');
+    }
+
+    const reviewData = {
+      ...ctx.request.body,
+      reviewerId,
+    };
+    const appointment = await ctx.service.appointment.review(ctx.params.id, reviewData);
     ctx.body = { success: true, data: appointment };
   }
 
@@ -118,7 +131,9 @@ class AppointmentController extends Controller {
    */
   async getPendingAppointments() {
     const { ctx } = this;
-    const result = await ctx.service.appointment.getPendingAppointments(ctx.query);
+    const reviewerId = ctx.state.user.sub;
+    const reviewerRole = ctx.state.user.role;
+    const result = await ctx.service.appointment.getPendingAppointments(ctx.query, reviewerId, reviewerRole);
 
     ctx.body = {
       success: true,

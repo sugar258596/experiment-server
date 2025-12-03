@@ -55,8 +55,21 @@ module.exports = () => {
         path === '/api/user/check-existence'
       ));
 
-    // 公开路由直接放行
+    // 公开路由：尝试提取用户信息（如果有token），但不强制要求
     if (isPublic) {
+      const authorization = ctx.get('authorization');
+      const token = authorization?.replace('Bearer ', '');
+
+      if (token) {
+        try {
+          const decoded = ctx.app.jwt.verify(token, ctx.app.config.jwt.secret);
+          ctx.state.user = decoded;
+        } catch (err) {
+          // 对于公开路由，token验证失败不抛出错误，只是不设置用户信息
+          ctx.state.user = null;
+        }
+      }
+
       await next();
       return;
     }

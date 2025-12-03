@@ -13,6 +13,13 @@ module.exports = app => {
     tableName: 'favorites',
     paranoid: true,
     updatedAt: false,
+    indexes: [
+      {
+        name: 'idx_userId_labId',
+        fields: ['userId', 'labId'],
+        comment: '用户ID和实验室ID的复合索引，优化收藏状态查询性能',
+      },
+    ],
   });
 
   Favorite.associate = () => {

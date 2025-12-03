@@ -14,6 +14,7 @@ module.exports = app => {
     images: { type: JSON, allowNull: true, comment: '设备图片URL数组' },
     qrCode: { type: STRING(500), allowNull: true, comment: '设备二维码' },
     labId: { type: INTEGER, allowNull: true, comment: '所属实验室ID' },
+    rating: { type: app.Sequelize.DECIMAL(2, 1), defaultValue: 0, comment: '设备评分(1-5分)' },
     createdAt: { type: DATE, allowNull: false, comment: '创建时间' },
     updatedAt: { type: DATE, allowNull: false, comment: '更新时间' },
     deletedAt: { type: DATE, allowNull: true, comment: '软删除时间' },

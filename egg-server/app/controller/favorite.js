@@ -82,10 +82,7 @@ class FavoriteController extends Controller {
 
     const result = await ctx.service.favorite.getMyFavorites(userId, ctx.query);
 
-    ctx.body = {
-      success: true,
-      data: result,
-    };
+    ctx.body = result
   }
 }
 

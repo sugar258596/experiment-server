@@ -14,6 +14,7 @@ module.exports = app => {
     department: { type: STRING(100), allowNull: false, comment: '所属院系/部门' },
     tags: { type: JSON, allowNull: false, comment: '实验室标签数组' },
     rating: { type: DECIMAL(3, 2), defaultValue: 0, comment: '实验室评分(0-5分,保留两位小数)' },
+    creatorId: { type: INTEGER, allowNull: true, comment: '创建者ID(教师)' },
     createdAt: { type: DATE, allowNull: false, comment: '创建时间' },
     updatedAt: { type: DATE, allowNull: false, comment: '更新时间' },
     deletedAt: { type: DATE, allowNull: true, comment: '软删除时间' },
@@ -28,6 +29,7 @@ module.exports = app => {
     app.model.Lab.hasMany(app.model.Favorite, { foreignKey: 'labId', as: 'favorites' });
     app.model.Lab.hasMany(app.model.Evaluation, { foreignKey: 'labId', as: 'evaluations' });
     app.model.Lab.hasMany(app.model.Instrument, { foreignKey: 'labId', as: 'instruments' });
+    app.model.Lab.belongsTo(app.model.User, { foreignKey: 'creatorId', as: 'creator' });
   };
 
   return Lab;

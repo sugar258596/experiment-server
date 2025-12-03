@@ -33,7 +33,7 @@ class FavoriteService extends Service {
       offset,
     });
 
-    return { data: rows, total: count };
+    return { list: rows, total: count };
   }
 
   async toggle(userId, labId) {

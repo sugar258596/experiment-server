@@ -14,10 +14,16 @@ class LabController extends Controller {
    */
   async index() {
     const { ctx } = this;
-    const labs = await ctx.service.lab.findAll(ctx.query);
+    // 获取当前登录用户ID（如果未登录则为undefined）
+    const userId = ctx.state.user?.sub;
+    const result = await ctx.service.lab.findAll(ctx.query, userId);
     ctx.body = {
       success: true,
-      data: labs,
+      data: result.list,
+      list: result.list,
+      total: result.total,
+      page: result.page,
+      pageSize: result.pageSize,
     };
   }
 
@@ -30,7 +36,9 @@ class LabController extends Controller {
    */
   async show() {
     const { ctx } = this;
-    const lab = await ctx.service.lab.findById(ctx.params.id);
+    // 获取当前登录用户ID（如果未登录则为undefined）
+    const userId = ctx.state.user?.sub;
+    const lab = await ctx.service.lab.findById(ctx.params.id, userId);
     ctx.body = {
       success: true,
       data: lab,
@@ -52,13 +60,15 @@ class LabController extends Controller {
       // 获取上传的文件
       const files = ctx.request.files || [];
       const body = ctx.request.body;
+      // 获取当前登录用户ID作为创建者
+      const creatorId = ctx.state.user.sub;
 
-      const lab = await ctx.service.lab.createWithFiles(body, files);
+      const lab = await ctx.service.lab.createWithFiles(body, files, creatorId);
 
       // 清理临时文件
       ctx.cleanupRequestFiles();
 
-      ctx.body = lab
+      ctx.body = lab;
     } catch (error) {
       ctx.cleanupRequestFiles();
       throw error;
@@ -80,6 +90,17 @@ class LabController extends Controller {
     try {
       const files = ctx.request.files || [];
       const body = ctx.request.body;
+      const userId = ctx.state.user.sub;
+      const userRole = ctx.state.user.role;
+
+      // 教师只能编辑自己创建的实验室，管理员可以编辑所有
+      if (userRole === 'teacher') {
+        const isCreator = await ctx.service.lab.isLabCreator(ctx.params.id, userId);
+        if (!isCreator) {
+          ctx.cleanupRequestFiles();
+          ctx.throw(403, '您只能编辑自己创建的实验室');
+        }
+      }
 
       const lab = await ctx.service.lab.updateWithFiles(ctx.params.id, body, files);
 
@@ -121,7 +142,9 @@ class LabController extends Controller {
    */
   async getPopularLabs() {
     const { ctx } = this;
-    const labs = await ctx.service.lab.getPopularLabs(ctx.query);
+    // 获取当前登录用户ID（如果未登录则为undefined）
+    const userId = ctx.state.user?.sub;
+    const labs = await ctx.service.lab.getPopularLabs(ctx.query, userId);
 
     ctx.body = {
       success: true,
@@ -143,6 +166,28 @@ class LabController extends Controller {
       success: true,
       data: data.data,
       total: data.total,
+    };
+  }
+
+  /**
+   * @summary 获取我创建的实验室
+   * @description 获取当前教师创建的实验室列表
+   * @router get /api/labs/my
+   * @apikey
+   * @response 200 baseResponse 查询成功
+   */
+  async getMyLabs() {
+    const { ctx } = this;
+    const creatorId = ctx.state.user.sub;
+    const result = await ctx.service.lab.findByCreator(creatorId, ctx.query);
+
+    ctx.body = {
+      success: true,
+      data: result.list,
+      list: result.list,
+      total: result.total,
+      page: result.page,
+      pageSize: result.pageSize,
     };
   }
 }
