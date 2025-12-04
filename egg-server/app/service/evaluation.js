@@ -152,8 +152,11 @@ class EvaluationService extends Service {
       averageRating = totalRating / evaluations.length;
     }
 
+    const newRating = Number(averageRating.toFixed(2));
+    console.log(`更新实验室 ${labId} 评分: ${newRating} (基于 ${evaluations.length} 条评价)`);
+
     await this.ctx.model.Lab.update(
-      { rating: Number(averageRating.toFixed(2)) },
+      { rating: newRating },
       { where: { id: labId } }
     );
   }
