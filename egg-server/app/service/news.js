@@ -15,7 +15,12 @@ class NewsService extends Service {
   async create(data, user) {
     const userId = user?.sub || user?.id;
     if (!user || !userId) {
-      this.ctx.throw(400, '用户信息不完整,无法创建新闻');
+      this.ctx.throw(400, '用户信息不完整,无法创建动态');
+    }
+
+    // 权限检查：只有老师和管理员可以发布
+    if (!['teacher', 'admin', 'super_admin'].includes(user.role)) {
+      this.ctx.throw(403, '只有老师和管理员可以发布动态');
     }
 
     return this.ctx.model.News.create({
@@ -35,7 +40,12 @@ class NewsService extends Service {
   async createWithFiles(formData, files, user) {
     const userId = user?.sub || user?.id;
     if (!user || !userId) {
-      this.ctx.throw(400, '用户信息不完整,无法创建新闻');
+      this.ctx.throw(400, '用户信息不完整,无法创建动态');
+    }
+
+    // 权限检查：只有老师和管理员可以发布
+    if (!['teacher', 'admin', 'super_admin'].includes(user.role)) {
+      this.ctx.throw(403, '只有老师和管理员可以发布动态');
     }
 
     // 调试输出
@@ -117,7 +127,7 @@ class NewsService extends Service {
     }
   }
 
-  async findAll(query = {}) {
+  async findAll(query = {}, userId = null) {
     const { keyword, tag, page = 1, pageSize = 10 } = query;
     const where = { status: NewsStatus.APPROVED };
     const limit = parseInt(pageSize) || 10;
@@ -136,31 +146,190 @@ class NewsService extends Service {
 
     const { count, rows } = await this.ctx.model.News.findAndCountAll({
       where,
-      include: [{ model: this.ctx.model.User, as: 'author', attributes: ['id', 'username', 'nickname'] }],
+      include: [
+        { model: this.ctx.model.User, as: 'author', attributes: ['id', 'username', 'nickname', 'avatar'] },
+      ],
       order: [['createdAt', 'DESC']],
       limit,
       offset,
     });
 
-    return { data: rows, total: count };
+    // 如果提供了用户ID，查询用户的点赞和收藏状态
+    if (userId) {
+      const newsIds = rows.map(news => news.id);
+
+      console.log('查询点赞收藏状态 - userId:', userId, 'newsIds:', newsIds);
+
+      // 只查询未软删除的点赞和收藏记录
+      const likes = await this.ctx.model.NewsLike.findAll({
+        where: { userId, newsId: newsIds },
+        attributes: ['newsId'],
+      });
+      const favorites = await this.ctx.model.NewsFavorite.findAll({
+        where: { userId, newsId: newsIds },
+        attributes: ['newsId'],
+      });
+
+      console.log('查询到的点赞:', likes.map(l => l.newsId));
+      console.log('查询到的收藏:', favorites.map(f => f.newsId));
+
+      const likedNewsIds = new Set(likes.map(like => like.newsId));
+      const favoritedNewsIds = new Set(favorites.map(fav => fav.newsId));
+
+      rows.forEach(news => {
+        news.dataValues.isLiked = likedNewsIds.has(news.id);
+        news.dataValues.isFavorited = favoritedNewsIds.has(news.id);
+      });
+    } else {
+      // 如果没有用户ID，设置默认值
+      rows.forEach(news => {
+        news.dataValues.isLiked = false;
+        news.dataValues.isFavorited = false;
+      });
+    }
+
+    return { list: rows, total: count };
   }
 
-  async findOne(id) {
+  async findOne(id, userId = null) {
     const news = await this.ctx.model.News.findByPk(id, {
-      include: [{ model: this.ctx.model.User, as: 'author', attributes: ['id', 'username', 'nickname'] }],
+      include: [{ model: this.ctx.model.User, as: 'author', attributes: ['id', 'username', 'nickname', 'avatar'] }],
     });
 
     if (!news) {
       this.ctx.throw(404, `动态ID ${id} 不存在`);
     }
 
+    // 如果提供了用户ID，查询用户的点赞和收藏状态
+    if (userId) {
+      const like = await this.ctx.model.NewsLike.findOne({
+        where: { userId, newsId: id },
+      });
+      const favorite = await this.ctx.model.NewsFavorite.findOne({
+        where: { userId, newsId: id },
+      });
+
+      news.dataValues.isLiked = !!like;
+      news.dataValues.isFavorited = !!favorite;
+    }
+
     return news;
   }
 
-  async like(id) {
-    const news = await this.findOne(id);
+  async toggleLike(newsId, userId) {
+    const news = await this.findOne(newsId);
+
+    // 查找是否已点赞（包括软删除的记录）
+    const existingLike = await this.ctx.model.NewsLike.findOne({
+      where: { userId, newsId },
+      paranoid: false,
+    });
+
+    if (existingLike) {
+      if (existingLike.deletedAt) {
+        // 如果是软删除的记录，恢复它
+        await existingLike.restore();
+        await news.increment('likes', { by: 1 });
+        return { isLiked: true, message: '点赞成功' };
+      }
+      // 取消点赞（软删除）
+      await existingLike.destroy();
+      await news.decrement('likes', { by: 1 });
+      return { isLiked: false, message: '取消点赞成功' };
+    }
+    // 添加点赞
+    await this.ctx.model.NewsLike.create({ userId, newsId });
     await news.increment('likes', { by: 1 });
-    return news.reload();
+    return { isLiked: true, message: '点赞成功' };
+  }
+
+  async toggleFavorite(newsId, userId) {
+    const news = await this.findOne(newsId);
+
+    // 查找是否已收藏（包括软删除的记录）
+    const existingFavorite = await this.ctx.model.NewsFavorite.findOne({
+      where: { userId, newsId },
+      paranoid: false,
+    });
+
+    if (existingFavorite) {
+      if (existingFavorite.deletedAt) {
+        // 如果是软删除的记录，恢复它
+        await existingFavorite.restore();
+        await news.increment('favorites', { by: 1 });
+        return { isFavorited: true, message: '收藏成功' };
+      }
+      // 取消收藏（软删除）
+      await existingFavorite.destroy();
+      await news.decrement('favorites', { by: 1 });
+      return { isFavorited: false, message: '取消收藏成功' };
+    }
+    // 添加收藏
+    await this.ctx.model.NewsFavorite.create({ userId, newsId });
+    await news.increment('favorites', { by: 1 });
+    return { isFavorited: true, message: '收藏成功' };
+  }
+
+  async getMyLikes(userId, query = {}) {
+    const { page = 1, pageSize = 10 } = query;
+    const limit = parseInt(pageSize) || 10;
+    const offset = (parseInt(page) - 1) * limit;
+
+    const { count, rows } = await this.ctx.model.NewsLike.findAndCountAll({
+      where: { userId },
+      include: [
+        {
+          model: this.ctx.model.News,
+          as: 'news',
+          where: { status: NewsStatus.APPROVED },
+          include: [
+            { model: this.ctx.model.User, as: 'author', attributes: ['id', 'username', 'nickname', 'avatar'] },
+          ],
+        },
+      ],
+      order: [['createdAt', 'DESC']],
+      limit,
+      offset,
+    });
+
+    const data = rows.map(like => ({
+      ...like.news.dataValues,
+      isLiked: true,
+      likedAt: like.createdAt,
+    }));
+
+    return { list: data, total: count };
+  }
+
+  async getMyFavorites(userId, query = {}) {
+    const { page = 1, pageSize = 10 } = query;
+    const limit = parseInt(pageSize) || 10;
+    const offset = (parseInt(page) - 1) * limit;
+
+    const { count, rows } = await this.ctx.model.NewsFavorite.findAndCountAll({
+      where: { userId },
+      include: [
+        {
+          model: this.ctx.model.News,
+          as: 'news',
+          where: { status: NewsStatus.APPROVED },
+          include: [
+            { model: this.ctx.model.User, as: 'author', attributes: ['id', 'username', 'nickname', 'avatar'] },
+          ],
+        },
+      ],
+      order: [['createdAt', 'DESC']],
+      limit,
+      offset,
+    });
+
+    const data = rows.map(favorite => ({
+      ...favorite.news.dataValues,
+      isFavorited: true,
+      favoritedAt: favorite.createdAt,
+    }));
+
+    return { list: data, total: count };
   }
 
   async review(id, approved, currentUser) {

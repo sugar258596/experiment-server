@@ -36,7 +36,8 @@ module.exports = () => {
         path.startsWith('/api/labs/') ||
         // 新闻相关路由：排除需要权限的路径
         (path.startsWith('/api/news/') &&
-          !path.startsWith('/api/news/pending')) ||
+          !path.startsWith('/api/news/pending') &&
+          !path.startsWith('/api/news/my/')) ||
         path.startsWith('/api/banners/') ||
         // 预约相关路由：排除需要权限的路径
         (path.startsWith('/api/appointments/') &&

@@ -34,6 +34,8 @@ module.exports = app => {
     app.model.User.hasMany(app.model.Repair, { foreignKey: 'reporterId', as: 'instrumentRepairs' });
     app.model.User.hasMany(app.model.Feedback, { foreignKey: 'userId', as: 'feedbacks' });
     app.model.User.hasMany(app.model.FeedbackReply, { foreignKey: 'userId', as: 'feedbackReplies' });
+    app.model.User.hasMany(app.model.NewsLike, { foreignKey: 'userId', as: 'newsLikes' });
+    app.model.User.hasMany(app.model.NewsFavorite, { foreignKey: 'userId', as: 'newsFavorites' });
   };
 
   return User;

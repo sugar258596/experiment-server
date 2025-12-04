@@ -28,6 +28,8 @@ module.exports = app => {
   News.associate = () => {
     app.model.News.belongsTo(app.model.User, { foreignKey: 'authorId', as: 'author' });
     app.model.News.belongsTo(app.model.User, { foreignKey: 'reviewerId', as: 'reviewer' });
+    app.model.News.hasMany(app.model.NewsLike, { foreignKey: 'newsId', as: 'newsLikes' });
+    app.model.News.hasMany(app.model.NewsFavorite, { foreignKey: 'newsId', as: 'newsFavorites' });
   };
 
   return News;

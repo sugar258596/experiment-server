@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * 新闻公告路由模块
+ * 动态路由模块
  * @param {Egg.Application} app
  */
 module.exports = app => {
@@ -9,24 +9,33 @@ module.exports = app => {
   const roles = app.middleware.roles;
   const jwtAuth = app.middleware.jwtAuth();
 
-  // 获取新闻列表 (公开)
-  router.get('/api/news', controller.news.index);
+  // 获取我点赞的动态 (需要登录) - 必须在 /api/news/:id 之前
+  router.get('/api/news/my/likes', jwtAuth, controller.news.getMyLikes);
 
-  // 获取新闻详情 (公开)
-  router.get('/api/news/:id', controller.news.show);
+  // 获取我收藏的动态 (需要登录) - 必须在 /api/news/:id 之前
+  router.get('/api/news/my/favorites', jwtAuth, controller.news.getMyFavorites);
 
-  // 发布新闻 (教师及以上)
+  // 获取动态列表 (公开，但会尝试获取用户信息)
+  router.get('/api/news', jwtAuth, controller.news.index);
+
+  // 获取动态详情 (公开，但会尝试获取用户信息)
+  router.get('/api/news/:id', jwtAuth, controller.news.show);
+
+  // 发布动态 (教师及以上)
   router.post('/api/news', jwtAuth, roles('TEACHER', 'ADMIN', 'SUPER_ADMIN'), controller.news.create);
 
-  // 点赞新闻 (需要登录) - 必须在 /api/news/:id 之前
-  router.post('/api/news/like/:id', jwtAuth, controller.news.like);
+  // 切换点赞状态 (需要登录)
+  router.post('/api/news/:id/like', jwtAuth, controller.news.like);
 
-  // 审核新闻 (管理员) - 必须在 /api/news/:id 之前
-  router.patch('/api/news/review/:id', jwtAuth, roles('ADMIN', 'SUPER_ADMIN'), controller.news.review);
+  // 切换收藏状态 (需要登录)
+  router.post('/api/news/:id/favorite', jwtAuth, controller.news.favorite);
 
-  // 更新新闻 (需要登录)
-  router.post('/api/news/:id', jwtAuth, controller.news.update);
+  // 审核动态 (管理员)
+  router.patch('/api/news/:id/review', jwtAuth, roles('ADMIN', 'SUPER_ADMIN'), controller.news.review);
 
-  // 删除新闻 (需要登录)
+  // 更新动态 (需要登录)
+  router.put('/api/news/:id', jwtAuth, controller.news.update);
+
+  // 删除动态 (需要登录)
   router.delete('/api/news/:id', jwtAuth, controller.news.destroy);
 };
