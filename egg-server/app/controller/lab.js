@@ -17,14 +17,7 @@ class LabController extends Controller {
     // 获取当前登录用户ID（如果未登录则为undefined）
     const userId = ctx.state.user?.sub;
     const result = await ctx.service.lab.findAll(ctx.query, userId);
-    ctx.body = {
-      success: true,
-      data: result.list,
-      list: result.list,
-      total: result.total,
-      page: result.page,
-      pageSize: result.pageSize,
-    };
+    ctx.body = result
   }
 
   /**
@@ -39,10 +32,7 @@ class LabController extends Controller {
     // 获取当前登录用户ID（如果未登录则为undefined）
     const userId = ctx.state.user?.sub;
     const lab = await ctx.service.lab.findById(ctx.params.id, userId);
-    ctx.body = {
-      success: true,
-      data: lab,
-    };
+    ctx.body = lab
   }
 
   /**
@@ -106,11 +96,7 @@ class LabController extends Controller {
 
       ctx.cleanupRequestFiles();
 
-      ctx.body = {
-        success: true,
-        data: lab,
-        message: 'Lab updated successfully',
-      };
+      ctx.body = lab
     } catch (error) {
       ctx.cleanupRequestFiles();
       throw error;
@@ -128,10 +114,7 @@ class LabController extends Controller {
   async destroy() {
     const { ctx } = this;
     const result = await ctx.service.lab.delete(ctx.params.id);
-    ctx.body = {
-      success: true,
-      data: result,
-    };
+    ctx.body = result
   }
 
   /**
@@ -146,10 +129,7 @@ class LabController extends Controller {
     const userId = ctx.state.user?.sub;
     const labs = await ctx.service.lab.getPopularLabs(ctx.query, userId);
 
-    ctx.body = {
-      success: true,
-      data: labs,
-    };
+    ctx.body = labs
   }
 
   /**
@@ -162,11 +142,7 @@ class LabController extends Controller {
     const { ctx } = this;
     const data = await ctx.service.lab.getOptions(ctx.query);
 
-    ctx.body = {
-      success: true,
-      data: data.data,
-      total: data.total,
-    };
+    ctx.body = data
   }
 
   /**
@@ -181,14 +157,7 @@ class LabController extends Controller {
     const creatorId = ctx.state.user.sub;
     const result = await ctx.service.lab.findByCreator(creatorId, ctx.query);
 
-    ctx.body = {
-      success: true,
-      data: result.list,
-      list: result.list,
-      total: result.total,
-      page: result.page,
-      pageSize: result.pageSize,
-    };
+    ctx.body = result
   }
 }
 

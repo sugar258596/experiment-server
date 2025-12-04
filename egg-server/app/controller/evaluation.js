@@ -53,7 +53,7 @@ class EvaluationController extends Controller {
       { sub: ctx.state.user.sub },
       data
     );
-    ctx.body = { success: true, data: result };
+    ctx.body = result
   }
 
   /**
@@ -85,7 +85,7 @@ class EvaluationController extends Controller {
       { sub: ctx.state.user.sub },
       data
     );
-    ctx.body = { success: true, data: result };
+    ctx.body = result
   }
 
   /**
@@ -111,7 +111,7 @@ class EvaluationController extends Controller {
     const { ctx } = this;
     const labId = parseInt(ctx.params.labId);
     const result = await ctx.service.evaluation.findByLab(labId);
-    ctx.body = { success: true, data: result };
+    ctx.body = result
   }
 
   /**
@@ -123,7 +123,7 @@ class EvaluationController extends Controller {
     const { ctx } = this;
     const instrumentId = parseInt(ctx.params.instrumentId);
     const result = await ctx.service.evaluation.findByInstrument(instrumentId);
-    ctx.body = { success: true, data: result };
+    ctx.body = result
   }
 
   /**
@@ -135,7 +135,7 @@ class EvaluationController extends Controller {
     const { ctx } = this;
     const appointmentId = parseInt(ctx.params.appointmentId);
     const result = await ctx.service.evaluation.findByAppointmentId(appointmentId);
-    ctx.body = { success: true, data: result };
+    ctx.body = result
   }
 
   /**
@@ -147,7 +147,7 @@ class EvaluationController extends Controller {
     const { ctx } = this;
     const applicationId = parseInt(ctx.params.applicationId);
     const result = await ctx.service.evaluation.findByInstrumentApplicationId(applicationId);
-    ctx.body = { success: true, data: result };
+    ctx.body = result
   }
 
   /**
@@ -159,7 +159,7 @@ class EvaluationController extends Controller {
     const { ctx } = this;
     const labId = parseInt(ctx.params.labId);
     const result = await ctx.service.evaluation.getLabStatistics(labId);
-    ctx.body = { success: true, data: result };
+    ctx.body = result
   }
 
   /**
@@ -171,7 +171,7 @@ class EvaluationController extends Controller {
     const { ctx } = this;
     const instrumentId = parseInt(ctx.params.instrumentId);
     const result = await ctx.service.evaluation.getInstrumentStatistics(instrumentId);
-    ctx.body = { success: true, data: result };
+    ctx.body = result
   }
 }
 

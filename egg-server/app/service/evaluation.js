@@ -288,7 +288,7 @@ class EvaluationService extends Service {
   /**
    * 上传评价图片
    * @param {Object} file - 上传的文件
-   * @return {string} 图片URL
+   * @return {string} 图片URL（完整URL）
    */
   async uploadImage(file) {
     const fs = require('fs');
@@ -313,9 +313,15 @@ class EvaluationService extends Service {
       writer.on('error', reject);
     });
 
-    // 返回静态文件访问路径
-    const staticPrefix = this.app.config.static.prefix || '/static';
-    return `${staticPrefix}/uploads/evaluations/${filename}`;
+    // 从环境变量获取服务器配置
+    const protocol = process.env.SERVET_AGREEMENT || 'http';
+    const host = process.env.SERVET_HOST || 'localhost';
+    const port = process.env.SERVET_PORT || '7001';
+    const staticPrefix = process.env.SERVET_FILE_STATIC || this.app.config.static.prefix || '/static';
+
+    // 构建完整的URL
+    const serverUrl = `${protocol}://${host}:${port}`;
+    return `${serverUrl}${staticPrefix}/uploads/evaluations/${filename}`;
   }
 
   /**
@@ -341,6 +347,32 @@ class EvaluationService extends Service {
         { model: this.ctx.model.User, as: 'user', attributes: ['id', 'username', 'nickname', 'avatar'] },
         { model: this.ctx.model.Instrument, as: 'instrument', attributes: ['id', 'name'] },
       ],
+    });
+  }
+
+  /**
+   * 根据实验室ID查找评论列表
+   */
+  async findByLab(labId) {
+    return this.ctx.model.Evaluation.findAll({
+      where: { labId, type: EVALUATION_TYPE.LAB },
+      include: [
+        { model: this.ctx.model.User, as: 'user', attributes: ['id', 'username', 'nickname', 'avatar'] },
+      ],
+      order: [['createdAt', 'DESC']],
+    });
+  }
+
+  /**
+   * 根据仪器ID查找评价列表
+   */
+  async findByInstrument(instrumentId) {
+    return this.ctx.model.Evaluation.findAll({
+      where: { instrumentId, type: EVALUATION_TYPE.INSTRUMENT },
+      include: [
+        { model: this.ctx.model.User, as: 'user', attributes: ['id', 'username', 'nickname', 'avatar'] },
+      ],
+      order: [['createdAt', 'DESC']],
     });
   }
 }

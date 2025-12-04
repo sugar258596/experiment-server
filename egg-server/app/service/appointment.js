@@ -6,12 +6,40 @@ class AppointmentService extends Service {
   async create(data) {
     const { userId, labId, appointmentDate, timeSlot } = data;
 
-    const existing = await this.ctx.model.Appointment.findOne({
-      where: { labId, appointmentDate, timeSlot, status: [0, 1] },
+    // 获取实验室信息
+    const lab = await this.ctx.model.Lab.findByPk(labId);
+    if (!lab) {
+      this.ctx.throw(404, '实验室不存在');
+    }
+
+    // 检查该用户是否已经预约了同一时段
+    const userExisting = await this.ctx.model.Appointment.findOne({
+      where: {
+        userId,
+        labId,
+        appointmentDate,
+        timeSlot,
+        status: [0, 1], // 待审核或已通过
+      },
     });
 
-    if (existing) {
-      this.ctx.throw(400, 'Time slot already booked');
+    if (userExisting) {
+      this.ctx.throw(400, '您已预约该时段，请勿重复预约');
+    }
+
+    // 检查该时段的预约数量是否已达到实验室容量
+    const Op = this.app.Sequelize.Op;
+    const approvedCount = await this.ctx.model.Appointment.count({
+      where: {
+        labId,
+        appointmentDate,
+        timeSlot,
+        status: [0, 1], // 待审核或已通过
+      },
+    });
+
+    if (approvedCount >= lab.capacity) {
+      this.ctx.throw(400, '该时段预约已满，请选择其他时段');
     }
 
     return this.ctx.model.Appointment.create(data);
@@ -98,7 +126,7 @@ class AppointmentService extends Service {
   }
 
   async findMyAppointments(userId) {
-    return this.ctx.model.Appointment.findAll({
+    const appointments = await this.ctx.model.Appointment.findAll({
       where: { userId },
       include: [
         { model: this.ctx.model.Lab, as: 'lab' },
@@ -106,6 +134,21 @@ class AppointmentService extends Service {
       ],
       order: [['createdAt', 'DESC']],
     });
+
+    // 为每个预约添加是否已评论的标志
+    const appointmentsWithEvaluation = await Promise.all(
+      appointments.map(async (appointment) => {
+        const evaluation = await this.ctx.model.Evaluation.findOne({
+          where: { appointmentId: appointment.id, type: 0 },
+        });
+
+        const plainAppointment = appointment.toJSON();
+        plainAppointment.hasEvaluation = !!evaluation;
+        return plainAppointment;
+      })
+    );
+
+    return appointmentsWithEvaluation;
   }
 
   /**
