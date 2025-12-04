@@ -152,6 +152,24 @@ class NewsController extends Controller {
   }
 
   /**
+   * @summary 获取我发布的动态
+   * @description 查询当前用户发布的所有动态
+   * @router get /api/news/my
+   * @apikey
+   * @response 200 baseResponse 查询成功
+   */
+  async getMyNews() {
+    const { ctx } = this;
+    if (!ctx.state.user || !ctx.state.user.sub) {
+      ctx.throw(401, '请先登录');
+    }
+    const userId = ctx.state.user.sub;
+    const result = await ctx.service.news.getMyNews(userId, ctx.query);
+
+    ctx.body = result;
+  }
+
+  /**
    * @summary 审核新闻
    * @description 审核新闻发布申请(仅管理员可操作)
    * @router patch /api/news/{id}/review

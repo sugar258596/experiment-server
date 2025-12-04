@@ -332,8 +332,27 @@ class NewsService extends Service {
     return { list: data, total: count };
   }
 
+  async getMyNews(userId, query = {}) {
+    const { page = 1, pageSize = 10 } = query;
+    const limit = parseInt(pageSize) || 10;
+    const offset = (parseInt(page) - 1) * limit;
+
+    const { count, rows } = await this.ctx.model.News.findAndCountAll({
+      where: { authorId: userId },
+      include: [
+        { model: this.ctx.model.User, as: 'author', attributes: ['id', 'username', 'nickname', 'avatar'] },
+      ],
+      order: [['createdAt', 'DESC']],
+      limit,
+      offset,
+    });
+
+    return { list: rows, total: count };
+  }
+
   async review(id, approved, currentUser) {
-    if (currentUser && !['ADMIN', 'SUPER_ADMIN'].includes(currentUser.role)) {
+    const userRole = (currentUser?.role || '').toLowerCase();
+    if (currentUser && !['admin', 'super_admin'].includes(userRole)) {
       this.ctx.throw(403, '需要管理员权限才能审核新闻');
     }
 
@@ -374,7 +393,8 @@ class NewsService extends Service {
 
     // 权限检查：只有作者或管理员可以修改
     const isAuthor = news.authorId === userId;
-    const isAdmin = ['ADMIN', 'SUPER_ADMIN'].includes(user.role);
+    const userRole = (user.role || '').toLowerCase();
+    const isAdmin = ['admin', 'super_admin'].includes(userRole);
     if (!isAuthor && !isAdmin) {
       this.ctx.throw(403, '只有作者或管理员可以修改新闻');
     }
@@ -474,7 +494,8 @@ class NewsService extends Service {
 
     // 权限检查：只有作者或管理员可以删除
     const isAuthor = news.authorId === userId;
-    const isAdmin = ['ADMIN', 'SUPER_ADMIN'].includes(user.role);
+    const userRole = (user.role || '').toLowerCase();
+    const isAdmin = ['admin', 'super_admin'].includes(userRole);
     if (!isAuthor && !isAdmin) {
       this.ctx.throw(403, '只有作者或管理员可以删除新闻');
     }

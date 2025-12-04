@@ -9,6 +9,9 @@ module.exports = app => {
   const roles = app.middleware.roles;
   const jwtAuth = app.middleware.jwtAuth();
 
+  // 获取我发布的动态 (需要登录) - 必须在 /api/news/:id 之前
+  router.get('/api/news/my', jwtAuth, controller.news.getMyNews);
+
   // 获取我点赞的动态 (需要登录) - 必须在 /api/news/:id 之前
   router.get('/api/news/my/likes', jwtAuth, controller.news.getMyLikes);
 
