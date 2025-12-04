@@ -125,16 +125,17 @@ class InstrumentApplicationService extends Service {
       this.ctx.throw(400, '该仪器当前状态不可申请使用');
     }
 
+    // 只有待审核状态(0)的申请才阻止重复提交
     const existingApplication = await this.ctx.model.InstrumentApplication.findOne({
       where: {
         applicantId: user.sub,
         instrumentId,
-        status: { [this.app.Sequelize.Op.in]: [0, 1] },
+        status: 0, // 只检查待审核状态
       },
     });
 
     if (existingApplication) {
-      this.ctx.throw(400, '您已对该仪器提交过申请，不能重复申请');
+      this.ctx.throw(400, '您已有待审核的申请，不能重复申请');
     }
 
     if (new Date(data.startTime) >= new Date(data.endTime)) {
@@ -197,11 +198,13 @@ class InstrumentApplicationService extends Service {
     }
 
     // status: 0-待审核, 1-已通过, 2-已拒绝
-    const statusMap = { APPROVED: 1, REJECTED: 2 };
-    const statusCode = statusMap[reviewData.status];
+    // 只支持数字或数字字符串
+    let statusCode = typeof reviewData.status === 'string'
+      ? parseInt(reviewData.status, 10)
+      : reviewData.status;
 
-    if (statusCode === undefined) {
-      this.ctx.throw(400, '审核状态只能是已通过或已拒绝');
+    if (statusCode !== 1 && statusCode !== 2) {
+      this.ctx.throw(400, '审核状态只能是1(已通过)或2(已拒绝)');
     }
 
     await application.update({

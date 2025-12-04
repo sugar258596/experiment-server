@@ -30,6 +30,16 @@ class InstrumentService extends Service {
    * @return {Promise<Object>} 创建结果
    */
   async createWithFiles(data, files) {
+    // 处理 labId 类型转换（兼容字符串和数字）
+    if (data.labId !== undefined && data.labId !== null && data.labId !== '') {
+      data.labId = parseInt(data.labId, 10);
+      if (isNaN(data.labId)) {
+        data.labId = null;
+      }
+    } else {
+      data.labId = null;
+    }
+
     // 验证实验室存在
     if (data.labId) {
       const lab = await this.ctx.model.Lab.findByPk(data.labId);
@@ -151,6 +161,14 @@ class InstrumentService extends Service {
       oldImages.forEach(imageUrl => {
         deleteFile(imageUrl);
       });
+    }
+
+    // 处理 labId 类型转换（兼容字符串和数字）
+    if (updateData.labId !== undefined && updateData.labId !== null && updateData.labId !== '') {
+      updateData.labId = parseInt(updateData.labId, 10);
+      if (isNaN(updateData.labId)) {
+        updateData.labId = null;
+      }
     }
 
     // 处理实验室关联

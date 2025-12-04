@@ -227,12 +227,19 @@ class LabService extends Service {
     if (formData.instrumentIds) {
       if (typeof formData.instrumentIds === 'string') {
         try {
-          instrumentIds = JSON.parse(formData.instrumentIds);
+          const parsed = JSON.parse(formData.instrumentIds);
+          // 兼容单个ID和数组两种情况
+          instrumentIds = Array.isArray(parsed) ? parsed : [parsed];
         } catch (e) {
-          instrumentIds = [];
+          // 如果不是有效JSON，尝试按逗号分隔或作为单个ID处理
+          instrumentIds = formData.instrumentIds.includes(',')
+            ? formData.instrumentIds.split(',').map(id => parseInt(id.trim(), 10)).filter(id => !isNaN(id))
+            : [parseInt(formData.instrumentIds, 10)].filter(id => !isNaN(id));
         }
       } else if (Array.isArray(formData.instrumentIds)) {
         instrumentIds = formData.instrumentIds;
+      } else if (typeof formData.instrumentIds === 'number') {
+        instrumentIds = [formData.instrumentIds];
       }
     }
 
@@ -437,12 +444,19 @@ class LabService extends Service {
     if (formData.instrumentIds !== undefined) {
       if (typeof formData.instrumentIds === 'string') {
         try {
-          instrumentIds = JSON.parse(formData.instrumentIds);
+          const parsed = JSON.parse(formData.instrumentIds);
+          // 兼容单个ID和数组两种情况
+          instrumentIds = Array.isArray(parsed) ? parsed : [parsed];
         } catch (e) {
-          instrumentIds = [];
+          // 如果不是有效JSON，尝试按逗号分隔或作为单个ID处理
+          instrumentIds = formData.instrumentIds.includes(',')
+            ? formData.instrumentIds.split(',').map(id => parseInt(id.trim(), 10)).filter(id => !isNaN(id))
+            : [parseInt(formData.instrumentIds, 10)].filter(id => !isNaN(id));
         }
       } else if (Array.isArray(formData.instrumentIds)) {
         instrumentIds = formData.instrumentIds;
+      } else if (typeof formData.instrumentIds === 'number') {
+        instrumentIds = [formData.instrumentIds];
       } else {
         instrumentIds = [];
       }

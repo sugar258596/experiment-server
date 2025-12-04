@@ -22,5 +22,4 @@ module.exports = app => {
   require('./router/notification')(app);
   require('./router/favorite')(app);
   require('./router/evaluation')(app);
-  require('./router/banner')(app);
 };
