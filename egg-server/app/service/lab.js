@@ -105,6 +105,14 @@ class LabService extends Service {
     const list = labsWithFavorite.map(lab => {
       const plainLab = lab.toJSON();
       plainLab.isFavorite = lab.isFavorite;
+      // 确保 tags 字段被正确序列化
+      if (plainLab.tags && typeof plainLab.tags === 'string') {
+        try {
+          plainLab.tags = JSON.parse(plainLab.tags);
+        } catch (e) {
+          plainLab.tags = [];
+        }
+      }
       return plainLab;
     });
 
@@ -148,6 +156,14 @@ class LabService extends Service {
     // Convert to plain object to ensure isFavorite is included in JSON serialization
     const plainLab = labWithFavorite.toJSON();
     plainLab.isFavorite = labWithFavorite.isFavorite;
+    // 确保 tags 字段被正确序列化
+    if (plainLab.tags && typeof plainLab.tags === 'string') {
+      try {
+        plainLab.tags = JSON.parse(plainLab.tags);
+      } catch (e) {
+        plainLab.tags = [];
+      }
+    }
     return plainLab;
   }
 
@@ -544,6 +560,14 @@ class LabService extends Service {
     return labsWithFavorite.map(lab => {
       const plainLab = lab.toJSON();
       plainLab.isFavorite = lab.isFavorite;
+      // 确保 tags 字段被正确序列化
+      if (plainLab.tags && typeof plainLab.tags === 'string') {
+        try {
+          plainLab.tags = JSON.parse(plainLab.tags);
+        } catch (e) {
+          plainLab.tags = [];
+        }
+      }
       return plainLab;
     });
   }

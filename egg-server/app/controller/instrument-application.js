@@ -102,6 +102,22 @@ class InstrumentApplicationController extends Controller {
     const result = await ctx.service.instrumentApplication.reviewApplication(applicationId, reviewer, ctx.request.body);
     ctx.body = result;
   }
+
+  /**
+   * @summary 归还仪器
+   * @description 归还已借出的仪器，将仪器状态恢复为正常
+   * @router post /api/instrument-applications/{id}/return
+   * @request path string *id
+   * @apikey
+   * @response 200 baseResponse 归还成功
+   */
+  async returnInstrument() {
+    const { ctx } = this;
+    const applicationId = parseInt(ctx.params.id);
+    const userId = ctx.state.user.sub;
+    const result = await ctx.service.instrumentApplication.returnInstrument(applicationId, userId);
+    ctx.body = result;
+  }
 }
 
 module.exports = InstrumentApplicationController;

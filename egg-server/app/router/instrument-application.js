@@ -23,4 +23,7 @@ module.exports = app => {
 
   // 审核申请 (教师及以上)
   router.post('/api/instrument-applications/:id', jwtAuth, roles('TEACHER', 'ADMIN', 'SUPER_ADMIN'), controller.instrumentApplication.review);
+
+  // 归还仪器 (需要登录)
+  router.post('/api/instrument-applications/:id/return', jwtAuth, controller.instrumentApplication.returnInstrument);
 };

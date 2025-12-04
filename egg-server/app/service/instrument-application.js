@@ -224,6 +224,53 @@ class InstrumentApplicationService extends Service {
 
     return { message: '审核成功' };
   }
+
+  /**
+   * 归还仪器
+   * @param {number} applicationId - 申请ID
+   * @param {number} userId - 用户ID
+   * @return {Promise<Object>} 归还结果
+   */
+  async returnInstrument(applicationId, userId) {
+    const application = await this.ctx.model.InstrumentApplication.findByPk(applicationId, {
+      include: [{ model: this.ctx.model.Instrument, as: 'instrument' }],
+    });
+
+    if (!application) {
+      this.ctx.throw(404, '申请记录不存在');
+    }
+
+    // 只有申请人可以归还
+    if (application.applicantId !== userId) {
+      this.ctx.throw(403, '您没有权限归还此仪器');
+    }
+
+    // 只有已通过的申请才能归还
+    if (application.status !== 1) {
+      this.ctx.throw(400, '只有已通过的申请才能归还仪器');
+    }
+
+    // 检查仪器状态是否为借出
+    if (application.instrument.status !== 4) {
+      this.ctx.throw(400, '该仪器当前不是借出状态');
+    }
+
+    // 将仪器状态恢复为正常
+    await this.ctx.model.Instrument.update(
+      { status: 0 },
+      { where: { id: application.instrumentId } }
+    );
+
+    // 更新申请状态为已归还
+    await application.update({
+      status: 3,
+    });
+
+    return {
+      success: true,
+      message: '归还成功',
+    };
+  }
 }
 
 module.exports = InstrumentApplicationService;

@@ -20,4 +20,7 @@ module.exports = app => {
 
   // 更新维修状态 (管理员)
   router.post('/api/repairs/update/:id', jwtAuth, roles('ADMIN', 'SUPER_ADMIN'), controller.repair.updateRepairStatus);
+
+  // 取消报修 (需要登录)
+  router.delete('/api/repairs/:id', jwtAuth, controller.repair.cancel);
 };

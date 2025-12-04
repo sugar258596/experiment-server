@@ -158,10 +158,8 @@ class RepairService extends Service {
     });
 
     return {
-      data: rows,
+      list: rows,
       total: count,
-      page: parseInt(page),
-      pageSize: parseInt(pageSize),
     };
   }
 
@@ -181,6 +179,35 @@ class RepairService extends Service {
     }
     await repair.update(data);
     return repair;
+  }
+
+  /**
+   * 取消报修
+   * @param {number} id - 报修ID
+   * @param {number} userId - 用户ID
+   * @return {Promise<Object>} 取消结果
+   */
+  async cancel(id, userId) {
+    const repair = await this.ctx.model.Repair.findByPk(id);
+
+    if (!repair) {
+      this.ctx.throw(404, '报修记录不存在');
+    }
+
+    // 只有报修人可以取消
+    if (repair.reporterId !== userId) {
+      this.ctx.throw(403, '您没有权限取消此报修');
+    }
+
+    // 只有待处理状态才能取消
+    if (repair.status !== 0) {
+      this.ctx.throw(400, '只能取消待处理状态的报修');
+    }
+
+    // 更新状态为已取消(3)
+    await repair.update({ status: 3 });
+
+    return { message: '取消成功' };
   }
 }
 

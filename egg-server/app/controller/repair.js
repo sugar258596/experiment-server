@@ -89,9 +89,27 @@ class RepairController extends Controller {
     const userId = ctx.state.user.sub;
     const result = await ctx.service.repair.getMyRepairs(userId, ctx.query);
 
+    ctx.body = result
+  }
+
+  /**
+   * @summary 取消报修
+   * @description 取消自己提交的报修记录(仅待处理状态可取消)
+   * @router delete /api/repairs/{id}
+   * @request path string *id
+   * @apikey
+   * @response 200 baseResponse 取消成功
+   */
+  async cancel() {
+    const { ctx } = this;
+    const id = parseInt(ctx.params.id);
+    const userId = ctx.state.user.sub;
+    const result = await ctx.service.repair.cancel(id, userId);
+
     ctx.body = {
       success: true,
       data: result,
+      message: '取消成功',
     };
   }
 }

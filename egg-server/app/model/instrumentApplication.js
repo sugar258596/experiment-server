@@ -11,7 +11,7 @@ module.exports = app => {
     description: { type: TEXT, allowNull: false, comment: '详细描述' },
     startTime: { type: DATE, allowNull: false, comment: '使用开始时间' },
     endTime: { type: DATE, allowNull: false, comment: '使用结束时间' },
-    status: { type: INTEGER, defaultValue: 0, comment: '申请状态:0-待审核,1-已通过,2-已拒绝' },
+    status: { type: INTEGER, defaultValue: 0, comment: '申请状态:0-待审核,1-已通过,2-已拒绝,3-已归还' },
     rejectionReason: { type: STRING(500), allowNull: true, comment: '拒绝原因' },
     reviewerId: { type: INTEGER, allowNull: true, comment: '审核人ID' },
     reviewTime: { type: DATE, allowNull: true, comment: '审核时间' },
