@@ -84,6 +84,18 @@ class FeedbackController extends Controller {
   }
 
   /**
+   * 更新反馈状态
+   */
+  async updateStatus() {
+    const { ctx } = this;
+    const userId = ctx.state.user.sub;
+    const userRole = ctx.state.user.role;
+    const { status } = ctx.request.body;
+    const result = await ctx.service.feedback.updateStatus(ctx.params.id, status, userId, userRole);
+    ctx.body = { success: true, data: result };
+  }
+
+  /**
    * @summary 关闭反馈
    * @description 实验室创建者或管理员关闭反馈
    * @router patch /api/feedbacks/{id}/close
@@ -96,6 +108,21 @@ class FeedbackController extends Controller {
     const userRole = ctx.state.user.role;
     const result = await ctx.service.feedback.close(ctx.params.id, userId, userRole);
     ctx.body = { success: true, data: result };
+  }
+
+  /**
+   * @summary 删除反馈
+   * @description 管理员删除反馈
+   * @router delete /api/feedbacks/{id}
+   * @request path integer *id 反馈ID
+   * @response 200 baseResponse 删除成功
+   */
+  async destroy() {
+    const { ctx } = this;
+    const userId = ctx.state.user.sub;
+    const userRole = ctx.state.user.role;
+    await ctx.service.feedback.delete(ctx.params.id, userId, userRole);
+    ctx.body = { success: true, message: '删除成功' };
   }
 }
 

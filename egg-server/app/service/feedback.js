@@ -182,13 +182,14 @@ class FeedbackService extends Service {
   }
 
   /**
-   * 关闭反馈
+   * 更新反馈状态
    * @param {number} id - 反馈ID
+   * @param {number} status - 新状态
    * @param {number} userId - 操作用户ID
    * @param {string} userRole - 用户角色
    * @return {Object} 更新后的反馈
    */
-  async close(id, userId, userRole) {
+  async updateStatus(id, status, userId, userRole) {
     const feedback = await this.ctx.model.Feedback.findByPk(id, {
       include: [{ model: this.ctx.model.Lab, as: 'lab' }],
     });
@@ -202,11 +203,46 @@ class FeedbackService extends Service {
     const isLabCreator = userRole === 'teacher' && feedback.lab && String(feedback.lab.creatorId) === String(userId);
 
     if (!isAdmin && !isLabCreator) {
-      this.ctx.throw(403, '没有权限关闭此反馈');
+      this.ctx.throw(403, '没有权限更新此反馈状态');
     }
 
-    await feedback.update({ status: 2 });
+    await feedback.update({ status });
     return feedback;
+  }
+
+  /**
+   * 关闭反馈
+   * @param {number} id - 反馈ID
+   * @param {number} userId - 操作用户ID
+   * @param {string} userRole - 用户角色
+   * @return {Object} 更新后的反馈
+   */
+  async close(id, userId, userRole) {
+    return this.updateStatus(id, 2, userId, userRole);
+  }
+
+  /**
+   * 删除反馈
+   * @param {number} id - 反馈ID
+   * @param {number} userId - 操作用户ID
+   * @param {string} userRole - 用户角色
+   */
+  async delete(id, userId, userRole) {
+    const feedback = await this.ctx.model.Feedback.findByPk(id, {
+      include: [{ model: this.ctx.model.Lab, as: 'lab' }],
+    });
+
+    if (!feedback) {
+      this.ctx.throw(404, '反馈不存在');
+    }
+
+    // 只有管理员可以删除
+    const isAdmin = userRole === 'admin' || userRole === 'super_admin';
+    if (!isAdmin) {
+      this.ctx.throw(403, '没有权限删除反馈');
+    }
+
+    await feedback.destroy();
   }
 }
 
