@@ -63,7 +63,8 @@ class AppointmentService extends Service {
       this.ctx.throw(404, 'Appointment not found');
     }
 
-    if (appointment.userId !== userId) {
+    // 使用 == 进行宽松比较，避免类型不一致导致的问题
+    if (String(appointment.userId) !== String(userId)) {
       this.ctx.throw(403, 'Forbidden');
     }
 
@@ -115,7 +116,7 @@ class AppointmentService extends Service {
    * @return {Object} 预约列表
    */
   async getPendingAppointments(query = {}, reviewerId = null, reviewerRole = null) {
-    const { page = 1, pageSize = 10, keyword, labId, userId, startDate, endDate, department } = query;
+    const { page = 1, pageSize = 10, keyword, labId, userId, startDate, endDate, department, creatorId } = query;
 
     const whereCondition = {
       status: 0,
@@ -128,7 +129,7 @@ class AppointmentService extends Service {
       ];
     }
 
-    // 实验室筛选
+    // 实验室筛选 - 当有实验室ID时才按实验室筛选
     if (labId) {
       whereCondition.labId = labId;
     }
@@ -151,8 +152,16 @@ class AppointmentService extends Service {
       labWhere.department = { [this.app.Sequelize.Op.like]: `%${department}%` };
     }
 
-    // 如果是教师角色，只能查看自己创建的实验室的预约
-    if (reviewerRole === 'teacher' && reviewerId) {
+    // 创建者筛选（管理员可以通过 creatorId 参数筛选）
+    if (creatorId) {
+      labWhere.creatorId = creatorId;
+    }
+
+    // 教师角色权限控制：
+    // 1. 如果没有指定实验室ID，获取该教师创建的所有实验室的申请
+    // 2. 如果指定了实验室ID，则通过上面的 whereCondition.labId 筛选
+    // 管理员角色：获取全部申请，但可以通过 creatorId 参数筛选
+    if (reviewerRole === 'teacher' && reviewerId && !labId && !creatorId) {
       labWhere.creatorId = reviewerId;
     }
 

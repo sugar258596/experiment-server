@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = app => {
-  const { STRING, INTEGER, DATE, TEXT, DATEONLY } = app.Sequelize;
+  const { INTEGER, DATE, TEXT, DATEONLY } = app.Sequelize;
 
   const Appointment = app.model.define('appointments', {
     id: { type: INTEGER, primaryKey: true, autoIncrement: true, comment: '预约单唯一标识' },
@@ -31,6 +31,7 @@ module.exports = app => {
     app.model.Appointment.belongsTo(app.model.Lab, { foreignKey: 'labId', as: 'lab' });
     app.model.Appointment.belongsTo(app.model.User, { foreignKey: 'userId', as: 'user' });
     app.model.Appointment.belongsTo(app.model.User, { foreignKey: 'reviewerId', as: 'reviewer' });
+    app.model.Appointment.hasMany(app.model.Feedback, { foreignKey: 'appointmentId', as: 'feedbacks' });
   };
 
   return Appointment;

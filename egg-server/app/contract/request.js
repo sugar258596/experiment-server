@@ -99,4 +99,13 @@ module.exports = {
     newPassword: { type: 'string', required: true, description: '新密码' },
     confirmPassword: { type: 'string', required: true, description: '确认新密码' },
   },
+  createFeedbackBody: {
+    labId: { type: 'number', required: true, description: '实验室ID' },
+    appointmentId: { type: 'number', required: true, description: '关联的预约ID' },
+    title: { type: 'string', required: true, description: '反馈标题' },
+    content: { type: 'string', required: true, description: '反馈内容' },
+  },
+  replyFeedbackBody: {
+    content: { type: 'string', required: true, description: '回复内容' },
+  },
 };

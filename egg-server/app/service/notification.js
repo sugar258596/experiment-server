@@ -24,7 +24,7 @@ class NotificationService extends Service {
       this.ctx.throw(403, 'Forbidden');
     }
 
-    await notification.update({ read: true });
+    await notification.update({ isRead: true });
     return notification;
   }
 

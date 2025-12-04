@@ -222,6 +222,11 @@ class LabService extends Service {
       }
     }
 
+    // 确保 tags 字段不为空，如果没有提供则设置为空数组
+    if (!labData.tags) {
+      labData.tags = [];
+    }
+
     // 解析 instrumentIds 字段
     let instrumentIds = [];
     if (formData.instrumentIds) {
@@ -437,6 +442,11 @@ class LabService extends Service {
       } catch (e) {
         // 如果解析失败，保持原字符串
       }
+    }
+
+    // 确保 tags 字段不为空，如果没有提供则设置为空数组
+    if (!updateData.tags) {
+      updateData.tags = [];
     }
 
     // 解析 instrumentIds 字段

@@ -30,6 +30,7 @@ module.exports = app => {
     app.model.Lab.hasMany(app.model.Evaluation, { foreignKey: 'labId', as: 'evaluations' });
     app.model.Lab.hasMany(app.model.Instrument, { foreignKey: 'labId', as: 'instruments' });
     app.model.Lab.belongsTo(app.model.User, { foreignKey: 'creatorId', as: 'creator' });
+    app.model.Lab.hasMany(app.model.Feedback, { foreignKey: 'labId', as: 'feedbacks' });
   };
 
   return Lab;
