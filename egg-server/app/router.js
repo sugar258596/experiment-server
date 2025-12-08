@@ -13,6 +13,7 @@ module.exports = app => {
   // ==================== 加载模块路由 ====================
   require('./router/auth')(app);
   require('./router/user')(app);
+  require('./router/dashboard')(app);
   require('./router/lab')(app);
   require('./router/appointment')(app);
   require('./router/instrument')(app);
